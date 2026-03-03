@@ -171,179 +171,184 @@ body{
 .empty-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
 
 /* ════════════════════════
-   JOURNAL (TODAY) — Reimagined
-   Clean cards + bold structure
+   JOURNAL (TODAY) — Card-per-exercise layout
 ════════════════════════ */
 .j-wrap{background:var(--j-bg);min-height:100vh;padding-bottom:110px;}
 
-/* Page header */
-.j-hdr{
-  padding:20px 16px 16px;
-  background:var(--j-sur);
-  border-bottom:3px solid var(--j-acc);
-}
-.j-hdr-date{font-size:10px;font-weight:700;color:var(--j-mut);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:5px;}
-.j-hdr-title{font-family:'Black Ops One',sans-serif;font-size:24px;letter-spacing:3px;
-  color:var(--j-txt);}
+/* ── Page header ── */
+.j-hdr{background:var(--j-sur);border-bottom:2px solid var(--j-acc);}
+.j-hdr-inner{padding:10px 14px 9px;display:flex;align-items:flex-end;justify-content:space-between;}
+.j-hdr-date{font-size:9px;font-weight:700;color:var(--j-mut);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+.j-hdr-title{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:3px;color:var(--j-txt);}
+.j-hdr-meta{display:flex;gap:14px;align-items:center;}
+.j-hdr-stat{text-align:right;}
+.j-hdr-stat-val{font-family:'Black Ops One',sans-serif;font-size:20px;color:var(--j-acc);line-height:1;}
+.j-hdr-stat-lbl{font-size:8px;color:var(--j-mut);letter-spacing:1px;text-transform:uppercase;}
 
-/* Timestamps */
-.j-ts-bar{
-  display:flex;gap:20px;padding:8px 16px;
-  background:var(--j-tnt);
-  border-bottom:1px solid var(--j-bor);font-size:10px;color:var(--j-mut);
-}
-.j-ts-item{display:flex;align-items:center;gap:6px;}
-.j-ts-lbl{font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
-.j-ts-val{color:var(--j-txt);font-weight:600;}
+/* ── Timestamp bar ── */
+.j-ts-bar{display:flex;padding:5px 14px;background:var(--j-tnt);border-bottom:1px solid var(--j-bor2);gap:16px;}
+.j-ts-item{display:flex;align-items:center;gap:5px;}
+.j-ts-lbl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--j-mut);}
+.j-ts-val{font-size:10px;font-weight:600;color:var(--j-txt);}
 
-/* Section divider */
-.j-divider{
-  margin:20px 16px 0;
-  display:flex;align-items:center;gap:12px;
-}
-.j-divider span{
-  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
-  color:var(--j-mut);white-space:nowrap;
-}
-.j-divider::after{content:'';flex:1;height:1px;background:var(--j-bor2);}
+/* ── Section label ── */
+.j-section-lbl{padding:10px 14px 4px;font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--j-mut);}
 
-/* Exercise block — clean card with left accent */
+/* ── Exercise card ── */
 .j-ex{
-  background:var(--j-card);
-  margin:12px 16px 0;
-  border-radius:12px;
-  border:1px solid var(--j-bor);
+  background:var(--j-sur);
+  margin:0 12px 10px;
+  border:1.5px solid var(--j-bor2);
+  border-radius:8px;
   overflow:hidden;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
-  animation:jslide .22s ease both;
-  transition:border-color .25s, box-shadow .25s;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  animation:jslide .2s ease both;
+  transition:border-color .2s,box-shadow .2s;
 }
-@keyframes jslide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes jslide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.j-ex:nth-child(1){animation-delay:.03s}.j-ex:nth-child(2){animation-delay:.06s}
+.j-ex:nth-child(3){animation-delay:.09s}.j-ex:nth-child(4){animation-delay:.12s}
+.j-ex:nth-child(5){animation-delay:.15s}.j-ex:nth-child(6){animation-delay:.18s}
+.j-ex:nth-child(7){animation-delay:.21s}.j-ex:nth-child(8){animation-delay:.24s}
 
-.j-ex-hdr{
-  padding:14px 16px 12px;
-  display:flex;justify-content:space-between;align-items:flex-start;
-  border-bottom:1px solid var(--j-bor);
-}
-.j-ex-name{
-  font-weight:700;font-size:15px;color:var(--j-txt);
-  text-transform:uppercase;letter-spacing:.5px;
-}
-.j-ex-grp{font-size:10px;color:var(--j-mut);margin-top:3px;letter-spacing:.3px;}
-.j-ex-scheme{
-  font-size:11px;font-weight:700;color:var(--j-acc);
-  flex-shrink:0;margin-left:12px;
-  background:rgba(200,16,46,.08);
-  border:1px solid rgba(200,16,46,.2);
-  border-radius:6px;padding:3px 9px;letter-spacing:.5px;
-}
+/* complete state */
+.j-ex.ex-complete{border-color:var(--j-up);box-shadow:0 0 0 1px rgba(22,163,74,.2),0 2px 10px rgba(22,163,74,.08);}
 
-/* Last session ref */
-.j-last{
-  padding:8px 16px;
-  display:flex;align-items:center;gap:8px;
-  font-size:11px;color:var(--j-mut);
+/* ── Exercise name row ── */
+.j-ex-name-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px 7px;
   border-bottom:1px solid var(--j-bor);
   background:var(--j-tnt);
 }
-.j-last-w{font-weight:700;font-size:13px;color:var(--j-txt);}
-.j-larrow{font-size:15px;font-weight:700;}
-.j-larrow.up{color:var(--j-up);} .j-larrow.dn{color:var(--j-dn);} .j-larrow.eq{color:var(--j-eq);}
-.j-hint{font-size:9px;background:var(--j-tnt2);padding:2px 8px;border-radius:20px;
-  color:var(--j-mut);margin-left:auto;font-weight:600;letter-spacing:.3px;}
+.j-ex-name{font-weight:700;font-size:13px;color:var(--j-txt);text-transform:uppercase;letter-spacing:.4px;line-height:1.2;}
+.j-ex.ex-complete .j-ex-name{color:var(--j-up);}
+.j-ex-grp{font-size:9px;color:var(--j-mut);margin-top:2px;letter-spacing:.2px;}
+.j-ex-right{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:8px;}
+.j-ex-scheme{font-size:9px;font-weight:700;color:var(--j-acc);background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.18);border-radius:3px;padding:2px 7px;letter-spacing:.5px;}
+.j-ex-last{font-size:9px;color:var(--j-mut);display:flex;align-items:center;gap:3px;}
+.j-ex-last-w{font-weight:700;color:var(--j-txt2);font-size:10px;}
+.j-larrow{font-size:11px;font-weight:700;}
+.j-larrow.up{color:var(--j-up);}.j-larrow.dn{color:var(--j-dn);}.j-larrow.eq{color:var(--j-eq);}
 
-/* Weight row */
+/* ── Weight row ── */
 .j-wt-row{
-  padding:12px 16px;display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
   border-bottom:1px solid var(--j-bor);
+  background:var(--j-sur);
 }
-.j-wt-lbl{font-size:10px;color:var(--j-mut);font-weight:700;min-width:48px;
-  text-transform:uppercase;letter-spacing:.5px;}
-.j-wt-wrap{display:flex;align-items:center;border:1.5px solid var(--j-bor2);
-  border-radius:8px;overflow:hidden;}
+.j-wt-lbl{font-size:9px;font-weight:700;color:var(--j-mut);text-transform:uppercase;letter-spacing:.8px;min-width:48px;}
+.j-wt-ctrl{display:flex;align-items:center;border:1.5px solid var(--j-bor2);border-radius:6px;overflow:hidden;}
 .j-adj{
-  width:38px;height:38px;background:var(--j-tnt);border:none;font-size:20px;
-  color:var(--j-txt);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background .1s;flex-shrink:0;font-weight:300;
+  width:34px;height:34px;background:var(--j-tnt);border:none;font-size:20px;
+  color:var(--j-txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .1s;flex-shrink:0;font-weight:300;line-height:1;
 }
 .j-adj:active{background:var(--j-tnt2);}
 .j-wt-val{
-  width:64px;height:38px;border:none;
+  width:54px;height:34px;border:none;
   border-left:1px solid var(--j-bor2);border-right:1px solid var(--j-bor2);
+  text-align:center;font-size:16px;font-weight:700;
+  color:var(--j-txt);background:var(--j-sur);font-family:'Inter',sans-serif;
+}
+.j-wt-val:focus{outline:none;background:#fffef0;}
+.j-wt-unit{font-size:9px;color:var(--j-mut);font-weight:500;}
+
+/* ── Sets grid: all sets in one horizontal row ── */
+.j-sets-grid{
+  display:flex;border-bottom:1px solid var(--j-bor);
+}
+/* column headers for sets area */
+.j-sets-col-hdr{
+  display:flex;
+  border-bottom:1px solid var(--j-bor);
+  background:var(--j-tnt2);
+}
+.j-sets-col-hdr-cell{
+  flex:1;text-align:center;
+  font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--j-mut);padding:4px 2px;
+  border-right:1px solid var(--j-bor);
+}
+.j-sets-col-hdr-cell:last-child{border-right:none;}
+
+/* Set cell — full tap = toggle done; tap the number = edit reps */
+.j-cell-set{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:8px 4px;gap:6px;
+  cursor:pointer;
+  border-right:1px solid var(--j-bor);
+  transition:background .12s;
+  position:relative;
+  min-height:72px;
+}
+.j-cell-set:last-child{border-right:none;}
+.j-cell-set:active{opacity:.7;}
+.j-cell-set.done{background:rgba(22,163,74,.07);}
+
+/* rep fraction  actual / target */
+.j-set-frac{display:flex;align-items:baseline;gap:1px;line-height:1;}
+.j-set-actual{
+  font-size:18px;font-weight:700;color:var(--j-txt);
+  border-bottom:1.5px solid var(--j-bor2);
+  min-width:22px;text-align:center;cursor:text;
+  padding:0 2px;transition:color .15s;
+}
+.j-cell-set.done .j-set-actual{color:var(--j-up);}
+.j-set-slash{font-size:10px;color:var(--j-mut);margin:0 2px;}
+.j-set-target{font-size:10px;color:var(--j-mut);}
+
+/* inline edit input (hidden until activated) */
+.j-set-input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;}
+.j-set-input.editing{
+  position:static;opacity:1;pointer-events:all;
+  width:42px;height:28px;border:none;
+  border-bottom:2px solid var(--j-acc);
   text-align:center;font-size:17px;font-weight:700;
-  color:var(--j-txt);background:var(--j-sur);font-family:'Inter',sans-serif;
+  color:var(--j-acc);background:transparent;
+  font-family:'Inter',sans-serif;outline:none;
 }
-.j-wt-val:focus{outline:none;background:#fffdf9;}
-.j-wt-unit{font-size:10px;color:var(--j-mut);font-weight:500;}
 
-/* Sets area */
-.j-sets-area{padding:12px 16px 8px;}
-.j-sets-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  color:var(--j-mut);margin-bottom:10px;}
-.j-set-rows{display:flex;flex-direction:column;gap:8px;}
-.j-set-row{display:flex;align-items:center;gap:10px;}
-.j-set-n{font-size:11px;font-weight:700;color:var(--j-mut);width:20px;
-  text-align:center;flex-shrink:0;}
-.j-rep-wrap{display:flex;align-items:center;border:1.5px solid var(--j-bor2);
-  border-radius:8px;overflow:hidden;}
-.j-radj{
-  width:34px;height:34px;background:var(--j-tnt);border:none;font-size:18px;
-  color:var(--j-txt);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-weight:300;transition:background .1s;
+/* checkbox circle */
+.j-set-chk{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--j-bor2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:transparent;
+  transition:all .15s;background:var(--j-sur);flex-shrink:0;
 }
-.j-radj:active{background:var(--j-tnt2);}
-.j-reps{
-  width:44px;height:34px;border:none;
-  border-left:1px solid var(--j-bor2);border-right:1px solid var(--j-bor2);
-  text-align:center;font-size:15px;font-weight:700;
-  color:var(--j-txt);background:var(--j-sur);font-family:'Inter',sans-serif;
-}
-.j-reps:focus{outline:none;background:#fffdf9;}
-.j-tgt{font-size:10px;color:var(--j-mut);}
-.j-chk{
-  width:28px;height:28px;border-radius:50%;border:2px solid var(--j-bor2);
-  background:transparent;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;font-size:13px;margin-left:auto;flex-shrink:0;
-  transition:all .2s;
-}
-.j-chk.done{background:var(--j-up);border-color:var(--j-up);color:#fff;}
+.j-cell-set.done .j-set-chk{background:var(--j-up);border-color:var(--j-up);color:#fff;}
 
-/* Exercise complete state */
-.j-ex.ex-complete{
-  border-color:var(--j-up);
-  box-shadow:0 0 0 1px var(--j-up),0 4px 16px rgba(22,163,74,.1);
+/* filler cell (exercise has fewer sets than max) */
+.j-cell-set-empty{
+  flex:1;border-right:1px solid var(--j-bor);
+  background:var(--j-tnt);opacity:.35;
 }
-.j-ex.ex-complete .j-ex-hdr{
-  background:linear-gradient(135deg,rgba(22,163,74,.06) 0%,transparent 100%);
-}
-.j-ex-complete-badge{
-  display:none;align-items:center;gap:6px;
-  padding:6px 16px;background:rgba(22,163,74,.08);
-  border-bottom:1px solid rgba(22,163,74,.15);
-  font-size:9px;font-weight:700;color:#16a34a;
-  letter-spacing:2px;text-transform:uppercase;
-}
-.j-ex.ex-complete .j-ex-complete-badge{display:flex;}
-.j-ex-complete-badge::before{content:'✓';font-size:12px;}
+.j-cell-set-empty:last-child{border-right:none;}
 
-/* Next time row */
+/* ── Next-session row ── */
 .j-next-row{
-  padding:10px 16px 12px;
-  display:flex;align-items:center;gap:8px;
-  border-top:1px solid var(--j-bor);
+  display:flex;align-items:center;padding:8px 12px;gap:8px;
 }
-.j-next-lbl{font-size:9px;color:var(--j-mut);font-weight:700;
-  letter-spacing:1px;text-transform:uppercase;margin-right:4px;white-space:nowrap;}
+.j-next-lbl{font-size:9px;font-weight:700;color:var(--j-mut);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;min-width:38px;}
 .j-abtn{
-  flex:1;padding:8px 4px;border:1.5px solid var(--j-bor2);border-radius:8px;
-  background:var(--j-sur);font-size:17px;cursor:pointer;
-  transition:all .15s;text-align:center;
+  flex:1;padding:8px 6px;border:1.5px solid var(--j-bor2);border-radius:7px;
+  background:var(--j-sur);font-size:16px;cursor:pointer;
+  transition:all .15s;text-align:center;line-height:1;
 }
-.j-abtn:active{transform:scale(.95);}
+.j-abtn:active{transform:scale(.94);}
 .j-abtn.aup{background:#dcfce7;border-color:var(--j-up);}
-.j-abtn.aeq{background:#f1f5f9;border-color:var(--j-eq);}
+.j-abtn.aeq{background:#f0fdf4;border-color:var(--j-up);}
 .j-abtn.adn{background:#fee2e2;border-color:var(--j-dn);}
+
+/* compat stubs */
+.j-wt-unit{} /* used in JS flush; keep visible but shrink */
+.j-sets-area,.j-set-rows,.j-set-row,.j-set-n,.j-set-num,.j-set-check,
+.j-set-tgt,.j-set-reps-wrap,.j-tgt,.j-chk,.j-next-lbl,.j-hint,
+.j-ex-hdr,.j-ex-scheme-old,.j-ex-complete-badge,.j-divider{display:none;}
+.j-abtn-sm{display:none;}
 
 /* CARDIO */
 .cardio-card{
@@ -1297,85 +1302,110 @@ function startWorkout(){
 }
 
 /* ═══════════════════════════════════════════
-   TODAY — GRID LAYOUT
+   TODAY — CARD-PER-EXERCISE LAYOUT
 ═══════════════════════════════════════════ */
 function renderToday(){
   const wrap=document.getElementById('j-wrap');
   if(!active){
-    wrap.innerHTML='<div style="text-align:center;padding:64px 20px;color:#444;font-size:11px;letter-spacing:2px;text-transform:uppercase;line-height:2;">No Active Workout<br>Go to Build to start one</div>';
+    wrap.innerHTML=`<div style="text-align:center;padding:64px 20px;color:#888;font-size:11px;letter-spacing:2px;text-transform:uppercase;line-height:2.2;">
+      <div style="font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:4px;color:#ccc;margin-bottom:8px;">READY</div>
+      Go to Build tab to generate &amp; start a workout
+    </div>`;
     return;
   }
   const w=active;
   const inc=cfg.weightIncrement||5;
   const fmtTime=iso=>{if(!iso)return'—';const d=new Date(iso);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
+  const totalSets=w.exercises.reduce((a,ex)=>a+ex.sets,0);
+  const doneSets=w.exercises.reduce((a,ex)=>a+ex.setsDone.filter(Boolean).length,0);
 
-  let html=`<div class="j-hdr">
-    <div class="j-hdr-date">${dotw(w.date)}, ${fmtDate(w.date)}</div>
-    <div class="j-hdr-title">Workout Log</div>
+  let html=`
+  <div class="j-hdr">
+    <div class="j-hdr-inner">
+      <div>
+        <div class="j-hdr-date">${dotw(w.date)} · ${fmtDate(w.date)}</div>
+        <div class="j-hdr-title">Workout Log</div>
+      </div>
+      <div class="j-hdr-meta">
+        <div class="j-hdr-stat">
+          <div class="j-hdr-stat-val">${w.exercises.length}</div>
+          <div class="j-hdr-stat-lbl">Lifts</div>
+        </div>
+        <div class="j-hdr-stat">
+          <div class="j-hdr-stat-val" id="sets-counter">${doneSets}/${totalSets}</div>
+          <div class="j-hdr-stat-lbl">Sets</div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="j-ts-bar">
     <div class="j-ts-item"><span class="j-ts-lbl">Started</span><span class="j-ts-val">${fmtTime(w.startedAt)}</span></div>
     <div class="j-ts-item"><span class="j-ts-lbl">Now</span><span class="j-ts-val">${fmtTime(new Date().toISOString())}</span></div>
-  </div>`;
-
-  html+='<div class="j-divider" style="margin-top:14px;"><span>Strength</span></div>';
+  </div>
+  <div class="j-section-lbl">Strength Training</div>
+  <div style="padding:0 0 8px;">`;
 
   w.exercises.forEach((ex,ei)=>{
-    const lastHtml=ex.last?`<div class="j-last">
-      <span>Last:</span>
-      <span class="j-last-w">${ex.last.weight}lb</span>
-      <span class="j-larrow ${arCls(ex.last.arrow)}">${arSym(ex.last.arrow)}</span>
-      <span class="j-hint">suggested start</span>
-    </div>`:'';
+    const allDone=ex.setsDone.every(Boolean)&&ex.arrow!==null;
+    const lastInfo=ex.last
+      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${ex.last.weight}lb</span><span class="j-larrow ${arCls(ex.last.arrow)}">${arSym(ex.last.arrow)}</span></div>`
+      :'';
 
-    // Ruled set rows — one tap toggles done
-    let setRowsHtml='';
+    // column headers: one per set
+    const colHdrs=Array.from({length:ex.sets},(_,s)=>`<div class="j-sets-col-hdr-cell">S${s+1}</div>`).join('');
+
+    // set cells
+    let setCells='';
     for(let s=0;s<ex.sets;s++){
       const done=ex.setsDone[s];
-      setRowsHtml+=`<div class="j-set-row${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})">
-        <span class="j-set-num">SET ${s+1}</span>
-        <span class="j-set-check">${done?'✓':''}</span>
-        <div class="j-set-reps-wrap" onclick="event.stopPropagation()">
-          <button class="j-radj" onclick="adjReps(${ei},${s},-1)">−</button>
-          <input class="j-reps" type="number" inputmode="numeric" id="rp-${ei}-${s}"
-            value="${ex.repsLog[s]}" onchange="setReps(${ei},${s},this.value)" onfocus="this.select()">
-          <button class="j-radj" onclick="adjReps(${ei},${s},1)">+</button>
+      setCells+=`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})">
+        <div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})">
+          <span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span>
+          <span class="j-set-slash">/</span>
+          <span class="j-set-target">${ex.targetReps}</span>
         </div>
-        <span class="j-set-tgt">/ ${ex.targetReps} reps</span>
+        <input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric"
+          value="${ex.repsLog[s]}"
+          onchange="commitReps(${ei},${s},this.value)"
+          onblur="blurReps(${ei},${s})"
+          onclick="event.stopPropagation()">
+        <div class="j-set-chk">✓</div>
       </div>`;
     }
 
     const asel=a=>ex.arrow===a?` a${a}`:'';
-    const allDone=ex.setsDone.every(Boolean)&&ex.arrow!==null;
     html+=`<div class="j-ex${allDone?' ex-complete':''}" id="jex-${ei}">
-      <div class="j-ex-hdr">
-        <div>
+      <div class="j-ex-name-row">
+        <div style="min-width:0;flex:1;">
           <div class="j-ex-name">${ex.name}</div>
           <div class="j-ex-grp">${ex.group}</div>
         </div>
-        <div class="j-ex-scheme">${ex.scheme}</div>
+        <div class="j-ex-right">
+          ${lastInfo}
+          <div class="j-ex-scheme">${ex.scheme}</div>
+        </div>
       </div>
-      <div class="j-ex-complete-badge">✓ &nbsp;Complete</div>
-      ${lastHtml}
       <div class="j-wt-row">
         <span class="j-wt-lbl">Weight</span>
-        <div class="j-wt-wrap">
+        <div class="j-wt-ctrl">
           <button class="j-adj" onclick="adjWt(${ei},-${inc})">−</button>
           <input class="j-wt-val" type="number" inputmode="decimal" id="wt-${ei}"
             value="${ex.weight}" onchange="setWt(${ei},this.value)" onfocus="this.select()">
           <button class="j-adj" onclick="adjWt(${ei},${inc})">+</button>
         </div>
-        <span class="j-wt-unit">lbs · ±${inc}</span>
+        <span class="j-wt-unit" style="font-size:9px;color:var(--j-mut);">lbs</span>
       </div>
-      <div class="j-sets-area">${setRowsHtml}</div>
+      <div class="j-sets-col-hdr">${colHdrs}</div>
+      <div class="j-sets-grid">${setCells}</div>
       <div class="j-next-row">
         <span class="j-next-lbl">Next:</span>
         <button class="j-abtn${asel('up')}"   onclick="setArrow(${ei},'up')">↑</button>
-        <button class="j-abtn${asel('eq')}"   onclick="setArrow(${ei},'eq')">＝</button>
+        <button class="j-abtn${asel('eq')}"   onclick="setArrow(${ei},'eq')">✓</button>
         <button class="j-abtn${asel('dn')}"   onclick="setArrow(${ei},'dn')">↓</button>
       </div>
     </div>`;
   });
+  html+='</div>'; // close exercises wrapper
 
   // Cardio
   const cd=w.cardio;
@@ -1451,21 +1481,41 @@ function setWt(ei,v){active.exercises[ei].weight=parseFloat(v)||0;}
 function toggleDone(ei,si){
   active.exercises[ei].setsDone[si]=!active.exercises[ei].setsDone[si];
   const done=active.exercises[ei].setsDone[si];
-  const row=document.getElementById(`row-${ei}-${si}`);
-  if(row){
-    row.classList.toggle('done',done);
-    const chk=row.querySelector('.j-set-check');
-    if(chk) chk.textContent=done?'✓':'';
-  }
+  const cell=document.getElementById(`row-${ei}-${si}`);
+  if(cell) cell.classList.toggle('done',done);
   checkExComplete(ei);
+}
+function startEditReps(e,ei,si){
+  e.stopPropagation();
+  const inp=document.getElementById(`si-${ei}-${si}`);
+  const disp=document.getElementById(`sa-${ei}-${si}`);
+  if(!inp||!disp)return;
+  inp.classList.add('editing');
+  disp.style.display='none';
+  inp.value=active.exercises[ei].repsLog[si];
+  inp.focus();inp.select();
+}
+function commitReps(ei,si,val){
+  const v=parseInt(val)||0;
+  active.exercises[ei].repsLog[si]=v;
+  const disp=document.getElementById(`sa-${ei}-${si}`);
+  if(disp)disp.textContent=v;
+}
+function blurReps(ei,si){
+  const inp=document.getElementById(`si-${ei}-${si}`);
+  const disp=document.getElementById(`sa-${ei}-${si}`);
+  if(inp){commitReps(ei,si,inp.value);inp.classList.remove('editing');}
+  if(disp)disp.style.display='';
 }
 function checkExComplete(ei){
   const ex=active.exercises[ei];
   const card=document.getElementById('jex-'+ei);if(!card)return;
   const allDone=ex.setsDone.every(Boolean)&&ex.arrow!==null;
   card.classList.toggle('ex-complete',allDone);
-  const badge=card.querySelector('.j-ex-complete-badge');
-  if(badge) badge.style.display=allDone?'flex':'none';
+  const totalSets=active.exercises.reduce((a,e)=>a+e.sets,0);
+  const doneSets=active.exercises.reduce((a,e)=>a+e.setsDone.filter(Boolean).length,0);
+  const ctr=document.getElementById('sets-counter');
+  if(ctr)ctr.textContent=doneSets+'/'+totalSets;
 }
 function setArrow(ei,arrow){
   active.exercises[ei].arrow=arrow;
