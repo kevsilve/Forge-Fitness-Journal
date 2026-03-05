@@ -170,6 +170,29 @@ body{
   color:var(--surface3);display:block;margin-bottom:8px;}
 .empty-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
 
+/* Active workout warning banner on generate tab */
+.active-workout-banner{
+  background:var(--surface);border:1.5px solid var(--accent);border-radius:8px;
+  padding:16px;margin-bottom:16px;
+  box-shadow:0 0 20px var(--accent-glow);
+}
+.awb-title{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;
+  color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.awb-pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite;}
+.awb-sub{font-size:11px;color:var(--text2);margin-bottom:14px;line-height:1.5;}
+.awb-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.awb-btn-go{flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:6px;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;cursor:pointer;transition:opacity .15s;min-width:80px;}
+.awb-btn-go:active{opacity:.85;}
+.awb-btn-end{flex:1;padding:10px;background:transparent;border:1.5px solid var(--up);
+  color:var(--up);border-radius:6px;font-family:'Inter',sans-serif;font-size:11px;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;min-width:80px;}
+.awb-btn-discard{flex:1;padding:10px;background:transparent;border:1.5px solid var(--border3);
+  color:var(--text3);border-radius:6px;font-family:'Inter',sans-serif;font-size:11px;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;min-width:80px;}
+.awb-btn-discard.armed{border-color:var(--dn);color:var(--dn);}
+
 /* ════════════════════════
    JOURNAL (TODAY) — Card-per-exercise layout
 ════════════════════════ */
@@ -581,6 +604,8 @@ body{
 .h-chev.open{transform:rotate(180deg);}
 .h-sess-del{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .h-sess-del:hover{border-color:var(--j-dn);color:var(--j-dn);}
+.h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.h-sess-edit:hover{border-color:var(--j-acc);color:var(--j-acc);}
 .hist-body{display:none;border-top:1px solid var(--j-bor);}
 .hist-body.open{display:block;}
 .h-ex-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-bottom:1px solid var(--j-bor);gap:10px;}
@@ -1112,7 +1137,21 @@ function launchApp(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
   updateSyncUI();
+  startAutoSync();
 }
+
+/* ── AUTO-SYNC every 30s when active workout exists ── */
+let autoSyncInterval=null;
+function startAutoSync(){
+  if(autoSyncInterval)clearInterval(autoSyncInterval);
+  autoSyncInterval=setInterval(async()=>{
+    if(!active||!gistCfg.pat)return;
+    // Save active workout state to localStorage silently
+    lsSet('fj_active_workout',active);
+    try{await gistPush();}catch(e){/* silent */}
+  },30000);
+}
+function saveActiveToLocal(){if(active)lsSet('fj_active_workout',active);}
 function continueOffline(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
@@ -1220,6 +1259,7 @@ function switchTab(tab){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   const v=document.getElementById('view-'+tab);
   if(v) v.classList.add('active');
+  if(tab==='generate') renderActiveWorkoutBanner();
   if(tab==='today')    renderToday();
   if(tab==='history')  renderHistory();
   if(tab==='settings') renderSettings();
@@ -1231,6 +1271,7 @@ function switchTab(tab){
    GENERATE
 ═══════════════════════════════════════════ */
 function generate(){
+  if(active){toast('Finish or discard your active workout first');return;}
   const btn=document.getElementById('gen-btn');
   btn.classList.remove('rolling');void btn.offsetWidth;btn.classList.add('rolling');
   const used=new Set();
@@ -1279,11 +1320,100 @@ function renderPending(){
   }).join('');
 }
 
+function renderActiveWorkoutBanner(){
+  const container=document.getElementById('view-generate');
+  const existing=document.getElementById('active-workout-banner');
+  if(existing)existing.remove();
+  // Toggle generate button and start button state
+  const genBtn=document.getElementById('gen-btn');
+  const startBtn=document.getElementById('start-btn');
+  if(active){
+    if(genBtn){genBtn.style.opacity='.35';genBtn.style.cursor='not-allowed';}
+    if(startBtn)startBtn.style.display='none';
+  } else {
+    if(genBtn){genBtn.style.opacity='';genBtn.style.cursor='';}
+    // start btn visibility managed by generate/discard logic
+  }
+  if(!active)return;
+  const exDone=active.exercises.filter(ex=>ex.setsDone.every(Boolean)&&ex.arrow!==null).length;
+  const banner=document.createElement('div');
+  banner.id='active-workout-banner';
+  banner.className='active-workout-banner';
+  banner.innerHTML=`
+    <div class="awb-title"><span class="awb-pulse"></span> WORKOUT IN PROGRESS</div>
+    <div class="awb-sub">${active.exercises.length} exercises · ${exDone}/${active.exercises.length} complete · started ${(()=>{if(!active.startedAt)return 'earlier';const d=new Date(active.startedAt);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});})()}</div>
+    <div class="awb-btns">
+      <button class="awb-btn-go" onclick="switchTab('today')">▶ Go to Workout</button>
+      <button class="awb-btn-end" onclick="endAndSaveActive()">✓ End &amp; Save</button>
+      <button class="awb-btn-discard${armed['discard-active']?' armed':''}" onclick="discardActiveWorkout()" id="discard-btn">
+        ${armed['discard-active']?'Confirm Discard':'✕ Discard'}
+      </button>
+    </div>`;
+  container.insertBefore(banner, container.firstChild);
+}
+function discardActiveWorkout(){
+  if(armed['discard-active']){
+    clearTimeout(armed['discard-active_t']);
+    delete armed['discard-active'];delete armed['discard-active_t'];
+    active=null;pending=null;
+    lsSet('fj_active_workout',null);
+    renderPending();
+    document.getElementById('start-btn').style.display='none';
+    renderActiveWorkoutBanner();
+    toast('Workout discarded');
+  } else {
+    armed['discard-active']=true;
+    armed['discard-active_t']=setTimeout(()=>{delete armed['discard-active'];delete armed['discard-active_t'];renderActiveWorkoutBanner();},3000);
+    renderActiveWorkoutBanner();
+  }
+}
+async function endAndSaveActive(){
+  if(!active)return;
+  flushStrength();flushCardio();flushFinish();
+  const savedAt=new Date().toISOString();
+  const session={
+    id:Date.now(),date:active.date,
+    startedAt:active.startedAt||null,savedAt,
+    effort:active.effort,duration:active.duration,calories:active.calories,notes:active.notes,
+    cardio:active.cardio&&active.cardio.machine?dc(active.cardio):null,
+    exercises:active.exercises.map(ex=>({
+      name:ex.name,group:ex.group,scheme:ex.scheme,
+      weight:ex.weight,repsLog:[...ex.repsLog],arrow:ex.arrow||'eq'
+    }))
+  };
+  sessions.unshift(session);sv('fj_sessions',sessions);
+  stats.total=(stats.total||0)+1;
+  if(!stats.exercises)stats.exercises={};
+  if(!stats.weightHistory)stats.weightHistory={};
+  if(!stats.totalReps)stats.totalReps={};
+  if(!stats.prs)stats.prs={};
+  session.exercises.forEach(ex=>{
+    const k=ex.group+'::'+ex.name;
+    stats.exercises[k]=(stats.exercises[k]||0)+1;
+    if(!stats.weightHistory[k])stats.weightHistory[k]=[];
+    stats.weightHistory[k].push({date:session.date,weight:ex.weight});
+    const repsThisSession=ex.repsLog.reduce((a,b)=>a+b,0);
+    stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
+    const cur=stats.prs[k];
+    if(!cur||ex.weight>cur.weight){stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};}
+  });
+  sv('fj_stats',stats);
+  active=null;pending=null;
+  lsSet('fj_active_workout',null);
+  renderPending();
+  document.getElementById('start-btn').style.display='none';
+  renderActiveWorkoutBanner();
+  toast('Workout saved! 💪');
+  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+  else showBackupPrompt();
+}
+
 /* ═══════════════════════════════════════════
    START
 ═══════════════════════════════════════════ */
 function startWorkout(){
   if(!pending)return;
+  if(active){toast('Finish or discard your active workout first');return;}
   active={
     date:todayISO(),startedAt:new Date().toISOString(),effort:null,duration:'',calories:'',notes:'',
     cardio:{machine:null,duration:'',metric:'',calories:'',program:''},
@@ -1299,6 +1429,7 @@ function startWorkout(){
     })
   };
   switchTab('today');
+  lsSet('fj_active_workout',active);
 }
 
 /* ═══════════════════════════════════════════
@@ -1484,6 +1615,7 @@ function toggleDone(ei,si){
   const cell=document.getElementById(`row-${ei}-${si}`);
   if(cell) cell.classList.toggle('done',done);
   checkExComplete(ei);
+  saveActiveToLocal();
 }
 function startEditReps(e,ei,si){
   e.stopPropagation();
@@ -1524,6 +1656,7 @@ function setArrow(ei,arrow){
     const a=['up','eq','dn'][i];btn.className='j-abtn'+(arrow===a?' a'+a:'');
   });
   checkExComplete(ei);
+  saveActiveToLocal();
 }
 function setEffort(n){
   active.effort=n;
@@ -1599,6 +1732,7 @@ async function saveWorkout(){
   sv('fj_stats',stats);
 
   active=null;pending=null;
+  lsSet('fj_active_workout',null);
   renderPending();
   document.getElementById('start-btn').style.display='none';
   switchTab('history');
@@ -2008,6 +2142,7 @@ function renderListView(){
         <div class="hsd-meta">${s.exercises.length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
         <div class="hsd-right">
           ${badge}
+          <button class="h-sess-edit" title="Edit session" onclick="event.stopPropagation();openEditSession('${s.id}')">✎</button>
           <button class="h-sess-del" title="Delete session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button>
           <span class="h-chev" id="hc-${si}">▼</span>
         </div>
@@ -2049,6 +2184,137 @@ function rebuildStats(){
   sv('fj_stats',stats);
 }
 function clearHistory(){armReset('hist-clear',async()=>{sessions=[];sv('fj_sessions',sessions);if(gistCfg.pat){try{await gistPush();}catch(e){}}toast('History cleared');renderHistory();},renderHistory);}
+
+/* ── EDIT SESSION ── */
+let editSessionData=null;
+function openEditSession(id){
+  const sess=sessions.find(s=>String(s.id)===String(id));
+  if(!sess)return;
+  editSessionData=JSON.parse(JSON.stringify(sess)); // deep copy
+  renderEditModal();
+}
+function renderEditModal(){
+  const root=document.getElementById('modal-root');
+  const s=editSessionData;
+  const effortLabels=['','Easy','Good','Hard','Max'];
+  const gmap=getGroupExerciseMap();
+  const allGroupNames=gmap.map(g=>g.name);
+  const exHtml=s.exercises.map((ex,i)=>{
+    const grpOpts=allGroupNames.map(n=>`<option value="${n}"${ex.group===n?' selected':''}>${n}</option>`).join('');
+    const matchedGroup=gmap.find(g=>g.name===ex.group);
+    const exOptions=matchedGroup?matchedGroup.exercises.map(e=>e):gmap.flatMap(g=>g.exercises.map(e=>e));
+    const exOpts=exOptions.map(n=>`<option value="${n}"${ex.name===n?' selected':''}>${n}</option>`).join('');
+    const setsHtml=ex.repsLog.map((r,si)=>`
+      <div style="display:flex;align-items:center;gap:5px;">
+        <span style="font-size:10px;color:var(--j-mut);width:14px;">${si+1}</span>
+        <input class="me-inp me-inp-sm" type="number" inputmode="numeric" value="${r}"
+          onchange="editSessionData.exercises[${i}].repsLog[${si}]=parseInt(this.value)||0">
+      </div>`).join('');
+    return`<div class="me-ex-card">
+      <div class="me-ex-top">
+        <span class="me-ex-num">${i+1}</span>
+        <button class="me-ex-del" onclick="editRemoveEx(${i})">×</button>
+      </div>
+      <div class="me-ex-fields">
+        <div class="me-field" style="flex:1;min-width:120px;"><span class="me-field-lbl">Group</span>
+          <select class="me-inp" style="width:100%;" onchange="editSessionData.exercises[${i}].group=this.value">${grpOpts}</select>
+        </div>
+        <div class="me-field" style="flex:1;min-width:140px;"><span class="me-field-lbl">Exercise</span>
+          <select class="me-inp" style="width:100%;" onchange="editSessionData.exercises[${i}].name=this.value">${exOpts}</select>
+        </div>
+        <div class="me-field"><span class="me-field-lbl">Weight (lb)</span>
+          <input class="me-inp me-inp-sm" type="number" inputmode="decimal" value="${ex.weight||0}"
+            onchange="editSessionData.exercises[${i}].weight=parseFloat(this.value)||0">
+        </div>
+        <div class="me-field"><span class="me-field-lbl">Scheme</span>
+          <select class="me-inp" onchange="editSetScheme(${i},this.value)">
+            ${['3×10','3×12','4×10','3×8','4×8','5×5'].map(sc=>`<option${ex.scheme===sc?' selected':''}>${sc}</option>`).join('')}
+          </select>
+        </div>
+        <div class="me-field"><span class="me-field-lbl">Reps per set</span>
+          <div style="display:flex;flex-direction:column;gap:4px;">${setsHtml}</div>
+        </div>
+        <div class="me-field"><span class="me-field-lbl">Next time</span>
+          <select class="me-inp" onchange="editSessionData.exercises[${i}].arrow=this.value">
+            <option value="up"${ex.arrow==='up'?' selected':''}>↑ Up</option>
+            <option value="eq"${ex.arrow==='eq'?' selected':''}>= Same</option>
+            <option value="dn"${ex.arrow==='dn'?' selected':''}>↓ Down</option>
+          </select>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  root.innerHTML=`<div class="modal-overlay" onclick="closeEditModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-hdr">
+        <span class="modal-title">Edit Session</span>
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="me-section"><span class="me-section-lbl">Date</span>
+          <input class="me-inp" style="width:100%;" type="date" id="edit-date" value="${s.date}" max="${todayISO()}">
+        </div>
+        <div class="me-section"><span class="me-section-lbl">Exercises</span>
+          <div class="me-ex-list">${exHtml}</div>
+          <button class="me-add-ex" onclick="editAddEx()">+ Add Exercise</button>
+        </div>
+        <div class="me-section"><span class="me-section-lbl">Session Notes (optional)</span>
+          <textarea class="me-inp" style="width:100%;resize:none;min-height:60px;font-size:13px;" id="edit-notes">${s.notes||''}</textarea>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div class="me-field" style="flex:1;"><span class="me-field-lbl">Effort</span>
+            <select class="me-inp" style="width:100%;" id="edit-effort">
+              <option value="">— skip —</option>
+              ${[1,2,3,4].map(n=>`<option value="${n}"${s.effort===n?' selected':''}>${effortLabels[n]}</option>`).join('')}
+            </select>
+          </div>
+          <div class="me-field" style="flex:1;"><span class="me-field-lbl">Total Time</span>
+            <input class="me-inp" style="width:100%;" type="text" id="edit-duration" value="${s.duration||''}" placeholder="e.g. 60 min">
+          </div>
+        </div>
+        <button class="me-save-btn" onclick="saveEditSession()">Save Changes</button>
+      </div>
+    </div>
+  </div>`;
+}
+function editRemoveEx(i){editSessionData.exercises.splice(i,1);renderEditModal();}
+function editAddEx(){
+  const gmap=getGroupExerciseMap();
+  const g=gmap[0]||{name:'General',exercises:[]};
+  const exName=g.exercises[0]||'Unnamed';
+  editSessionData.exercises.push({name:exName,group:g.name,scheme:'3×10',weight:0,repsLog:[10,10,10],arrow:'eq'});
+  renderEditModal();
+  setTimeout(()=>{const m=document.querySelector('.modal');if(m)m.scrollTop=m.scrollHeight;},50);
+}
+function editSetScheme(i,val){
+  const{sets,reps}=parseScheme(val);
+  editSessionData.exercises[i].scheme=val;
+  editSessionData.exercises[i].repsLog=Array(sets).fill(reps);
+  renderEditModal();
+}
+function closeEditModal(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('modal-root').innerHTML='';
+}
+async function saveEditSession(){
+  const dateEl=document.getElementById('edit-date');
+  const notesEl=document.getElementById('edit-notes');
+  const effortEl=document.getElementById('edit-effort');
+  const durEl=document.getElementById('edit-duration');
+  const idx=sessions.findIndex(s=>String(s.id)===String(editSessionData.id));
+  if(idx===-1){toast('Session not found');return;}
+  editSessionData.date=dateEl?dateEl.value:editSessionData.date;
+  editSessionData.notes=notesEl?notesEl.value:editSessionData.notes;
+  editSessionData.effort=effortEl&&effortEl.value?parseInt(effortEl.value):null;
+  editSessionData.duration=durEl?durEl.value:editSessionData.duration;
+  sessions[idx]=editSessionData;
+  sv('fj_sessions',sessions);
+  rebuildStats();
+  document.getElementById('modal-root').innerHTML='';
+  toast('Session updated ✓');
+  renderHistory();
+  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+}
 
 /* ═══════════════════════════════════════════
    PRs
@@ -2448,49 +2714,91 @@ function renderStatExercises(){
 function renderStatProgress(){
   const wh=stats.weightHistory||{};
   const keys=Object.keys(wh).filter(k=>wh[k]&&wh[k].length>0);
-  if(!keys.length)return`<div class="stat-panel active"><div class="no-stat">No weight data yet</div></div>`;
+  if(!keys.length)return`<div class="stat-panel active"><div class="no-stat">No weight data yet — complete sessions to track progress</div></div>`;
+
+  // Overall improvement: average % gain across all exercises with 2+ data points
+  const allGains=[];
+  keys.forEach(k=>{
+    const data=wh[k];
+    if(!data||data.length<2)return;
+    const weights=data.map(d=>d.weight);
+    const first=weights[0];const last=weights[weights.length-1];
+    if(first>0)allGains.push(((last-first)/first)*100);
+  });
+  const overallPct=allGains.length?allGains.reduce((a,b)=>a+b,0)/allGains.length:null;
+  const overallColor=overallPct>0?'var(--up)':overallPct<0?'var(--dn)':'var(--text3)';
+  const overallArrow=overallPct>0?'↑':overallPct<0?'↓':'→';
+
+  const overallHtml=overallPct!==null?`
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+      <div style="flex:1;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Overall Improvement</div>
+        <div style="font-size:10px;color:var(--text2);">${allGains.length} exercise${allGains.length!==1?'s':''} with progress data</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:${overallColor};line-height:1;">${overallArrow}${Math.abs(overallPct).toFixed(1)}%</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:2px;">avg weight gain</div>
+      </div>
+    </div>`:'';
+
+  // Sort: most sessions first, then by biggest gain
   keys.sort((a,b)=>(wh[b]||[]).length-(wh[a]||[]).length);
-  let html='<div class="stat-panel active">';
+
+  let html=`<div class="stat-panel active">${overallHtml}`;
+
   keys.forEach(key=>{
     const sep=key.indexOf('::');const exName=key.slice(sep+2);
     const data=wh[key];if(!data||data.length<1)return;
     const weights=data.map(d=>d.weight);
-    const maxW=Math.max(...weights);const minW=Math.min(...weights);
-    const range=maxW-minW||1;const W=300,H=56,PAD=6;const n=data.length;
-    const pts=data.map((d,i)=>{
-      const x=n===1?W/2:PAD+(i/(n-1))*(W-PAD*2);
-      const y=H-PAD-(((d.weight-minW)/range)*(H-PAD*2));
-      return`${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
-    const dots=data.map((d,i)=>{
-      const x=n===1?W/2:PAD+(i/(n-1))*(W-PAD*2);
-      const y=H-PAD-(((d.weight-minW)/range)*(H-PAD*2));
-      return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${d.weight===maxW?4:2.5}" fill="var(--accent)" opacity="${d.weight===maxW?1:.7}"/>`;
-    }).join('');
-    const trend=weights[weights.length-1]-weights[0];
-    const trendLbl=trend>0?`+${trend}lb ↑`:trend<0?`${trend}lb ↓`:'Steady';
-    const trendColor=trend>0?'var(--up)':trend<0?'var(--dn)':'var(--text3)';
-    html+=`<div class="wt-chart-wrap">
-      <div class="wt-chart-hdr">
-        <span class="wt-chart-name">${exName}</span>
-        <span class="wt-chart-max" style="color:${trendColor}">${trendLbl}</span>
+    const minW=Math.min(...weights);const maxW=Math.max(...weights);
+    const firstW=weights[0];const lastW=weights[weights.length-1];
+    const n=data.length;
+    const pct=firstW>0?((lastW-firstW)/firstW*100):null;
+    const pctLbl=pct!==null?(pct>0?`+${pct.toFixed(1)}%`:pct<0?`${pct.toFixed(1)}%`:'0%'):null;
+    const pctColor=pct>0?'var(--up)':pct<0?'var(--dn)':'var(--text3)';
+    // mini sparkline (simple inline bars relative to range)
+    const range=maxW-minW||1;
+    const sparkW=120,sparkH=28;
+    let sparkHtml='';
+    if(n>1){
+      const pts=data.map((d,i)=>{
+        const x=(i/(n-1))*(sparkW-4)+2;
+        const y=sparkH-2-((d.weight-minW)/range)*(sparkH-4);
+        return`${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      sparkHtml=`<svg width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}" style="flex-shrink:0;">
+        <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".7"/>
+        <circle cx="${data.reduce((mx,d,i)=>d.weight>data[mx].weight?i:mx,0)/(n-1)*(sparkW-4)+2}" cy="${sparkH-2-((maxW-minW)/range)*(sparkH-4)}" r="3" fill="var(--accent)"/>
+      </svg>`;
+    }
+    html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+        <div style="min-width:0;flex:1;">
+          <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${exName}</div>
+          <div style="font-size:9px;color:var(--text3);letter-spacing:1px;">${n} session${n!==1?'s':''}</div>
+        </div>
+        ${pctLbl?`<div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:${pctColor};flex-shrink:0;margin-left:10px;">${pctLbl}</div>`:''}
       </div>
-      <svg class="wt-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-        <defs><linearGradient id="g${key.replace(/\W/g,'')}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--accent)" stop-opacity=".18"/>
-          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
-        </linearGradient></defs>
-        ${n>1?`<polyline points="${pts} ${(PAD+(n-1)/(n-1||1)*(W-PAD*2)).toFixed(1)},${H} ${PAD},${H}" fill="url(#g${key.replace(/\W/g,'')})" stroke="none"/>
-        <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`:''}
-        ${dots}
-      </svg>
-      <div class="wt-chart-foot">
-        <span>${data[0]?.date||''}</span>
-        <span style="color:var(--accent);font-weight:700">${maxW}lb peak · ${n} session${n!==1?'s':''}</span>
-        <span>${data[data.length-1]?.date||''}</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;gap:14px;flex:1;">
+          <div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Min</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text2);">${minW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
+          </div>
+          <div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Max</div>
+            <div style="font-size:15px;font-weight:700;color:var(--accent);">${maxW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
+          </div>
+          <div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Current</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">${lastW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
+          </div>
+        </div>
+        ${sparkHtml}
       </div>
     </div>`;
   });
+
   html+=`<div class="stat-actions"><span class="stat-count-lbl">${keys.length} exercise${keys.length!==1?'s':''} tracked</span>
     <button class="rst-stats-btn${armed['clrstats']?' armed':''}" onclick="clearStats()">
       ${armed['clrstats']?'Confirm Clear':'Clear Stats'}</button>
