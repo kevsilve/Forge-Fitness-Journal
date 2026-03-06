@@ -1136,6 +1136,12 @@ async function init(){
 function launchApp(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
+  // Restore any in-progress workout that was interrupted (refresh, crash, etc.)
+  const savedActive=ld('fj_active_workout',null);
+  if(savedActive&&savedActive.exercises){
+    active=savedActive;
+    toast('Workout restored 💪');
+  }
   updateSyncUI();
   startAutoSync();
 }
@@ -1152,6 +1158,12 @@ function startAutoSync(){
   },30000);
 }
 function saveActiveToLocal(){if(active)lsSet('fj_active_workout',active);}
+// Throttled version for high-frequency events (weight inputs, reps)
+let _saveThrottle=null;
+function saveActiveThrottled(){
+  if(_saveThrottle)clearTimeout(_saveThrottle);
+  _saveThrottle=setTimeout(()=>{saveActiveToLocal();_saveThrottle=null;},500);
+}
 function continueOffline(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
@@ -1548,7 +1560,7 @@ function renderToday(){
   const metField=selM?`<div class="c-row">
     <span class="c-lbl">${selM.metric}</span>
     <input class="c-inp" type="number" inputmode="decimal" placeholder="0"
-      value="${cd.metric}" onchange="active.cardio.metric=this.value">
+      value="${cd.metric}" onchange="active.cardio.metric=this.value;saveActiveThrottled()">
     <span class="c-unit">${selM.unit}</span>
   </div>`:'';
   html+=`<div class="j-divider"><span>Cardio</span></div>
@@ -1562,16 +1574,16 @@ function renderToday(){
         <div class="cardio-fields">
           <div class="c-row"><span class="c-lbl">Program</span>
             <input class="c-inp" type="text" placeholder="e.g. Weight Loss Mode Level 3"
-              value="${cd.program||''}" onchange="active.cardio.program=this.value">
+              value="${cd.program||''}" onchange="active.cardio.program=this.value;saveActiveThrottled()">
           </div>
           <div class="c-row"><span class="c-lbl">Duration</span>
             <input class="c-inp" type="text" placeholder="e.g. 30 min"
-              value="${cd.duration}" onchange="active.cardio.duration=this.value">
+              value="${cd.duration}" onchange="active.cardio.duration=this.value;saveActiveThrottled()">
           </div>
           ${metField}
           <div class="c-row"><span class="c-lbl">Calories</span>
             <input class="c-inp" type="number" inputmode="numeric" placeholder="from machine"
-              value="${cd.calories}" onchange="active.cardio.calories=this.value">
+              value="${cd.calories}" onchange="active.cardio.calories=this.value;saveActiveThrottled()">
             <span class="c-unit">cal</span>
           </div>
         </div>
@@ -1587,15 +1599,15 @@ function renderToday(){
     <div class="finish-body">
       <div class="f-row"><span class="f-lbl">Effort</span><div class="effort-opts">${effHtml}</div></div>
       <div class="f-row"><span class="f-lbl">Total Time</span>
-        <input class="f-inp" type="text" placeholder="e.g. 75 min" value="${w.duration}" onchange="active.duration=this.value">
+        <input class="f-inp" type="text" placeholder="e.g. 75 min" value="${w.duration}" onchange="active.duration=this.value;saveActiveThrottled()">
       </div>
       <div class="f-row"><span class="f-lbl">Calories</span>
-        <input class="f-inp" type="number" inputmode="numeric" placeholder="from watch" value="${w.calories}" onchange="active.calories=this.value">
+        <input class="f-inp" type="number" inputmode="numeric" placeholder="from watch" value="${w.calories}" onchange="active.calories=this.value;saveActiveThrottled()">
       </div>
       <div>
         <div class="j-sets-lbl" style="margin-bottom:7px;padding-top:4px;">Notes</div>
         <textarea class="f-textarea" placeholder="How did it go? Any PRs, observations..."
-          onchange="active.notes=this.value">${w.notes||''}</textarea>
+          onchange="active.notes=this.value;saveActiveThrottled()">${w.notes||''}</textarea>
       </div>
     </div>
   </div>
@@ -1607,8 +1619,9 @@ function renderToday(){
 function adjWt(ei,d){
   active.exercises[ei].weight=Math.max(0,(active.exercises[ei].weight||0)+d);
   const el=document.getElementById('wt-'+ei);if(el)el.value=active.exercises[ei].weight;
+  saveActiveThrottled();
 }
-function setWt(ei,v){active.exercises[ei].weight=parseFloat(v)||0;}
+function setWt(ei,v){active.exercises[ei].weight=parseFloat(v)||0;saveActiveThrottled();}
 function toggleDone(ei,si){
   active.exercises[ei].setsDone[si]=!active.exercises[ei].setsDone[si];
   const done=active.exercises[ei].setsDone[si];
@@ -1632,6 +1645,7 @@ function commitReps(ei,si,val){
   active.exercises[ei].repsLog[si]=v;
   const disp=document.getElementById(`sa-${ei}-${si}`);
   if(disp)disp.textContent=v;
+  saveActiveThrottled();
 }
 function blurReps(ei,si){
   const inp=document.getElementById(`si-${ei}-${si}`);
@@ -1661,6 +1675,7 @@ function setArrow(ei,arrow){
 function setEffort(n){
   active.effort=n;
   document.querySelectorAll('.eff-btn').forEach((b,i)=>{b.className='eff-btn'+(n===i+1?' e'+(i+1):'');});
+  saveActiveToLocal();
 }
 function selMachine(id){
   flushCardio();flushStrength();
