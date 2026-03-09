@@ -1125,7 +1125,28 @@ async function init(){
   lmsg.textContent='Syncing from Gist…';setSyncStatus('syncing');
   try{
     const data=await gistPull();
-    if(data&&data.version)applyPayload(data);
+    if(data&&data.version){
+      // Merge strategy: compare session counts — take whichever has more data
+      // For sessions: merge by id so no duplicates, keep all unique sessions
+      const localSessions=ld('fj_sessions',[]);
+      const gistSessions=data.sessions||[];
+      if(gistSessions.length>0){
+        // Merge: union of sessions by id, newest wins for duplicates
+        const merged=Object.values(
+          [...localSessions,...gistSessions].reduce((acc,s)=>{
+            if(!acc[s.id]||s.savedAt>acc[s.id].savedAt)acc[s.id]=s;
+            return acc;
+          },{})
+        ).sort((a,b)=>b.date.localeCompare(a.date));
+        sessions=merged;sv('fj_sessions',sessions);
+        data.sessions=sessions;
+      }
+      // For non-session data, only apply Gist version if local wasn't modified after last push
+      // Simple heuristic: always take Gist groups/cfg/machines (they're settings, not history)
+      // But only if Gist has them — don't wipe local customizations
+      if(data.groups&&data.groups.length)applyPayload({...data,sessions});
+      else applyPayload({...data,sessions,groups,cfg,machines});
+    }
     setSyncStatus('synced');ls.style.display='none';launchApp();
   }catch(err){
     lspinner.style.display='none';lmsg.style.display='none';
@@ -1157,7 +1178,16 @@ function startAutoSync(){
     try{await gistPush();}catch(e){/* silent */}
   },30000);
 }
-function saveActiveToLocal(){if(active)lsSet('fj_active_workout',active);}
+/* ── AUTO-PUSH settings changes to Gist (debounced) ── */
+let _settingsPushTimer=null;
+function autoSaveSettings(){
+  if(!gistCfg.pat)return;
+  if(_settingsPushTimer)clearTimeout(_settingsPushTimer);
+  _settingsPushTimer=setTimeout(async()=>{
+    _settingsPushTimer=null;
+    try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}
+  },2500);
+}
 // Throttled version for high-frequency events (weight inputs, reps)
 let _saveThrottle=null;
 function saveActiveThrottled(){
@@ -1787,31 +1817,6 @@ function calSelectDay(iso){
   }
 }
 
-/* ═══════════════════════════════════════════
-   HISTORY + CALENDAR
-═══════════════════════════════════════════ */
-function getCalMonthDate(){
-  if(calViewMonth) return new Date(calViewMonth.year,calViewMonth.month,1);
-  const n=new Date();return new Date(n.getFullYear(),n.getMonth(),1);
-}
-function calNav(d){
-  const cur=getCalMonthDate();
-  const nd=new Date(cur.getFullYear(),cur.getMonth()+d,1);
-  calViewMonth={year:nd.getFullYear(),month:nd.getMonth()};
-  renderHistory();
-}
-function calGoToday(){calViewMonth=null;calSelectedDate=null;renderHistory();}
-function calSelectDay(iso){
-  calSelectedDate=(calSelectedDate===iso)?null:iso;
-  renderHistory();
-  if(calSelectedDate){
-    setTimeout(()=>{
-      const el=document.getElementById('cal-detail');
-      if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});
-    },60);
-  }
-}
-
 /* ─── HISTORY: top-level dispatcher ─── */
 function renderHistory(){
   // Toggle bar
@@ -2111,9 +2116,7 @@ function renderListView(){
     <span class="hist-count">${sessions.length} session${sessions.length!==1?'s':''}</span>
     <div style="display:flex;gap:7px;">
       <button class="hist-clear-btn" onclick="openManualEntry()" style="color:var(--j-acc);border-color:var(--j-acc);">+ Log Past</button>
-      <button class="hist-clear-btn${armed['hist-clear']?' armed':''}" onclick="clearHistory()">
-        ${armed['hist-clear']?'Confirm Clear':'Clear History'}
-      </button>
+      <button class="hist-clear-btn" onclick="clearHistory()">Clear History</button>
     </div>
   </div>`;
   const rows=sessions.map((s,si)=>{
@@ -2198,7 +2201,39 @@ function rebuildStats(){
   stats=s;
   sv('fj_stats',stats);
 }
-function clearHistory(){armReset('hist-clear',async()=>{sessions=[];sv('fj_sessions',sessions);if(gistCfg.pat){try{await gistPush();}catch(e){}}toast('History cleared');renderHistory();},renderHistory);}
+function clearHistory(){
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)document.getElementById('modal-root').innerHTML=''">
+    <div class="modal" onclick="event.stopPropagation()" style="max-height:60vh;">
+      <div class="modal-hdr">
+        <span class="modal-title" style="color:#ef4444;">⚠ CLEAR HISTORY</span>
+        <button class="modal-close" onclick="document.getElementById('modal-root').innerHTML=''">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--j-txt2);line-height:1.6;margin-bottom:16px;">
+          This will permanently delete all <strong>${sessions.length} session${sessions.length!==1?'s':''}</strong> and rebuild stats from scratch. Your exercise pool and settings will remain untouched.
+        </p>
+        <p style="font-size:12px;color:var(--j-mut);margin-bottom:10px;">Type <strong>DELETE</strong> to confirm:</p>
+        <input class="me-inp" id="clear-hist-confirm" type="text" placeholder="DELETE" style="width:100%;margin-bottom:16px;" oninput="document.getElementById('clear-hist-go').disabled=this.value!=='DELETE'">
+        <button class="me-save-btn" id="clear-hist-go" disabled style="background:#ef4444;opacity:.5;cursor:not-allowed;"
+          onclick="if(document.getElementById('clear-hist-confirm').value==='DELETE'){document.getElementById('modal-root').innerHTML='';_doClearHistory();}">
+          Permanently Delete History
+        </button>
+      </div>
+    </div>
+  </div>`;
+  const btn=document.getElementById('clear-hist-go');
+  document.getElementById('clear-hist-confirm').addEventListener('input',function(){
+    btn.style.opacity=this.value==='DELETE'?'1':'.5';
+    btn.style.cursor=this.value==='DELETE'?'pointer':'not-allowed';
+  });
+}
+async function _doClearHistory(){
+  sessions=[];sv('fj_sessions',sessions);
+  rebuildStats();
+  if(gistCfg.pat){try{await gistPush();}catch(e){}}
+  toast('History cleared');renderHistory();
+}
 
 /* ── EDIT SESSION ── */
 let editSessionData=null;
@@ -2337,6 +2372,7 @@ async function saveEditSession(){
 function renderPRs(){
   const wrap=document.getElementById('prs-wrap');
   const prs=stats.prs||{};
+  const wh=stats.weightHistory||{};
   const keys=Object.keys(prs);
   if(!keys.length){
     wrap.innerHTML=`<div class="prs-title">Personal Records</div><div class="prs-empty">No PRs yet — complete sessions to track your bests</div>`;return;
@@ -2349,23 +2385,55 @@ function renderPRs(){
     if(!byGroup[grp])byGroup[grp]=[];
     byGroup[grp].push({key:k,name:k.slice(sep+2),...prs[k]});
   });
-  // Sort each group by weight desc
   Object.values(byGroup).forEach(arr=>arr.sort((a,b)=>b.weight-a.weight));
-  const rankIcon=i=>i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
   let html=`<div class="prs-title">Personal Records</div>`;
   Object.entries(byGroup).sort((a,b)=>b[1][0].weight-a[1][0].weight).forEach(([grp,arr])=>{
     html+=`<div class="pr-group"><div class="pr-group-name">${grp}</div>`;
-    arr.forEach((pr,i)=>{
-      html+=`<div class="pr-row">
-        <span class="pr-rank">${rankIcon(i)||`<span style="font-size:11px;color:var(--text3)">#${i+1}</span>`}</span>
-        <div class="pr-info">
-          <div class="pr-name">${pr.name}</div>
-          <div class="pr-meta">${pr.scheme||''} · ${pr.date||''}</div>
+    arr.forEach(pr=>{
+      // Build mini sparkline from weight history
+      const hist=wh[pr.key]||[];
+      const sparkW=80,sparkH=24;
+      let sparkHtml='';
+      if(hist.length>1){
+        const weights=hist.map(d=>d.weight);
+        const minW=Math.min(...weights),maxW=Math.max(...weights);
+        const range=maxW-minW||1;
+        const n=hist.length;
+        const pts=hist.map((d,i)=>{
+          const x=(i/(n-1))*(sparkW-4)+2;
+          const y=sparkH-2-((d.weight-minW)/range)*(sparkH-4);
+          return`${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        const prIdx=hist.reduce((mx,d,i)=>d.weight>hist[mx].weight?i:mx,0);
+        const prX=(prIdx/(n-1))*(sparkW-4)+2;
+        const prY=sparkH-2-((hist[prIdx].weight-minW)/range)*(sparkH-4);
+        sparkHtml=`<svg width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}" style="flex-shrink:0;opacity:.8">
+          <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${prX.toFixed(1)}" cy="${prY.toFixed(1)}" r="3" fill="var(--accent)"/>
+        </svg>`;
+      }
+      // Trend: compare last 2 entries
+      let trendHtml='';
+      if(hist.length>=2){
+        const diff=hist[hist.length-1].weight-hist[hist.length-2].weight;
+        if(diff>0)trendHtml=`<span style="font-size:9px;color:var(--up);font-weight:700;">↑${diff}lb</span>`;
+        else if(diff<0)trendHtml=`<span style="font-size:9px;color:var(--dn);font-weight:700;">↓${Math.abs(diff)}lb</span>`;
+      }
+      html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="pr-info">
+            <div class="pr-name">${pr.name}</div>
+            <div class="pr-meta">${pr.scheme||''} · ${pr.date||''} ${trendHtml}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="pr-weight">${pr.weight}</div>
+            <div class="pr-unit">lbs PR</div>
+          </div>
         </div>
-        <div style="text-align:right">
-          <div class="pr-weight">${pr.weight}</div>
-          <div class="pr-unit">lbs</div>
-        </div>
+        ${hist.length>1?`<div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:9px;color:var(--text3);">${hist.length} sessions · started ${hist[0].weight}lb</div>
+          ${sparkHtml}
+        </div>`:''}
       </div>`;
     });
     html+='</div>';
@@ -2407,12 +2475,8 @@ function renderSettings(){
     acc('CARDIO MACHINES','machines',renderMachines())+
     acc('PREFERENCES','prefs',renderPrefs())+
     acc('THEME','theme',renderTheme())+
-    acc('DATA','data',renderDataManagement())+
-    `<div class="nuclear-wrap">
-      <button class="nuclear-btn${armed['nuclear']?' armed':''}" onclick="nuclearReset()">☢ Reset Everything to Defaults</button>
-      <div class="nuclear-sub">Wipes all groups, machines, settings, sessions &amp; stats</div>
-    </div>
-    <div class="autosave">Changes save automatically</div>`;
+    acc('DATA & RESET','data',renderDataManagement())+
+    `<div class="autosave">${linked?'Settings sync automatically when connected':'Changes saved locally · connect Gist to sync across devices'}</div>`;
 }
 function acc(title,id,body){
   const open=openAcc[id];
@@ -2420,9 +2484,9 @@ function acc(title,id,body){
     <div class="acc-hdr${open?' open':''}" onclick="toggleAcc('${id}')">
       <span class="acc-title">${title}</span>
       <div class="acc-right">
-        <button class="rst-btn${armed['rst_'+id]?' armed':''}" onclick="event.stopPropagation();resetAcc('${id}')">
+        ${id!=='data'?`<button class="rst-btn${armed['rst_'+id]?' armed':''}" onclick="event.stopPropagation();resetAcc('${id}')">
           ${armed['rst_'+id]?'CONFIRM':'RESET'}
-        </button>
+        </button>`:''}
         <span class="acc-chev">▲</span>
       </div>
     </div>
@@ -2430,6 +2494,170 @@ function acc(title,id,body){
   </div>`;
 }
 function toggleAcc(id){openAcc[id]=!openAcc[id];renderSettings();}
+function renderDataManagement(){
+  return`<div class="data-btns">
+    <button class="data-btn" onclick="exportData()">
+      <span class="data-btn-icon">⬇️</span>
+      <div class="data-btn-text"><span>Export Backup</span><span class="data-btn-sub">Copy your data as JSON</span></div>
+    </button>
+    <label class="data-btn" style="cursor:pointer;" for="import-file-visible">
+      <span class="data-btn-icon">⬆️</span>
+      <div class="data-btn-text"><span>Import Backup</span><span class="data-btn-sub">Tap to select a JSON backup file</span></div>
+    </label>
+  </div>
+  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Danger Zone</div>
+    <button class="data-btn" style="border-color:var(--dn);color:var(--dn);margin-bottom:8px;" onclick="resetHistoryAndStats()">
+      <span class="data-btn-icon">🗑️</span>
+      <div class="data-btn-text"><span>Reset History &amp; Stats</span><span class="data-btn-sub">Wipes all sessions, PRs &amp; stats — keeps your exercise pool</span></div>
+    </button>
+    <button class="data-btn" style="border-color:var(--dn);color:var(--dn);" onclick="nuclearReset()">
+      <span class="data-btn-icon">☢️</span>
+      <div class="data-btn-text"><span>Factory Reset</span><span class="data-btn-sub">Wipes everything including groups, machines &amp; settings</span></div>
+    </button>
+  </div>`;
+}
+function toggleGrp(id){openGrp[id]=!openGrp[id];renderSettings();}
+function adjCfg(k,d){
+  if(k==='bonusSlots')cfg.bonusSlots=Math.max(0,Math.min(10,(cfg.bonusSlots||2)+d));
+  sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+}
+function adjRequired(gid,d){
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  g.required=Math.max(1,Math.min(enabledEx(g).length,(g.required||1)+d));
+  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function toggleGroupActive(gid,val){const g=groups.find(g=>g.id===gid);if(g){g.active=val;sv('fj_groups',groups);autoSaveSettings();}renderSettings();}
+function setGroupMode(gid,mode){const g=groups.find(g=>g.id===gid);if(g){g.mode=mode;sv('fj_groups',groups);autoSaveSettings();}renderSettings();}
+function toggleEx(gid,eid,val){
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  if(!val&&enabledEx(g).length<=1){toast('Must keep at least one enabled');renderSettings();return;}
+  const ex=g.exercises.find(e=>e.id===eid);if(ex){ex.enabled=val;sv('fj_groups',groups);autoSaveSettings();}renderSettings();
+}
+function deleteEx(gid,eid){
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  if(enabledEx(g).length<=1&&g.exercises.find(e=>e.id===eid&&e.enabled)){toast('Must keep at least one');return;}
+  g.exercises=g.exercises.filter(e=>e.id!==eid);sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function addEx(gid){
+  const inp=document.getElementById('nex-'+gid);if(!inp)return;
+  const name=inp.value.trim();if(!name){toast('Enter a name');return;}
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  if(g.exercises.some(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already exists');return;}
+  g.exercises.push({id:uid(),name,enabled:true});sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function addGroup(){
+  const inp=document.getElementById('ngrp-inp');if(!inp)return;
+  const name=inp.value.trim();if(!name){toast('Enter a group name');return;}
+  if(groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){toast('Group exists');return;}
+  groups.push({id:uid(),name,mode:'bonus',active:true,required:1,exercises:[]});
+  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function deleteGroup(gid){
+  if(groups.length<=1){toast('Must keep at least one group');return;}
+  groups=groups.filter(g=>g.id!==gid);sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function addMachine(){
+  const icon=document.getElementById('nm-icon')?.value.trim()||'💪';
+  const name=document.getElementById('nm-name')?.value.trim();
+  const metric=document.getElementById('nm-metric')?.value.trim()||'Distance';
+  const unit=document.getElementById('nm-unit')?.value.trim()||'mi';
+  if(!name){toast('Enter machine name');return;}
+  if(machines.some(m=>m.name.toLowerCase()===name.toLowerCase())){toast('Machine exists');return;}
+  machines.push({id:uid(),icon,name,metric,unit});sv('fj_machines',machines);autoSaveSettings();renderSettings();
+}
+function deleteMachine(mid){
+  if(machines.length<=1){toast('Must keep at least one');return;}
+  machines=machines.filter(m=>m.id!==mid);sv('fj_machines',machines);autoSaveSettings();renderSettings();
+}
+function toggleDay(d){
+  const days=cfg.workoutDays||[];
+  const idx=days.indexOf(d);
+  if(idx>-1)days.splice(idx,1);else days.push(d);
+  cfg.workoutDays=days;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+}
+function setIncrement(v){cfg.weightIncrement=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
+function setTheme(t){theme=t;sv('fj_theme',theme);document.body.className='theme-'+t;autoSaveSettings();renderSettings();}
+function resetAcc(id){
+  armReset('rst_'+id,()=>{
+    if(id==='structure'){cfg.bonusSlots=DEF_CFG.bonusSlots;sv('fj_cfg',cfg);}
+    if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);}
+    if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
+    if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.workoutDays=[];sv('fj_cfg',cfg);}
+    if(id==='theme'){theme='dark-red';sv('fj_theme',theme);document.body.className='theme-dark-red';}
+    autoSaveSettings();
+    toast('Reset complete');renderSettings();
+  },renderSettings);
+}
+function resetHistoryAndStats(){
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)document.getElementById('modal-root').innerHTML=''">
+    <div class="modal" onclick="event.stopPropagation()" style="max-height:65vh;">
+      <div class="modal-hdr">
+        <span class="modal-title" style="color:#ef4444;">🗑 RESET HISTORY & STATS</span>
+        <button class="modal-close" onclick="document.getElementById('modal-root').innerHTML=''">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--j-txt2);line-height:1.6;margin-bottom:8px;">
+          This will permanently delete all <strong>${sessions.length} session${sessions.length!==1?'s':''}</strong>, all PRs, and all stats.
+        </p>
+        <p style="font-size:12px;color:var(--j-mut);line-height:1.6;margin-bottom:16px;">
+          ✅ Kept: exercise groups, machines, preferences, theme<br>
+          ❌ Deleted: workout history, PRs, weight progress, totals
+        </p>
+        <p style="font-size:12px;color:var(--j-mut);margin-bottom:10px;">Type <strong>DELETE</strong> to confirm:</p>
+        <input class="me-inp" id="rhs-confirm" type="text" placeholder="DELETE" style="width:100%;margin-bottom:16px;"
+          oninput="const b=document.getElementById('rhs-go');b.style.opacity=this.value==='DELETE'?'1':'.5';b.style.cursor=this.value==='DELETE'?'pointer':'not-allowed';b.disabled=this.value!=='DELETE';">
+        <button class="me-save-btn" id="rhs-go" disabled style="background:#ef4444;opacity:.5;cursor:not-allowed;"
+          onclick="document.getElementById('modal-root').innerHTML='';_doResetHistoryAndStats();">
+          Delete History &amp; Stats
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+async function _doResetHistoryAndStats(){
+  sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
+  sv('fj_sessions',sessions);sv('fj_stats',stats);
+  if(gistCfg.pat){try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+  toast('History & stats cleared');renderSettings();
+}
+function nuclearReset(){
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)document.getElementById('modal-root').innerHTML=''">
+    <div class="modal" onclick="event.stopPropagation()" style="max-height:65vh;">
+      <div class="modal-hdr">
+        <span class="modal-title" style="color:#ef4444;">☢ FACTORY RESET</span>
+        <button class="modal-close" onclick="document.getElementById('modal-root').innerHTML=''">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--j-txt2);line-height:1.6;margin-bottom:8px;">
+          This will wipe <strong>everything</strong> and restore factory defaults.
+        </p>
+        <p style="font-size:12px;color:var(--j-mut);line-height:1.6;margin-bottom:16px;">
+          ❌ Deleted: sessions, PRs, stats, groups, machines, all settings
+        </p>
+        <p style="font-size:12px;color:var(--j-mut);margin-bottom:10px;">Type <strong>RESET</strong> to confirm:</p>
+        <input class="me-inp" id="nuke-confirm" type="text" placeholder="RESET" style="width:100%;margin-bottom:16px;"
+          oninput="const b=document.getElementById('nuke-go');b.style.opacity=this.value==='RESET'?'1':'.5';b.style.cursor=this.value==='RESET'?'pointer':'not-allowed';b.disabled=this.value!=='RESET';">
+        <button class="me-save-btn" id="nuke-go" disabled style="background:#ef4444;opacity:.5;cursor:not-allowed;"
+          onclick="document.getElementById('modal-root').innerHTML='';_doNuclearReset();">
+          Factory Reset Everything
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+async function _doNuclearReset(){
+  groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
+  sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
+  theme='dark-red';
+  sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
+  sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
+  document.body.className='theme-dark-red';
+  if(gistCfg.pat){try{await gistPush();}catch(e){}}
+  toast('Everything reset to defaults');renderSettings();
+}
 function renderStructure(){
   const coreTotal=groups.filter(g=>g.active&&g.mode==='core').reduce((a,g)=>a+(g.required||1),0);
   return`
@@ -2535,101 +2763,6 @@ function renderTheme(){
       <div class="theme-name">${t.name}</div>
     </button>`).join('')}</div>`;
 }
-function renderDataManagement(){
-  return`<div class="data-btns">
-    <button class="data-btn" onclick="exportData()">
-      <span class="data-btn-icon">⬇️</span>
-      <div class="data-btn-text"><span>Export Backup</span><span class="data-btn-sub">Copy your data as JSON</span></div>
-    </button>
-    <label class="data-btn" style="cursor:pointer;" for="import-file-visible">
-      <span class="data-btn-icon">⬆️</span>
-      <div class="data-btn-text"><span>Import Backup</span><span class="data-btn-sub">Tap to select a JSON backup file</span></div>
-    </label>
-  </div>`;
-}
-function toggleGrp(id){openGrp[id]=!openGrp[id];renderSettings();}
-function adjCfg(k,d){
-  if(k==='bonusSlots')cfg.bonusSlots=Math.max(0,Math.min(10,(cfg.bonusSlots||2)+d));
-  sv('fj_cfg',cfg);renderSettings();
-}
-function adjRequired(gid,d){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  g.required=Math.max(1,Math.min(enabledEx(g).length,(g.required||1)+d));
-  sv('fj_groups',groups);renderSettings();
-}
-function toggleGroupActive(gid,val){const g=groups.find(g=>g.id===gid);if(g){g.active=val;sv('fj_groups',groups);}renderSettings();}
-function setGroupMode(gid,mode){const g=groups.find(g=>g.id===gid);if(g){g.mode=mode;sv('fj_groups',groups);}renderSettings();}
-function toggleEx(gid,eid,val){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(!val&&enabledEx(g).length<=1){toast('Must keep at least one enabled');renderSettings();return;}
-  const ex=g.exercises.find(e=>e.id===eid);if(ex){ex.enabled=val;sv('fj_groups',groups);}renderSettings();
-}
-function deleteEx(gid,eid){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(enabledEx(g).length<=1&&g.exercises.find(e=>e.id===eid&&e.enabled)){toast('Must keep at least one');return;}
-  g.exercises=g.exercises.filter(e=>e.id!==eid);sv('fj_groups',groups);renderSettings();
-}
-function addEx(gid){
-  const inp=document.getElementById('nex-'+gid);if(!inp)return;
-  const name=inp.value.trim();if(!name){toast('Enter a name');return;}
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(g.exercises.some(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already exists');return;}
-  g.exercises.push({id:uid(),name,enabled:true});sv('fj_groups',groups);renderSettings();
-}
-function addGroup(){
-  const inp=document.getElementById('ngrp-inp');if(!inp)return;
-  const name=inp.value.trim();if(!name){toast('Enter a group name');return;}
-  if(groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){toast('Group exists');return;}
-  groups.push({id:uid(),name,mode:'bonus',active:true,required:1,exercises:[]});
-  sv('fj_groups',groups);renderSettings();
-}
-function deleteGroup(gid){
-  if(groups.length<=1){toast('Must keep at least one group');return;}
-  groups=groups.filter(g=>g.id!==gid);sv('fj_groups',groups);renderSettings();
-}
-function addMachine(){
-  const icon=document.getElementById('nm-icon')?.value.trim()||'💪';
-  const name=document.getElementById('nm-name')?.value.trim();
-  const metric=document.getElementById('nm-metric')?.value.trim()||'Distance';
-  const unit=document.getElementById('nm-unit')?.value.trim()||'mi';
-  if(!name){toast('Enter machine name');return;}
-  if(machines.some(m=>m.name.toLowerCase()===name.toLowerCase())){toast('Machine exists');return;}
-  machines.push({id:uid(),icon,name,metric,unit});sv('fj_machines',machines);renderSettings();
-}
-function deleteMachine(mid){
-  if(machines.length<=1){toast('Must keep at least one');return;}
-  machines=machines.filter(m=>m.id!==mid);sv('fj_machines',machines);renderSettings();
-}
-function toggleDay(d){
-  const days=cfg.workoutDays||[];
-  const idx=days.indexOf(d);
-  if(idx>-1)days.splice(idx,1);else days.push(d);
-  cfg.workoutDays=days;sv('fj_cfg',cfg);renderSettings();
-}
-function setIncrement(v){cfg.weightIncrement=v;sv('fj_cfg',cfg);renderSettings();}
-function setTheme(t){theme=t;sv('fj_theme',theme);document.body.className='theme-'+t;renderSettings();}
-function resetAcc(id){
-  armReset('rst_'+id,()=>{
-    if(id==='structure'){cfg.bonusSlots=DEF_CFG.bonusSlots;sv('fj_cfg',cfg);}
-    if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);}
-    if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
-    if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.workoutDays=[];sv('fj_cfg',cfg);}
-    if(id==='theme'){theme='dark-red';sv('fj_theme',theme);document.body.className='theme-dark-red';}
-    toast('Reset complete');renderSettings();
-  },renderSettings);
-}
-function nuclearReset(){
-  armReset('nuclear',async()=>{
-    groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
-    sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
-    theme='dark-red';
-    sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
-    sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
-    document.body.className='theme-dark-red';
-    if(gistCfg.pat){try{await gistPush();}catch(e){}}
-    toast('Everything reset to defaults');renderSettings();
-  },renderSettings);
-}
 
 /* ═══════════════════════════════════════════
    STATS
@@ -2639,54 +2772,134 @@ function renderStats(){
   const tabs=`<div class="stat-tabs">
     <button class="stat-tab${statTab==='sessions'?' active':''}" onclick="setStatTab('sessions')">Sessions</button>
     <button class="stat-tab${statTab==='exercises'?' active':''}" onclick="setStatTab('exercises')">Exercises</button>
-    <button class="stat-tab${statTab==='progress'?' active':''}" onclick="setStatTab('progress')">Progress</button>
   </div>`;
-  wrap.innerHTML=tabs+(statTab==='sessions'?renderStatSessions():statTab==='exercises'?renderStatExercises():renderStatProgress());
+  wrap.innerHTML=tabs+(statTab==='sessions'?renderStatSessions():renderStatExercises());
 }
 function setStatTab(t){statTab=t;renderStats();}
 
-function buildWeeklyChart(){
-  // Last 12 weeks, bucket sessions by ISO week
-  const now=new Date();
-  const buckets=[]; // [{label, count, isThis}]
-  for(let w=11;w>=0;w--){
-    const start=new Date(now);
-    start.setDate(start.getDate()-(start.getDay()||7)+1-w*7); // Mon
-    start.setHours(0,0,0,0);
-    const end=new Date(start);end.setDate(end.getDate()+7);
-    const count=sessions.filter(s=>{const d=new Date(s.date+'T12:00:00');return d>=start&&d<end;}).length;
-    const label=start.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    buckets.push({label,count,isThis:w===0});
+
+function computeStreaks(){
+  if(!sessions.length)return{current:0,longest:0};
+  // Get unique sorted dates descending
+  const dates=[...new Set(sessions.map(s=>s.date))].sort((a,b)=>b.localeCompare(a));
+  const today=todayISO();
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yesterdayISO=isoFromDate(yesterday);
+  // Current streak: consecutive days ending today or yesterday
+  let current=0;
+  let cursor=dates[0];
+  if(cursor!==today&&cursor!==yesterdayISO){current=0;}
+  else{
+    current=1;
+    for(let i=1;i<dates.length;i++){
+      const prev=new Date(cursor+'T12:00:00');prev.setDate(prev.getDate()-1);
+      const prevISO=isoFromDate(prev);
+      if(dates[i]===prevISO){current++;cursor=dates[i];}
+      else break;
+    }
   }
-  const maxCount=Math.max(...buckets.map(b=>b.count),1);
-  const barHtml=buckets.map(b=>{
+  // Longest streak ever
+  let longest=1,streak=1;
+  for(let i=1;i<dates.length;i++){
+    const prev=new Date(dates[i-1]+'T12:00:00');prev.setDate(prev.getDate()-1);
+    if(isoFromDate(prev)===dates[i]){streak++;longest=Math.max(longest,streak);}
+    else streak=1;
+  }
+  return{current,longest};
+}
+function buildMonthlyChart(){
+  // Last 12 months
+  const now=new Date();
+  const months=[];
+  for(let m=11;m>=0;m--){
+    const d=new Date(now.getFullYear(),now.getMonth()-m,1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label=d.toLocaleDateString('en-US',{month:'short'});
+    const count=sessions.filter(s=>s.date.startsWith(key)).length;
+    months.push({key,label,count,isThis:m===0});
+  }
+  const maxCount=Math.max(...months.map(b=>b.count),1);
+  const barHtml=months.map(b=>{
     const h=Math.round((b.count/maxCount)*52)+2;
     return`<div class="week-bar-col">
       <div class="week-bar-num" style="font-size:${b.count?'9':'8'}px;color:${b.count?'var(--accent)':'var(--text3)'}">${b.count||''}</div>
       <div class="week-bar-fill${b.isThis?' this-week':''}" style="height:${h}px"></div>
-      <div class="week-bar-lbl">${b.label.split(' ')[0]}</div>
+      <div class="week-bar-lbl">${b.label}</div>
     </div>`;
   }).join('');
   return`<div class="weekly-chart">
-    <div class="weekly-chart-title">Workouts Per Week (Last 12 Weeks)</div>
+    <div class="weekly-chart-title">Sessions per Month (Last 12 Months)</div>
     <div class="week-bars">${barHtml}</div>
   </div>`;
 }
-
 function renderStatSessions(){
   const total=stats.total||0;
+  const {current,longest}=computeStreaks();
+  // Avg per week (last 4 weeks vs all time)
+  const now=new Date();
+  const fourWeeksAgo=new Date(now);fourWeeksAgo.setDate(now.getDate()-28);
+  const recent=sessions.filter(s=>new Date(s.date+'T12:00:00')>=fourWeeksAgo).length;
+  const avgRecent=(recent/4).toFixed(1);
+  // All-time avg: weeks since first session
+  let avgAllTime='—';
+  if(sessions.length){
+    const allDates=sessions.map(s=>s.date).sort();
+    const first=new Date(allDates[0]+'T12:00:00');
+    const weeksTotal=Math.max(1,Math.round((now-first)/(7*24*3600*1000)));
+    avgAllTime=(total/weeksTotal).toFixed(1);
+  }
+  // Best month
+  const monthCounts={};
+  sessions.forEach(s=>{const m=s.date.slice(0,7);monthCounts[m]=(monthCounts[m]||0)+1;});
+  let bestMonthLbl='—',bestMonthCount=0;
+  Object.entries(monthCounts).forEach(([k,v])=>{if(v>bestMonthCount){bestMonthCount=v;const d=new Date(k+'-01T12:00:00');bestMonthLbl=d.toLocaleDateString('en-US',{month:'short',year:'numeric'});}});
+  // Total workout time (if duration logged)
+  const durSessions=sessions.filter(s=>s.duration&&s.duration.trim());
+  const totalMinutes=durSessions.reduce((acc,s)=>{const m=s.duration.match(/(\d+)/);return acc+(m?parseInt(m[1]):0);},0);
+  const durHtml=totalMinutes>0?`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Total Time Logged</div>
+    <div style="font-size:10px;color:var(--text2);">${durSessions.length} sessions with duration</div></div>
+    <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">${totalMinutes>=60?Math.floor(totalMinutes/60)+'h '+(totalMinutes%60)+'m':totalMinutes+'m'}</div></div>
+  </div>`:'';
+
   return`<div class="stat-panel active">
+    <!-- Hero -->
     <div class="sess-hero">
       <span class="sess-num">${total}</span>
       <span class="sess-lbl">Total Sessions Logged</span>
     </div>
-    ${buildWeeklyChart()}
-    <div class="stat-actions">
-      <span class="stat-count-lbl">${total} session${total!==1?'s':''} recorded</span>
-      <button class="rst-stats-btn${armed['clrstats']?' armed':''}" onclick="clearStats()">
-        ${armed['clrstats']?'Confirm Clear':'Clear Stats'}
-      </button>
+    <!-- 4-box grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Current Streak</div>
+        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:${current>0?'var(--up)':'var(--text3)'};line-height:1;">${current}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">day${current!==1?'s':''}</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Longest Streak</div>
+        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${longest}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">day${longest!==1?'s':''}</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Avg / Week (4wk)</div>
+        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${avgRecent}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">sessions</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Avg / Week (all)</div>
+        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${avgAllTime}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">sessions</div>
+      </div>
     </div>
+    <!-- Best month -->
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Best Month</div>
+      <div style="font-size:10px;color:var(--text2);">${bestMonthLbl}</div></div>
+      <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">${bestMonthCount}</div>
+      <div style="font-size:9px;color:var(--text3);">sessions</div></div>
+    </div>
+    ${durHtml}
+    ${buildMonthlyChart()}
   </div>`;
 }
 function renderStatExercises(){
@@ -2720,112 +2933,8 @@ function renderStatExercises(){
     });
     html+='</div>';
   });
-  html+=`<div class="stat-actions"><span class="stat-count-lbl">${total} total picks</span>
-    <button class="rst-stats-btn${armed['clrstats']?' armed':''}" onclick="clearStats()">
-      ${armed['clrstats']?'Confirm Clear':'Clear Stats'}</button>
-  </div></div>`;
+  html+=`<div class="stat-actions"><span class="stat-count-lbl">${total} total picks</span></div></div>`;
   return html;
-}
-function renderStatProgress(){
-  const wh=stats.weightHistory||{};
-  const keys=Object.keys(wh).filter(k=>wh[k]&&wh[k].length>0);
-  if(!keys.length)return`<div class="stat-panel active"><div class="no-stat">No weight data yet — complete sessions to track progress</div></div>`;
-
-  // Overall improvement: average % gain across all exercises with 2+ data points
-  const allGains=[];
-  keys.forEach(k=>{
-    const data=wh[k];
-    if(!data||data.length<2)return;
-    const weights=data.map(d=>d.weight);
-    const first=weights[0];const last=weights[weights.length-1];
-    if(first>0)allGains.push(((last-first)/first)*100);
-  });
-  const overallPct=allGains.length?allGains.reduce((a,b)=>a+b,0)/allGains.length:null;
-  const overallColor=overallPct>0?'var(--up)':overallPct<0?'var(--dn)':'var(--text3)';
-  const overallArrow=overallPct>0?'↑':overallPct<0?'↓':'→';
-
-  const overallHtml=overallPct!==null?`
-    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
-      <div style="flex:1;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Overall Improvement</div>
-        <div style="font-size:10px;color:var(--text2);">${allGains.length} exercise${allGains.length!==1?'s':''} with progress data</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:${overallColor};line-height:1;">${overallArrow}${Math.abs(overallPct).toFixed(1)}%</div>
-        <div style="font-size:9px;color:var(--text3);margin-top:2px;">avg weight gain</div>
-      </div>
-    </div>`:'';
-
-  // Sort: most sessions first, then by biggest gain
-  keys.sort((a,b)=>(wh[b]||[]).length-(wh[a]||[]).length);
-
-  let html=`<div class="stat-panel active">${overallHtml}`;
-
-  keys.forEach(key=>{
-    const sep=key.indexOf('::');const exName=key.slice(sep+2);
-    const data=wh[key];if(!data||data.length<1)return;
-    const weights=data.map(d=>d.weight);
-    const minW=Math.min(...weights);const maxW=Math.max(...weights);
-    const firstW=weights[0];const lastW=weights[weights.length-1];
-    const n=data.length;
-    const pct=firstW>0?((lastW-firstW)/firstW*100):null;
-    const pctLbl=pct!==null?(pct>0?`+${pct.toFixed(1)}%`:pct<0?`${pct.toFixed(1)}%`:'0%'):null;
-    const pctColor=pct>0?'var(--up)':pct<0?'var(--dn)':'var(--text3)';
-    // mini sparkline (simple inline bars relative to range)
-    const range=maxW-minW||1;
-    const sparkW=120,sparkH=28;
-    let sparkHtml='';
-    if(n>1){
-      const pts=data.map((d,i)=>{
-        const x=(i/(n-1))*(sparkW-4)+2;
-        const y=sparkH-2-((d.weight-minW)/range)*(sparkH-4);
-        return`${x.toFixed(1)},${y.toFixed(1)}`;
-      }).join(' ');
-      sparkHtml=`<svg width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}" style="flex-shrink:0;">
-        <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".7"/>
-        <circle cx="${data.reduce((mx,d,i)=>d.weight>data[mx].weight?i:mx,0)/(n-1)*(sparkW-4)+2}" cy="${sparkH-2-((maxW-minW)/range)*(sparkH-4)}" r="3" fill="var(--accent)"/>
-      </svg>`;
-    }
-    html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
-        <div style="min-width:0;flex:1;">
-          <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${exName}</div>
-          <div style="font-size:9px;color:var(--text3);letter-spacing:1px;">${n} session${n!==1?'s':''}</div>
-        </div>
-        ${pctLbl?`<div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:${pctColor};flex-shrink:0;margin-left:10px;">${pctLbl}</div>`:''}
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="display:flex;gap:14px;flex:1;">
-          <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Min</div>
-            <div style="font-size:15px;font-weight:700;color:var(--text2);">${minW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
-          </div>
-          <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Max</div>
-            <div style="font-size:15px;font-weight:700;color:var(--accent);">${maxW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
-          </div>
-          <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:2px;">Current</div>
-            <div style="font-size:15px;font-weight:700;color:var(--text);">${lastW}<span style="font-size:9px;font-weight:500;color:var(--text3);margin-left:2px;">lb</span></div>
-          </div>
-        </div>
-        ${sparkHtml}
-      </div>
-    </div>`;
-  });
-
-  html+=`<div class="stat-actions"><span class="stat-count-lbl">${keys.length} exercise${keys.length!==1?'s':''} tracked</span>
-    <button class="rst-stats-btn${armed['clrstats']?' armed':''}" onclick="clearStats()">
-      ${armed['clrstats']?'Confirm Clear':'Clear Stats'}</button>
-  </div></div>`;
-  return html;
-}
-function clearStats(){
-  armReset('clrstats',async()=>{
-    stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};sv('fj_stats',stats);
-    if(gistCfg.pat){try{await gistPush();}catch(e){}}
-    toast('Stats cleared');renderStats();
-  },renderStats);
 }
 
 /* ═══════════════════════════════════════════
