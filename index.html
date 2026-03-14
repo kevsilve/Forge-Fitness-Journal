@@ -946,6 +946,28 @@ body{
 .setup-msg.err{background:rgba(239,68,68,.1);color:var(--dn);border:1px solid rgba(239,68,68,.2);}
 .setup-msg.info{background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2);}
 .setup-skip{margin-top:12px;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+/* ─── Empty State Cards ─── */
+.empty-state-card{text-align:center;padding:56px 24px 40px;}
+.es-icon{font-size:38px;margin-bottom:14px;display:block;}
+.es-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--text2);margin-bottom:8px;}
+.es-sub{font-size:12px;color:var(--text3);margin-bottom:24px;line-height:1.8;max-width:220px;margin-left:auto;margin-right:auto;}
+.es-cta{font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;padding:10px 22px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;display:block;margin:0 auto 10px;transition:opacity .15s;}
+.es-cta:hover{opacity:.85;}
+.es-secondary{font-size:11px;font-weight:600;color:var(--text3);background:transparent;border:1.5px solid var(--border2);padding:8px 18px;border-radius:8px;cursor:pointer;display:block;margin:0 auto;transition:all .15s;}
+.es-secondary:hover{color:var(--text);border-color:var(--border);}
+/* ─── Workout Summary Modal ─── */
+.summ-modal{border-radius:16px 16px 0 0;}
+.summ-hero{text-align:center;padding:28px 20px 20px;background:var(--j-sur);border-bottom:1px solid var(--j-bor);}
+.summ-title{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:4px;color:var(--accent);margin-bottom:6px;}
+.summ-date{font-size:12px;color:var(--j-mut);letter-spacing:1px;margin-bottom:6px;}
+.summ-effort{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.summ-stats-grid{display:flex;gap:8px;padding:16px;flex-wrap:wrap;justify-content:center;}
+.summ-stat{background:var(--j-card);border:1px solid var(--j-bor);border-radius:10px;padding:14px 18px;text-align:center;min-width:72px;flex:1;}
+.summ-stat-val{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--j-txt);letter-spacing:1px;margin-bottom:4px;}
+.summ-stat-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--j-mut);}
+.summ-prs{margin:0 16px 8px;background:var(--j-tnt);border:1px solid var(--accent);border-radius:10px;padding:12px 14px;}
+.summ-prs-title{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;}
+.summ-pr-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--j-txt);padding:3px 0;}
 </style>
 </head>
 <body class="theme-dark-red">
@@ -1135,6 +1157,8 @@ let expandedChip = null;
 const openAcc = {};
 const openGrp = {};
 const armed   = {};
+let _pendingDelete = null;
+let _pendingBackupPrompt = false;
 
 document.body.className = 'theme-'+theme;
 
@@ -1382,8 +1406,13 @@ function machById(id){return machines.find(m=>m.id===id);}
 
 function toast(msg,dur){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
+  t.textContent=msg;t.style.pointerEvents='';t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),dur||2500);
+}
+function toastHtml(html,dur){
+  const t=document.getElementById('toast');
+  t.innerHTML=html;t.style.pointerEvents='auto';t.classList.add('show');
+  setTimeout(()=>{t.classList.remove('show');t.style.pointerEvents='';},dur||2500);
 }
 function armReset(key,fn,render){
   if(armed[key]){
@@ -1454,7 +1483,8 @@ function generate(){
 function renderPending(){
   const c=document.getElementById('ex-cards');
   if(!pending||!pending.length){
-    c.innerHTML='<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">Hit generate to build your workout</span></div>';return;
+    const firstTime=!sessions.length;
+    c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Customize your exercises in Settings, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('settings')">Go to Settings →</button>`:''}</div>`;return;
   }
   c.innerHTML=pending.map(ex=>{
     const last=lastForEx(ex.name);
@@ -1522,43 +1552,8 @@ function discardActiveWorkout(){
 }
 async function endAndSaveActive(){
   if(!active)return;
-  flushStrength();flushCardio();flushFinish();
-  const savedAt=new Date().toISOString();
-  const session={
-    id:Date.now(),date:active.date,
-    startedAt:active.startedAt||null,savedAt,
-    effort:active.effort,duration:active.duration,calories:active.calories,notes:active.notes,
-    cardio:active.cardio&&active.cardio.machine?dc(active.cardio):null,
-    exercises:active.exercises.map(ex=>({
-      name:ex.name,group:ex.group,scheme:ex.scheme,
-      weight:ex.weight,repsLog:[...ex.repsLog],arrow:ex.arrow||'eq'
-    }))
-  };
-  sessions.unshift(session);sv('fj_sessions',sessions);
-  stats.total=(stats.total||0)+1;
-  if(!stats.exercises)stats.exercises={};
-  if(!stats.weightHistory)stats.weightHistory={};
-  if(!stats.totalReps)stats.totalReps={};
-  if(!stats.prs)stats.prs={};
-  session.exercises.forEach(ex=>{
-    const k=ex.group+'::'+ex.name;
-    stats.exercises[k]=(stats.exercises[k]||0)+1;
-    if(!stats.weightHistory[k])stats.weightHistory[k]=[];
-    stats.weightHistory[k].push({date:session.date,weight:ex.weight});
-    const repsThisSession=(ex.repsLog||[]).reduce((a,b)=>a+(isNaN(b)?0:+b),0);
-    stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
-    const cur=stats.prs[k];
-    if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};}
-  });
-  sv('fj_stats',stats);
-  active=null;pending=null;
-  lsSet('fj_active_workout',null);
-  renderPending();
-  const _sb2=document.getElementById('start-btn');if(_sb2)_sb2.style.display='none';
   renderActiveWorkoutBanner();
-  toast('Workout saved! 💪');
-  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
-  else showBackupPrompt();
+  await saveWorkout();
 }
 
 /* ═══════════════════════════════════════════
@@ -1953,6 +1948,9 @@ async function saveWorkout(){
       weight:ex.weight,repsLog:[...ex.repsLog],arrow:ex.arrow||'eq'
     }))
   };
+  // Snapshot PRs before update so we can detect new ones
+  const prsBefore=JSON.parse(JSON.stringify(stats.prs||{}));
+
   sessions.unshift(session);sv('fj_sessions',sessions);
 
   // Update stats
@@ -1976,26 +1974,64 @@ async function saveWorkout(){
   });
   sv('fj_stats',stats);
 
+  // Detect new PRs set this session
+  const newPRs=[];
+  session.exercises.forEach(ex=>{
+    const k=ex.group+'::'+ex.name;
+    const was=prsBefore[k];
+    const now=stats.prs[k];
+    if(now&&(!was||now.weight>was.weight)){newPRs.push({name:ex.name,weight:now.weight,prev:was?was.weight:0});}
+  });
+
   active=null;pending=null;
   lsSet('fj_active_workout',null);
   renderPending();
   const _sb=document.getElementById('start-btn');if(_sb)_sb.style.display='none';
-  switchTab('history');
-  if(caloriesEst){
-    toast('Workout saved! 💪  🔥'+session.calories+' cal estimated');
-  } else if(!session.calories&&!cfg.profile?.weight){
-    toast('Workout saved! 💪  — Add body weight in Settings → Profile for calorie estimates',5000);
-  } else {
-    toast('Workout saved! 💪');
-  }
-  // Auto-push to Gist
+
+  // Show summary modal — navigation to history happens on dismiss
+  showWorkoutSummary(session,newPRs);
+
+  // Auto-push to Gist in background while summary is visible
   if(gistCfg.pat){
     setSyncStatus('syncing');
     try{await gistPush();setSyncStatus('synced');}
-    catch(err){setSyncStatus('error');toast('Save OK · Gist sync failed: '+err.message,4000);}
+    catch(err){setSyncStatus('error');toast('Gist sync failed: '+err.message,4000);}
   } else {
-    showBackupPrompt();
+    _pendingBackupPrompt=true;
   }
+}
+function showWorkoutSummary(session,newPRs){
+  const effortLabels=['','Easy','Good','Hard','Max'];
+  const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
+  const totalSets=session.exercises.reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
+  const calHtml=session.calories?`<div class="summ-stat"><div class="summ-stat-val">🔥${session.calories}</div><div class="summ-stat-lbl">cal${session.caloriesEst?' (est)':''}</div></div>`:'';
+  const effortHtml=session.effort?`<div class="summ-effort" style="color:${effortColors[session.effort]}">${effortLabels[session.effort]}</div>`:'';
+  const prHtml=newPRs.length?`<div class="summ-prs"><div class="summ-prs-title">🏆 NEW PRs THIS SESSION</div>${newPRs.map(p=>`<div class="summ-pr-row"><span>${esc(p.name)}</span><span style="color:var(--accent);font-weight:700;">${p.weight}lb</span></div>`).join('')}</div>`:'';
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay">
+    <div class="modal summ-modal" onclick="event.stopPropagation()" style="max-height:85vh;">
+      <div class="summ-hero">
+        <div class="summ-title">WORKOUT COMPLETE</div>
+        <div class="summ-date">${dotw(session.date)}, ${fmtDate(session.date)}</div>
+        ${effortHtml}
+      </div>
+      <div class="summ-stats-grid">
+        ${session.duration?`<div class="summ-stat"><div class="summ-stat-val">⏱ ${esc(session.duration)}</div><div class="summ-stat-lbl">duration</div></div>`:''}
+        <div class="summ-stat"><div class="summ-stat-val">${session.exercises.length}</div><div class="summ-stat-lbl">exercise${session.exercises.length!==1?'s':''}</div></div>
+        <div class="summ-stat"><div class="summ-stat-val">${totalSets}</div><div class="summ-stat-lbl">set${totalSets!==1?'s':''}</div></div>
+        ${calHtml}
+      </div>
+      ${prHtml}
+      <div style="padding:16px 16px 32px;">
+        <button class="me-save-btn" onclick="closeSummaryModal()">Done →</button>
+      </div>
+    </div>
+  </div>`;
+}
+function closeSummaryModal(){
+  document.getElementById('modal-root').innerHTML='';
+  switchTab('history');
+  if(_pendingBackupPrompt){_pendingBackupPrompt=false;showBackupPrompt();}
 }
 
 /* ═══════════════════════════════════════════
@@ -2318,10 +2354,13 @@ function renderListView(){
   const effortLabels=['','Easy','Good','Hard','Max'];
   const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
   if(!sessions.length){
-    histWrap.innerHTML=`<div class="hist-toolbar">
-      <span class="hist-count">0 sessions</span>
-      <button class="hist-clear-btn" onclick="openManualEntry()" style="color:var(--j-acc);border-color:var(--j-acc);">+ Log Past</button>
-    </div><div class="hist-empty">No sessions yet</div>`;
+    histWrap.innerHTML=`<div class="empty-state-card">
+      <span class="es-icon">📋</span>
+      <div class="es-title">NO SESSIONS YET</div>
+      <div class="es-sub">Complete your first workout to see it here</div>
+      <button class="es-cta" onclick="switchTab('generate')">Build a Workout</button>
+      <button class="es-secondary" onclick="openManualEntry()">+ Log Past Session</button>
+    </div>`;
     return;
   }
   const listTotalCal=Math.round(sessions.reduce((a,s)=>a+sessionTotalCal(s),0));
@@ -2385,13 +2424,36 @@ function renderListView(){
   histWrap.innerHTML=toolbar+'<div style="padding-bottom:16px;">'+rows+'</div>';
 }
 function toggleHist(si){const b=document.getElementById('hb-'+si),c=document.getElementById('hc-'+si);b.classList.toggle('open');c.classList.toggle('open',b.classList.contains('open'));}
-function deleteSession(id){
-  sessions=sessions.filter(s=>String(s.id)!==String(id));
+function _commitPendingDelete(){
+  if(!_pendingDelete)return;
+  clearTimeout(_pendingDelete.t);
   sv('fj_sessions',sessions);
-  // Rebuild all stats from remaining sessions
   rebuildStats();
+  _pendingDelete=null;
+}
+function deleteSession(id){
+  // Commit any prior pending delete before starting a new one
+  _commitPendingDelete();
+  const removed=sessions.find(s=>String(s.id)===String(id));
+  if(!removed)return;
+  sessions=sessions.filter(s=>String(s.id)!==String(id));
   renderHistory();
-  toast('Session removed');
+  _pendingDelete={session:removed,t:setTimeout(()=>{
+    _pendingDelete=null;
+    sv('fj_sessions',sessions);
+    rebuildStats();
+  },5000)};
+  toastHtml(`Session removed &nbsp;<span style="font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="undoDelete()">Undo</span>`,5200);
+}
+function undoDelete(){
+  if(!_pendingDelete)return;
+  clearTimeout(_pendingDelete.t);
+  const s=_pendingDelete.session;
+  _pendingDelete=null;
+  sessions.push(s);
+  sessions.sort((a,b)=>b.id-a.id);
+  renderHistory();
+  toast('Session restored');
 }
 function rebuildStats(){
   const s={total:0,exercises:{},weightHistory:{},totalReps:{},prs:{}};
@@ -2591,7 +2653,12 @@ function renderPRs(){
   const wh=stats.weightHistory||{};
   const keys=Object.keys(prs);
   if(!keys.length){
-    wrap.innerHTML=`<div class="prs-title">Personal Records</div><div class="prs-empty">No PRs yet — complete sessions to track your bests</div>`;return;
+    wrap.innerHTML=`<div class="prs-title">Personal Records</div><div class="empty-state-card">
+      <span class="es-icon">🏆</span>
+      <div class="es-title">NO PRs YET</div>
+      <div class="es-sub">Complete workouts to start tracking your personal bests</div>
+      <button class="es-cta" onclick="switchTab('generate')">Build a Workout</button>
+    </div>`;return;
   }
   // Group by muscle group
   const byGroup={};
@@ -3023,6 +3090,15 @@ function renderTheme(){
 ═══════════════════════════════════════════ */
 function renderStats(){
   const wrap=document.getElementById('stats-wrap');
+  if(!sessions.length){
+    wrap.innerHTML=`<div class="empty-state-card">
+      <span class="es-icon">📊</span>
+      <div class="es-title">NO DATA YET</div>
+      <div class="es-sub">Complete workouts to see your stats and trends</div>
+      <button class="es-cta" onclick="switchTab('generate')">Build a Workout</button>
+    </div>`;
+    return;
+  }
   const tabs=`<div class="stat-tabs">
     <button class="stat-tab${statTab==='sessions'?' active':''}" onclick="setStatTab('sessions')">Sessions</button>
     <button class="stat-tab${statTab==='exercises'?' active':''}" onclick="setStatTab('exercises')">Exercises</button>
