@@ -958,11 +958,11 @@ body{
 .sett-card-title{font-family:'Black Ops One',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;}
 .sett-row-disabled{opacity:.4;pointer-events:none;}
 /* ─── Rest Timer Bar ─── */
-.rest-timer-bar{position:fixed;top:calc(var(--hdr-h) + 6px);left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:560px;background:var(--j-sur);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;z-index:50;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);overflow:hidden;}
-.rest-timer-time{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);min-width:46px;}
+.rest-timer-bar{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom) + 8px);left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:560px;background:var(--j-sur);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;z-index:250;display:flex;align-items:center;gap:12px;box-shadow:0 -2px 20px rgba(0,0,0,.35);overflow:hidden;}
+.rest-timer-time{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent);min-width:52px;}
 .rest-timer-label{font-size:10px;color:var(--j-mut);letter-spacing:1px;text-transform:uppercase;flex:1;}
 .rest-timer-prog{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);opacity:.6;transition:width 1s linear;}
-.rest-timer-skip{font-size:11px;font-weight:700;color:var(--accent);background:transparent;border:1.5px solid var(--accent);padding:5px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.rest-timer-skip{font-size:11px;font-weight:700;color:var(--accent);background:transparent;border:1.5px solid var(--accent);padding:5px 12px;border-radius:6px;cursor:pointer;white-space:nowrap;}
 .rest-timer-bar.rt-done{border-color:var(--up);}
 .rest-timer-bar.rt-done .rest-timer-time,.rest-timer-bar.rt-done .rest-timer-skip{color:var(--up);}
 .rest-timer-bar.rt-done .rest-timer-prog{background:var(--up);}
