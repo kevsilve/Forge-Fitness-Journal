@@ -1235,6 +1235,7 @@ function applyPayload(data){
   if(data.theme&&typeof data.theme==='string'){theme=data.theme;lsSet('fj_theme',theme);document.body.className='theme-'+theme;}
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
+  if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
   if(!stats.exercises)stats.exercises={};
   if(!stats.weightHistory)stats.weightHistory={};
   if(!stats.totalReps)stats.totalReps={};
@@ -1364,6 +1365,7 @@ function autoSaveSettings(){
 }
 // Throttled version for high-frequency events (weight inputs, reps)
 let _saveThrottle=null;
+function saveActiveToLocal(){lsSet('fj_active_workout',active);}
 function saveActiveThrottled(){
   if(_saveThrottle)clearTimeout(_saveThrottle);
   _saveThrottle=setTimeout(()=>{saveActiveToLocal();_saveThrottle=null;},500);
