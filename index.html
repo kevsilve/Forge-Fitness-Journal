@@ -851,13 +851,26 @@ body{
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;z-index:999;border:1px solid var(--border3);box-shadow:0 4px 24px rgba(0,0,0,.35);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+/* ── Sticky workout bar (replaces separate progress + ts-bar) ── */
+.j-sticky-bar{
+  position:sticky;top:0;z-index:100;
+  background:var(--j-sur);
+  border-bottom:1px solid var(--j-bor);
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+}
+.j-sticky-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 14px;
+}
+.j-sticky-sets{font-size:11px;font-weight:700;color:var(--j-txt);letter-spacing:.2px;}
+.j-sticky-timer{font-size:12px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;font-variant-numeric:tabular-nums;}
 /* ── Progress bar ── */
-.j-progress{height:3px;background:var(--j-bor2);position:relative;overflow:hidden;}
+.j-progress{height:3px;background:var(--j-bor2);overflow:hidden;}
 .j-progress-fill{height:100%;background:var(--j-acc);transition:width .35s cubic-bezier(.4,0,.2,1);will-change:width;}
 .j-progress-fill.complete{background:var(--j-up);}
 
-/* ── Live timer ── */
-.j-live-timer{font-size:11px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;margin-left:auto;font-variant-numeric:tabular-nums;}
+/* ── Live timer (legacy class kept for JS compat) ── */
+.j-live-timer{font-variant-numeric:tabular-nums;}
 
 /* ── Set completion pop animation ── */
 @keyframes setDone{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(.95)}100%{transform:scale(1)}}
@@ -1102,6 +1115,8 @@ let gistCfg = ld('fj_gist_cfg', {pat:'',gistId:''});
 
 let groups   = ld('fj_groups',   DEF_GROUPS);
 let cfg      = ld('fj_cfg',      DEF_CFG);
+// Migrate: ensure profile sub-object exists for users upgrading from older versions
+if(!cfg.profile) cfg.profile=dc(DEF_CFG.profile);
 let machines = ld('fj_machines', DEF_MACHINES);
 let sessions = ld('fj_sessions', []);
 let stats    = ld('fj_stats',    {exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}});
@@ -1571,10 +1586,12 @@ function renderToday(){
       </div>
     </div>
   </div>
-  <div class="j-progress"><div class="j-progress-fill${doneSets===totalSets&&totalSets>0?' complete':''}" id="j-prog-fill" style="width:${totalSets>0?Math.round((doneSets/totalSets)*100):0}%"></div></div>
-  <div class="j-ts-bar">
-    <div class="j-ts-item"><span class="j-ts-lbl">Started</span><span class="j-ts-val">${fmtTime(w.startedAt)}</span></div>
-    <div class="j-ts-item"><span class="j-ts-lbl">Elapsed</span><span class="j-ts-val j-live-timer" id="live-elapsed">—</span></div>
+  <div class="j-sticky-bar">
+    <div class="j-sticky-inner">
+      <span class="j-sticky-sets"><span id="sets-counter">${doneSets}/${totalSets}</span> sets · started ${fmtTime(w.startedAt)}</span>
+      <span class="j-sticky-timer j-live-timer" id="live-elapsed">—</span>
+    </div>
+    <div class="j-progress"><div class="j-progress-fill${doneSets===totalSets&&totalSets>0?' complete':''}" id="j-prog-fill" style="width:${totalSets>0?Math.round((doneSets/totalSets)*100):0}%"></div></div>
   </div>
   <div class="j-section-lbl">Strength Training</div>
   <div style="padding:0 0 8px;">`;
@@ -2918,28 +2935,29 @@ function renderProfile(){
   return`
     <div class="s-row"><div class="s-lbl">Body Weight<span class="s-sub">Required for calorie estimation</span></div>
       <div style="display:flex;gap:6px;align-items:center;">
-        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.weightUnit||'lbs')==='lbs'?'e.g. 185':'e.g. 84'}" value="${p.weight||''}" oninput="setProfileVal('weight',this.value)">
+        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.weightUnit||'lbs')==='lbs'?'e.g. 185':'e.g. 84'}" value="${p.weight||''}" oninput="setProfileVal('weight',this.value,true)">
         <div class="inc-pills">${wtUnitBtns}</div>
       </div>
     </div>
     <div class="s-row"><div class="s-lbl">Height <span style="font-weight:400;color:var(--text3);">(optional)</span><span class="s-sub">Used for future BMR refinement</span></div>
       <div style="display:flex;gap:6px;align-items:center;">
-        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.heightUnit||'in')==='in'?'e.g. 70':'e.g. 178'}" value="${p.height||''}" oninput="setProfileVal('height',this.value)">
+        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.heightUnit||'in')==='in'?'e.g. 70':'e.g. 178'}" value="${p.height||''}" oninput="setProfileVal('height',this.value,true)">
         <div class="inc-pills">${htUnitBtns}</div>
       </div>
     </div>
     <div class="s-row"><div class="s-lbl">Age <span style="font-weight:400;color:var(--text3);">(optional)</span></div>
-      <input class="gist-inp" type="number" inputmode="numeric" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="e.g. 30" value="${p.age||''}" oninput="setProfileVal('age',this.value)">
+      <input class="gist-inp" type="number" inputmode="numeric" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="e.g. 30" value="${p.age||''}" oninput="setProfileVal('age',this.value,true)">
     </div>
     <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
       <div class="s-lbl">Biological Sex <span style="font-weight:400;color:var(--text3);">(optional)</span><span class="s-sub">Improves MET accuracy</span></div>
       <div class="inc-pills">${sexBtns}</div>
     </div>`;
 }
-function setProfileVal(key,val){
+function setProfileVal(key,val,noRender){
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   cfg.profile[key]=val;
-  sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+  sv('fj_cfg',cfg);autoSaveSettings();
+  if(!noRender)renderSettings();
 }
 function renderTheme(){
   return`<div class="theme-grid">${THEMES.map(t=>`
