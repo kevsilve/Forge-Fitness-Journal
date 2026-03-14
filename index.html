@@ -1107,8 +1107,9 @@ const THEMES = [
 ═══════════════════════════════════════════ */
 function dc(x){return JSON.parse(JSON.stringify(x));}
 function uid(){return '_'+Math.random().toString(36).slice(2,9);}
-function ld(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):dc(d);}catch(e){return dc(d);}}
-function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ld(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):dc(d);}catch(e){console.warn('ld failed for',k,e);return dc(d);}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){if(typeof toast==='function')toast('⚠️ Storage full — clear old sessions to free space',5000);}console.error('sv failed for',k,e);}}
 const lsGet=ld, lsSet=sv;
 const GIST_FILENAME='forge-backup.json';
 let gistCfg = ld('fj_gist_cfg', {pat:'',gistId:''});
@@ -1144,12 +1145,18 @@ function buildPayload(){
   return JSON.stringify({version:3,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme},null,2);
 }
 function applyPayload(data){
-  if(data.sessions){sessions=data.sessions;lsSet('fj_sessions',sessions);}
-  if(data.stats){stats=data.stats;lsSet('fj_stats',stats);}
-  if(data.groups){groups=data.groups;lsSet('fj_groups',groups);}
-  if(data.cfg){cfg=data.cfg;lsSet('fj_cfg',cfg);}
-  if(data.machines){machines=data.machines;lsSet('fj_machines',machines);}
-  if(data.theme){theme=data.theme;lsSet('fj_theme',theme);document.body.className='theme-'+theme;}
+  if(Array.isArray(data.sessions)){sessions=data.sessions;lsSet('fj_sessions',sessions);}
+  if(data.stats&&typeof data.stats==='object'){stats=data.stats;lsSet('fj_stats',stats);}
+  if(Array.isArray(data.groups)&&data.groups.length){groups=data.groups;lsSet('fj_groups',groups);}
+  if(data.cfg&&typeof data.cfg==='object'){cfg=data.cfg;lsSet('fj_cfg',cfg);}
+  if(Array.isArray(data.machines)){machines=data.machines;lsSet('fj_machines',machines);}
+  if(data.theme&&typeof data.theme==='string'){theme=data.theme;lsSet('fj_theme',theme);document.body.className='theme-'+theme;}
+  // Post-apply migrations
+  if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
+  if(!stats.exercises)stats.exercises={};
+  if(!stats.weightHistory)stats.weightHistory={};
+  if(!stats.totalReps)stats.totalReps={};
+  if(!stats.prs)stats.prs={};
 }
 
 async function gistPull(){
@@ -1230,7 +1237,17 @@ function launchApp(){
   setHdrH();
   // Restore any in-progress workout that was interrupted (refresh, crash, etc.)
   const savedActive=ld('fj_active_workout',null);
-  if(savedActive&&savedActive.exercises){
+  if(savedActive&&Array.isArray(savedActive.exercises)){
+    // Validate and repair each exercise entry before restoring
+    savedActive.exercises=savedActive.exercises.map(ex=>{
+      if(!Array.isArray(ex.repsLog))ex.repsLog=[];
+      if(!Array.isArray(ex.setsDone))ex.setsDone=Array(ex.sets||3).fill(false);
+      if(typeof ex.weight!=='number'||isNaN(ex.weight))ex.weight=0;
+      if(typeof ex.sets!=='number'||ex.sets<1)ex.sets=ex.repsLog.length||3;
+      return ex;
+    });
+    if(!savedActive.cardio||typeof savedActive.cardio!=='object')
+      savedActive.cardio={machine:null,duration:'',metric:'',calories:'',program:''};
     active=savedActive;
     toast('Workout restored 💪');
   }
@@ -1342,7 +1359,7 @@ function fmtDate(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
-function parseScheme(s){const p=s.split('×');return{sets:+p[0],reps:+p[1]};}
+function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
 function arCls(a){return a==='up'?'up':a==='dn'?'dn':'eq';}
 function arSym(a){return a==='up'?'↑':a==='dn'?'↓':'=';}
 function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
@@ -1447,9 +1464,9 @@ function renderPending(){
     </div>`:'';
     return`<div class="ex-card${ex.isBonus?' bonus-card':''}">
       <div class="ex-card-top">
-        <div><div class="ex-name">${ex.name}${ex.isBonus?'<span class="bonus-tag">BONUS</span>':''}</div>
-        <div class="ex-group-lbl">${ex.group}</div></div>
-        <div class="ex-scheme-lbl">${ex.scheme}</div>
+        <div><div class="ex-name">${esc(ex.name)}${ex.isBonus?'<span class="bonus-tag">BONUS</span>':''}</div>
+        <div class="ex-group-lbl">${esc(ex.group)}</div></div>
+        <div class="ex-scheme-lbl">${esc(ex.scheme)}</div>
       </div>${lastHtml}
     </div>`;
   }).join('');
@@ -1528,16 +1545,16 @@ async function endAndSaveActive(){
     stats.exercises[k]=(stats.exercises[k]||0)+1;
     if(!stats.weightHistory[k])stats.weightHistory[k]=[];
     stats.weightHistory[k].push({date:session.date,weight:ex.weight});
-    const repsThisSession=ex.repsLog.reduce((a,b)=>a+b,0);
+    const repsThisSession=(ex.repsLog||[]).reduce((a,b)=>a+(isNaN(b)?0:+b),0);
     stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
     const cur=stats.prs[k];
-    if(!cur||ex.weight>cur.weight){stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};}
+    if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};}
   });
   sv('fj_stats',stats);
   active=null;pending=null;
   lsSet('fj_active_workout',null);
   renderPending();
-  document.getElementById('start-btn').style.display='none';
+  const _sb2=document.getElementById('start-btn');if(_sb2)_sb2.style.display='none';
   renderActiveWorkoutBanner();
   toast('Workout saved! 💪');
   if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
@@ -1647,12 +1664,12 @@ function renderToday(){
     html+=`<div class="j-ex${allDone?' ex-complete':''}" id="jex-${ei}">
       <div class="j-ex-name-row">
         <div style="min-width:0;flex:1;">
-          <div class="j-ex-name">${ex.name}</div>
-          <div class="j-ex-grp">${ex.group}</div>
+          <div class="j-ex-name">${esc(ex.name)}</div>
+          <div class="j-ex-grp">${esc(ex.group)}</div>
         </div>
         <div class="j-ex-right">
           ${lastInfo}
-          <div class="j-ex-scheme">${ex.scheme}</div>
+          <div class="j-ex-scheme">${esc(ex.scheme)}</div>
         </div>
       </div>
       <div class="j-wt-row">
@@ -1755,6 +1772,7 @@ function updateLiveTimer(){
   if(!el){clearInterval(_timerInterval);return;}
   if(!active?.startedAt){el.textContent='—';return;}
   const secs=Math.floor((Date.now()-new Date(active.startedAt))/1000);
+  if(isNaN(secs)||secs<0){el.textContent='—';return;}
   const h=Math.floor(secs/3600);
   const m=Math.floor((secs%3600)/60);
   const s=secs%60;
@@ -1767,7 +1785,7 @@ function adjWt(ei,d){
   const el=document.getElementById('wt-'+ei);if(el)el.value=active.exercises[ei].weight;
   saveActiveThrottled();
 }
-function setWt(ei,v){active.exercises[ei].weight=parseFloat(v)||0;saveActiveThrottled();}
+function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;saveActiveThrottled();}
 function toggleDone(ei,si){
   active.exercises[ei].setsDone[si]=!active.exercises[ei].setsDone[si];
   const done=active.exercises[ei].setsDone[si];
@@ -1805,7 +1823,7 @@ function startEditReps(e,ei,si){
   inp.focus();inp.select();
 }
 function commitReps(ei,si,val){
-  const v=parseInt(val)||0;
+  const v=Math.max(0,Math.min(parseInt(val)||0,999));
   active.exercises[ei].repsLog[si]=v;
   const disp=document.getElementById(`sa-${ei}-${si}`);
   if(disp)disp.textContent=v;
@@ -1882,7 +1900,7 @@ function estimateCalories(exercises,durationMin,effort,profile){
   const kg=profile.weightUnit==='kg'
     ?parseFloat(profile.weight)
     :parseFloat(profile.weight)*0.453592;
-  if(!kg||kg<=0)return null;
+  if(!kg||kg<=0||kg>500||isNaN(kg))return null;
   // MET values for resistance training by effort level (1=Easy,2=Good,3=Hard,4=Max)
   // Female MET values are slightly adjusted
   const mets={1:3.0,2:4.5,3:5.5,4:7.0};
@@ -1948,11 +1966,11 @@ async function saveWorkout(){
     stats.exercises[k]=(stats.exercises[k]||0)+1;
     if(!stats.weightHistory[k])stats.weightHistory[k]=[];
     stats.weightHistory[k].push({date:session.date,weight:ex.weight});
-    const repsThisSession=ex.repsLog.reduce((a,b)=>a+b,0);
+    const repsThisSession=(ex.repsLog||[]).reduce((a,b)=>a+(isNaN(b)?0:+b),0);
     stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
     // Update PRs
     const cur=stats.prs[k];
-    if(!cur||ex.weight>cur.weight){
+    if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){
       stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};
     }
   });
@@ -1961,7 +1979,7 @@ async function saveWorkout(){
   active=null;pending=null;
   lsSet('fj_active_workout',null);
   renderPending();
-  document.getElementById('start-btn').style.display='none';
+  const _sb=document.getElementById('start-btn');if(_sb)_sb.style.display='none';
   switchTab('history');
   if(caloriesEst){
     toast('Workout saved! 💪  🔥'+session.calories+' cal estimated');
@@ -2101,7 +2119,7 @@ function renderWeekView(){
       // Meta row
       const metaParts=[];
       if(s.effort)metaParts.push(`<span class="wsm-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`);
-      if(s.duration)metaParts.push(`<span class="wsm-stat">⏱ ${s.duration}</span>`);
+      if(s.duration)metaParts.push(`<span class="wsm-stat">⏱ ${esc(s.duration)}</span>`);
       if(sessionTotalCal(s))metaParts.push(`<span class="wsm-stat">${fmtCalFull(s)}</span>`);
       const fmtT=iso=>{if(!iso)return null;return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
       const ts=fmtT(s.startedAt);
@@ -2112,19 +2130,19 @@ function renderWeekView(){
       if(s.cardio&&s.cardio.machine){
         const m=machById(s.cardio.machine);
         const parts=[];
-        if(s.cardio.program)parts.push(`📋 ${s.cardio.program}`);
-        if(s.cardio.duration)parts.push(s.cardio.duration);
-        if(s.cardio.metric)parts.push(`${s.cardio.metric} ${m?m.unit:''}`);
-        if(s.cardio.calories)parts.push(`${s.cardio.calories} cal`);
+        if(s.cardio.program)parts.push(`📋 ${esc(s.cardio.program)}`);
+        if(s.cardio.duration)parts.push(esc(s.cardio.duration));
+        if(s.cardio.metric)parts.push(`${esc(s.cardio.metric)} ${m?esc(m.unit):''}`);
+        if(s.cardio.calories)parts.push(`${parseFloat(s.cardio.calories)||0} cal`);
         detailHtml+=`<div class="week-cardio-chip">
           <span class="wcc-icon">${m?m.icon:'🏃'}</span>
-          <div><div class="wcc-name">${m?m.name:'Cardio'}</div><div class="wcc-stats">${parts.join(' · ')}</div></div>
+          <div><div class="wcc-name">${m?esc(m.name):'Cardio'}</div><div class="wcc-stats">${parts.join(' · ')}</div></div>
         </div>`;
       }
 
       // Exercise chips — tappable to expand set detail
       detailHtml+=`<div class="week-ex-chips">`;
-      s.exercises.forEach((ex,ei)=>{
+      (s.exercises||[]).forEach((ex,ei)=>{
         const chipKey=`${s.id}::${ei}`;
         const isExp=expandedChip===chipKey;
         const pills=ex.repsLog.map((r,si2)=>`<span class="wec-set-pill">Set ${si2+1}: ${ex.weight}lb × ${r}</span>`).join('');
@@ -2132,8 +2150,8 @@ function renderWeekView(){
           <div class="week-ex-chip${isExp?' expanded':''}" onclick="toggleChip('${chipKey}')">
             <div class="wec-top">
               <div class="wec-info">
-                <div class="wec-name">${ex.name}</div>
-                <div class="wec-sub">${ex.group} · ${ex.scheme}</div>
+                <div class="wec-name">${esc(ex.name)}</div>
+                <div class="wec-sub">${esc(ex.group)} · ${esc(ex.scheme)}</div>
               </div>
               <div class="wec-right">
                 <span class="wec-wt">${ex.weight}lb</span>
@@ -2148,7 +2166,7 @@ function renderWeekView(){
       });
       detailHtml+=`</div>`;
 
-      if(s.notes)detailHtml+=`<div class="h-notes" style="margin:0 0 10px;border-radius:6px;">"${s.notes}"</div>`;
+      if(s.notes)detailHtml+=`<div class="h-notes" style="margin:0 0 10px;border-radius:6px;">"${esc(s.notes)}"</div>`;
     });
   }
   detailHtml+=`</div>`;
@@ -2233,36 +2251,36 @@ function renderMonthView(){
       </div>`;
     } else {
       daySessions.forEach(s=>{
-        const exRows=s.exercises.map(ex=>`
+        const exRows=(s.exercises||[]).map(ex=>`
           <div class="h-ex-row">
-            <div><div class="h-ex-name">${ex.name}</div><div class="h-ex-grp">${ex.group}</div></div>
+            <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
             <div class="h-ex-r">
-              <div class="h-ex-wt">${ex.weight}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
-              <div class="h-ex-sets">${ex.scheme} · ${ex.repsLog.join(', ')}</div>
+              <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
+              <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
             </div>
           </div>`).join('');
         let cardioHtml='';
         if(s.cardio&&s.cardio.machine){
           const m=machById(s.cardio.machine);
           const parts=[];
-          if(s.cardio.program)parts.push(`📋 ${s.cardio.program}`);
-          if(s.cardio.duration)parts.push(s.cardio.duration);
-          if(s.cardio.metric)parts.push(`${s.cardio.metric} ${m?m.unit:''}`);
-          if(s.cardio.calories)parts.push(`${s.cardio.calories} cal`);
+          if(s.cardio.program)parts.push(`📋 ${esc(s.cardio.program)}`);
+          if(s.cardio.duration)parts.push(esc(s.cardio.duration));
+          if(s.cardio.metric)parts.push(`${esc(s.cardio.metric)} ${m?esc(m.unit):''}`);
+          if(s.cardio.calories)parts.push(`${parseFloat(s.cardio.calories)||0} cal`);
           cardioHtml=`<div class="h-cardio-row"><span class="h-cardio-icon">${m?m.icon:'🏃'}</span>
-            <div><div class="h-cardio-name">${m?m.name:s.cardio.machine}</div>
+            <div><div class="h-cardio-name">${m?esc(m.name):esc(s.cardio.machine)}</div>
             <div class="h-cardio-stats">${parts.join(' · ')}</div></div></div>`;
         }
-        const notesHtml=s.notes?`<div class="h-notes">"${s.notes}"</div>`:'';
+        const notesHtml=s.notes?`<div class="h-notes">"${esc(s.notes)}"</div>`:'';
         const badge=s.effort?`<span class="h-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`:'';
         const ftParts=[];
-        if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
+        if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${esc(s.duration)}</span></div>`);
         if(sessionTotalCal(s))ftParts.push(`<div class="h-fi"><span class="h-fv">${fmtCalFull(s)}</span></div>`);
         const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
         detailHtml+=`<div class="cal-detail" id="cal-detail">
           <div class="cal-detail-hdr">
             <div><div class="cal-detail-date">${dotw(calSelectedDate)}, ${fmtDate(calSelectedDate)}</div>
-            <div class="cal-detail-meta">${s.exercises.length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
+            <div class="cal-detail-meta">${(s.exercises||[]).length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
             <div style="display:flex;gap:6px;align-items:center;">${badge}
               <button class="cal-detail-close" onclick="calSelectDay('${calSelectedDate}')">×</button>
             </div>
@@ -2317,31 +2335,31 @@ function renderListView(){
   </div>`;
   const rows=sessions.map((s,si)=>{
     const badge=s.effort?`<span class="h-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`:'';
-    const exRows=s.exercises.map(ex=>`
+    const exRows=(s.exercises||[]).map(ex=>`
       <div class="h-ex-row">
-        <div><div class="h-ex-name">${ex.name}</div><div class="h-ex-grp">${ex.group}</div></div>
+        <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
         <div class="h-ex-r">
-          <div class="h-ex-wt">${ex.weight}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
-          <div class="h-ex-sets">${ex.scheme} · ${ex.repsLog.join(', ')}</div>
+          <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
+          <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
         </div>
       </div>`).join('');
     let cardioHtml='';
     if(s.cardio&&s.cardio.machine){
       const m=machById(s.cardio.machine);
       const parts=[];
-      if(s.cardio.program)parts.push(`📋 ${s.cardio.program}`);
-      if(s.cardio.duration)parts.push(s.cardio.duration);
-      if(s.cardio.metric)parts.push(`${s.cardio.metric} ${m?m.unit:''}`);
-      if(s.cardio.calories)parts.push(`${s.cardio.calories} cal`);
+      if(s.cardio.program)parts.push(`📋 ${esc(s.cardio.program)}`);
+      if(s.cardio.duration)parts.push(esc(s.cardio.duration));
+      if(s.cardio.metric)parts.push(`${esc(s.cardio.metric)} ${m?esc(m.unit):''}`);
+      if(s.cardio.calories)parts.push(`${parseFloat(s.cardio.calories)||0} cal`);
       cardioHtml=`<div class="h-cardio-row">
         <span class="h-cardio-icon">${m?m.icon:'🏃'}</span>
-        <div><div class="h-cardio-name">${m?m.name:s.cardio.machine}</div>
+        <div><div class="h-cardio-name">${m?esc(m.name):esc(s.cardio.machine)}</div>
         <div class="h-cardio-stats">${parts.join(' · ')}</div></div>
       </div>`;
     }
-    const notesHtml=s.notes?`<div class="h-notes">"${s.notes}"</div>`:'';
+    const notesHtml=s.notes?`<div class="h-notes">"${esc(s.notes)}"</div>`:'';
     const ftParts=[];
-    if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
+    if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${esc(s.duration)}</span></div>`);
     if(sessionTotalCal(s))ftParts.push(`<div class="h-fi"><span class="h-fv">${fmtCalFull(s)}</span></div>`);
     const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
     const fmtTime=iso=>{if(!iso)return null;const d=new Date(iso);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
@@ -2505,7 +2523,7 @@ function renderEditModal(){
           <button class="me-add-ex" onclick="editAddEx()">+ Add Exercise</button>
         </div>
         <div class="me-section"><span class="me-section-lbl">Session Notes (optional)</span>
-          <textarea class="me-inp" style="width:100%;resize:none;min-height:60px;font-size:13px;" id="edit-notes">${s.notes||''}</textarea>
+          <textarea class="me-inp" style="width:100%;resize:none;min-height:60px;font-size:13px;" id="edit-notes">${esc(s.notes||'')}</textarea>
         </div>
         <div style="display:flex;gap:8px;">
           <div class="me-field" style="flex:1;"><span class="me-field-lbl">Effort</span>
@@ -2549,7 +2567,9 @@ async function saveEditSession(){
   const durEl=document.getElementById('edit-duration');
   const idx=sessions.findIndex(s=>String(s.id)===String(editSessionData.id));
   if(idx===-1){toast('Session not found');return;}
-  editSessionData.date=dateEl?dateEl.value:editSessionData.date;
+  const newDate=dateEl?dateEl.value.trim():editSessionData.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate)){toast('Invalid date format');return;}
+  editSessionData.date=newDate;
   editSessionData.notes=notesEl?notesEl.value:editSessionData.notes;
   editSessionData.effort=effortEl&&effortEl.value?parseInt(effortEl.value):null;
   editSessionData.duration=durEl?durEl.value:editSessionData.duration;
@@ -2584,19 +2604,19 @@ function renderPRs(){
   Object.values(byGroup).forEach(arr=>arr.sort((a,b)=>b.weight-a.weight));
   let html=`<div class="prs-title">Personal Records</div>`;
   Object.entries(byGroup).sort((a,b)=>b[1][0].weight-a[1][0].weight).forEach(([grp,arr])=>{
-    html+=`<div class="pr-group"><div class="pr-group-name">${grp}</div>`;
+    html+=`<div class="pr-group"><div class="pr-group-name">${esc(grp)}</div>`;
     arr.forEach(pr=>{
       // Build mini sparkline from weight history
       const hist=wh[pr.key]||[];
       const sparkW=80,sparkH=24;
       let sparkHtml='';
       if(hist.length>1){
-        const weights=hist.map(d=>d.weight);
+        const weights=hist.map(d=>isNaN(d.weight)?0:d.weight);
         const minW=Math.min(...weights),maxW=Math.max(...weights);
         const range=maxW-minW||1;
         const n=hist.length;
         const pts=hist.map((d,i)=>{
-          const x=(i/(n-1))*(sparkW-4)+2;
+          const x=(n>1?(i/(n-1)):0.5)*(sparkW-4)+2;
           const y=sparkH-2-((d.weight-minW)/range)*(sparkH-4);
           return`${x.toFixed(1)},${y.toFixed(1)}`;
         }).join(' ');
@@ -2621,8 +2641,8 @@ function renderPRs(){
       html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="pr-info">
-            <div class="pr-name">${pr.name}</div>
-            <div class="pr-meta">${pr.scheme||''} · ${pr.date||''}${prCalHtml} ${trendHtml}</div>
+            <div class="pr-name">${esc(pr.name)}</div>
+            <div class="pr-meta">${esc(pr.scheme||'')} · ${esc(pr.date||'')}${prCalHtml} ${trendHtml}</div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
             <div class="pr-weight">${pr.weight}</div>
@@ -2882,7 +2902,7 @@ function renderPool(){
     const exHtml=g.exercises.map(ex=>`
       <div class="ex-item">
         <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleEx('${g.id}','${ex.id}',this.checked)"><span class="tog-track"></span></label>
-        <span class="ex-item-name" style="${!ex.enabled?'color:var(--text3);text-decoration:line-through;':''}">${ex.name}</span>
+        <span class="ex-item-name" style="${!ex.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(ex.name)}</span>
         <button class="ex-del" onclick="deleteEx('${g.id}','${ex.id}')">×</button>
       </div>`).join('');
     return`<div class="grp-block">
@@ -3014,8 +3034,10 @@ function setStatTab(t){statTab=t;renderStats();}
 
 function computeStreaks(){
   if(!sessions.length)return{current:0,longest:0};
-  // Get unique sorted dates descending
-  const dates=[...new Set(sessions.map(s=>s.date))].sort((a,b)=>b.localeCompare(a));
+  const ISO_RE=/^\d{4}-\d{2}-\d{2}$/;
+  // Get unique sorted dates descending — filter out any malformed dates
+  const dates=[...new Set(sessions.map(s=>s.date).filter(d=>d&&ISO_RE.test(d)))].sort((a,b)=>b.localeCompare(a));
+  if(!dates.length)return{current:0,longest:0};
   const today=todayISO();
   const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
   const yesterdayISO=isoFromDate(yesterday);
@@ -3174,7 +3196,7 @@ function renderStatExercises(){
       const reps=totalReps[ex.key]||0;
       const repsLbl=reps>=1000?`${(reps/1000).toFixed(1)}k`:reps;
       html+=`<div class="sr">
-        <span class="sn" title="${ex.name}">${ex.name}</span>
+        <span class="sn" title="${esc(ex.name)}">${esc(ex.name)}</span>
         <div class="sbw"><div class="sb${i===0?' top':''}" style="width:${Math.round(pct*100)}%"></div></div>
         <span class="sp">${totPct}%</span><span class="sct">${ex.count}</span>
         <span class="sreps">${reps?repsLbl+'r':''}</span>
