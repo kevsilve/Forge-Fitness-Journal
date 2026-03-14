@@ -512,6 +512,7 @@ body{
 .week-sum-item{flex:1;text-align:center;padding:8px 4px;border-right:1px solid var(--j-bor);}
 .week-sum-item:last-child{border-right:none;}
 .week-sum-val{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--j-acc);display:block;line-height:1;}
+.week-summary.has-cal .week-sum-val{font-size:15px;}
 .week-sum-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--j-mut);margin-top:2px;display:block;}
 .week-detail{padding:12px 13px 16px;}
 .week-detail-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
@@ -545,8 +546,7 @@ body{
 .wec-arr.up{color:var(--j-up);}.wec-arr.dn{color:var(--j-dn);}.wec-arr.eq{color:var(--j-eq);}
 .wec-expand-icon{font-size:8px;color:var(--j-mut);transition:transform .2s;}
 .week-ex-chip.expanded .wec-expand-icon{transform:rotate(180deg);}
-.wec-detail{display:none;padding:0 12px 10px;}
-.wec-detail.open{display:block;}
+.wec-detail-legacy{display:none;}
 .wec-sets-row{display:flex;flex-wrap:wrap;gap:5px;}
 .wec-set-pill{font-size:10px;padding:3px 8px;background:var(--j-tnt);border-radius:20px;color:var(--j-mut);font-weight:600;}
 
@@ -848,8 +848,58 @@ body{
 .backup-skip-btn{padding:10px 16px;background:transparent;border:1px solid var(--border2);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;}
 .backup-skip-btn:hover{border-color:var(--border3);color:var(--text2);}
 
-.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;z-index:999;border:1px solid var(--border3);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;z-index:999;border:1px solid var(--border3);box-shadow:0 4px 24px rgba(0,0,0,.35);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── Progress bar ── */
+.j-progress{height:3px;background:var(--j-bor2);position:relative;overflow:hidden;}
+.j-progress-fill{height:100%;background:var(--j-acc);transition:width .35s cubic-bezier(.4,0,.2,1);will-change:width;}
+.j-progress-fill.complete{background:var(--j-up);}
+
+/* ── Live timer ── */
+.j-live-timer{font-size:11px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;margin-left:auto;font-variant-numeric:tabular-nums;}
+
+/* ── Set completion pop animation ── */
+@keyframes setDone{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+.j-cell-set.set-pop{animation:setDone .35s cubic-bezier(.34,1.56,.64,1);}
+
+/* ── Save button improved ── */
+.save-btn:hover{box-shadow:0 6px 28px rgba(200,16,46,.42);transform:translateY(-1px);}
+.save-btn.saving{opacity:.7;pointer-events:none;}
+.save-btn.saving::after{content:'';display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-left:8px;vertical-align:middle;}
+
+/* ── Effort button improvements ── */
+.eff-btn.e1{background:#dcfce7;border-color:var(--j-up);color:var(--j-up);font-weight:800;}
+.eff-btn.e2{background:#fef9c3;border-color:#ca8a04;color:#ca8a04;font-weight:800;}
+.eff-btn.e3{background:#fee2e2;border-color:var(--j-dn);color:var(--j-dn);font-weight:800;}
+.eff-btn.e4{background:#111;border-color:#333;color:#fff;font-weight:800;}
+.eff-btn{transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+.eff-btn:active{transform:scale(.92);}
+
+/* ── Week day cell transition ── */
+.week-day-cell{transition:transform .12s ease,background .15s;}
+.week-day-cell.is-selected .wdc-bubble{transform:scale(1.12);}
+.wdc-bubble{transition:transform .15s cubic-bezier(.34,1.56,.64,1);}
+
+/* ── History chip expand transition ── */
+.wec-detail{max-height:0;overflow:hidden;padding:0 12px;transition:max-height .28s cubic-bezier(.4,0,.2,1),padding .2s;}
+.wec-detail.open{max-height:200px;padding:0 12px 10px;}
+
+/* ── Exercise card hover polish ── */
+.j-ex:active{transform:scale(.995);}
+.j-adj{width:38px;height:38px;}
+
+/* ── Active workout dot on nav ── */
+.bnav-btn{position:relative;}
+.bnav-active-dot{
+  position:absolute;top:5px;right:calc(50% - 14px);
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  animation:navDotPulse 2s ease-in-out infinite;
+  display:none;
+}
+.bnav-btn.has-active-workout .bnav-active-dot{display:block;}
+@keyframes navDotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
 
 /* Loading & Setup screens */
 #loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
@@ -971,6 +1021,7 @@ body{
       <span class="bnav-lbl">Build</span>
     </button>
     <button class="bnav-btn" id="bnav-today" onclick="switchTab('today')">
+      <div class="bnav-active-dot"></div>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span class="bnav-lbl">Log</span>
     </button>
@@ -1022,7 +1073,7 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, workoutDays:[]};
+const DEF_CFG = {bonusSlots:2, weightIncrement:5, workoutDays:[], profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
   {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
@@ -1163,6 +1214,9 @@ function launchApp(){
     active=savedActive;
     toast('Workout restored 💪');
   }
+  // Set active workout dot on nav
+  const todayBtn=document.getElementById('bnav-today');
+  if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   updateSyncUI();
   startAutoSync();
 }
@@ -1270,6 +1324,7 @@ function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.fl
 function parseScheme(s){const p=s.split('×');return{sets:+p[0],reps:+p[1]};}
 function arCls(a){return a==='up'?'up':a==='dn'?'dn':'eq';}
 function arSym(a){return a==='up'?'↑':a==='dn'?'↓':'=';}
+function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
 function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
 function machById(id){return machines.find(m=>m.id===id);}
@@ -1301,6 +1356,10 @@ function switchTab(tab){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   const v=document.getElementById('view-'+tab);
   if(v) v.classList.add('active');
+  // Active workout indicator on Log nav button
+  const todayBtn=document.getElementById('bnav-today');
+  if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
+  if(tab!=='today') clearInterval(_timerInterval);
   if(tab==='generate') renderActiveWorkoutBanner();
   if(tab==='today')    renderToday();
   if(tab==='history')  renderHistory();
@@ -1397,6 +1456,7 @@ function discardActiveWorkout(){
   if(armed['discard-active']){
     clearTimeout(armed['discard-active_t']);
     delete armed['discard-active'];delete armed['discard-active_t'];
+    clearInterval(_timerInterval);
     active=null;pending=null;
     lsSet('fj_active_workout',null);
     renderPending();
@@ -1511,9 +1571,10 @@ function renderToday(){
       </div>
     </div>
   </div>
+  <div class="j-progress"><div class="j-progress-fill${doneSets===totalSets&&totalSets>0?' complete':''}" id="j-prog-fill" style="width:${totalSets>0?Math.round((doneSets/totalSets)*100):0}%"></div></div>
   <div class="j-ts-bar">
     <div class="j-ts-item"><span class="j-ts-lbl">Started</span><span class="j-ts-val">${fmtTime(w.startedAt)}</span></div>
-    <div class="j-ts-item"><span class="j-ts-lbl">Now</span><span class="j-ts-val">${fmtTime(new Date().toISOString())}</span></div>
+    <div class="j-ts-item"><span class="j-ts-lbl">Elapsed</span><span class="j-ts-val j-live-timer" id="live-elapsed">—</span></div>
   </div>
   <div class="j-section-lbl">Strength Training</div>
   <div style="padding:0 0 8px;">`;
@@ -1631,8 +1692,8 @@ function renderToday(){
       <div class="f-row"><span class="f-lbl">Total Time</span>
         <input class="f-inp" type="text" placeholder="e.g. 75 min" value="${w.duration}" onchange="active.duration=this.value;saveActiveThrottled()">
       </div>
-      <div class="f-row"><span class="f-lbl">Calories</span>
-        <input class="f-inp" type="number" inputmode="numeric" placeholder="from watch" value="${w.calories}" onchange="active.calories=this.value;saveActiveThrottled()">
+      <div class="f-row"><span class="f-lbl">Calories${cfg.profile?.weight?'<span style="font-size:9px;font-weight:400;color:var(--j-mut);margin-left:4px;">(est. ready)</span>':''}</span>
+        <input class="f-inp" type="number" inputmode="numeric" placeholder="${(()=>{if(!cfg.profile?.weight)return'from watch';const dMin=parseDurationMin(w.duration);const est=estimateCalories(w.exercises,dMin,w.effort,cfg.profile);return est?'~'+est+' cal (est.)':'from watch'})()}" value="${w.calories}" onchange="active.calories=this.value;saveActiveThrottled()">
       </div>
       <div>
         <div class="j-sets-lbl" style="margin-bottom:7px;padding-top:4px;">Notes</div>
@@ -1643,6 +1704,25 @@ function renderToday(){
   </div>
   <button class="save-btn" onclick="saveWorkout()">Save &amp; Finish</button>`;
   wrap.innerHTML=html;
+  startLiveTimer();
+}
+
+/* ── Live elapsed timer ── */
+let _timerInterval=null;
+function startLiveTimer(){
+  clearInterval(_timerInterval);
+  updateLiveTimer();
+  _timerInterval=setInterval(updateLiveTimer,1000);
+}
+function updateLiveTimer(){
+  const el=document.getElementById('live-elapsed');
+  if(!el){clearInterval(_timerInterval);return;}
+  if(!active?.startedAt){el.textContent='—';return;}
+  const secs=Math.floor((Date.now()-new Date(active.startedAt))/1000);
+  const h=Math.floor(secs/3600);
+  const m=Math.floor((secs%3600)/60);
+  const s=secs%60;
+  el.textContent=h>0?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
 /* Journal interactions */
@@ -1656,7 +1736,25 @@ function toggleDone(ei,si){
   active.exercises[ei].setsDone[si]=!active.exercises[ei].setsDone[si];
   const done=active.exercises[ei].setsDone[si];
   const cell=document.getElementById(`row-${ei}-${si}`);
-  if(cell) cell.classList.toggle('done',done);
+  if(cell){
+    cell.classList.toggle('done',done);
+    if(done){
+      cell.classList.remove('set-pop');
+      void cell.offsetWidth; // reflow to restart animation
+      cell.classList.add('set-pop');
+    }
+  }
+  // Update progress bar live
+  const totalSets=active.exercises.reduce((a,ex)=>a+ex.sets,0);
+  const doneSets=active.exercises.reduce((a,ex)=>a+ex.setsDone.filter(Boolean).length,0);
+  const fill=document.getElementById('j-prog-fill');
+  if(fill){
+    fill.style.width=totalSets>0?Math.round((doneSets/totalSets)*100)+'%':'0%';
+    fill.classList.toggle('complete',doneSets===totalSets&&totalSets>0);
+  }
+  // Update sets counter
+  const ctr=document.getElementById('sets-counter');
+  if(ctr)ctr.textContent=`${doneSets}/${totalSets}`;
   checkExComplete(ei);
   saveActiveToLocal();
 }
@@ -1737,16 +1835,58 @@ function flushFinish(){
 }
 
 /* ═══════════════════════════════════════════
+   CALORIE ESTIMATION
+═══════════════════════════════════════════ */
+function parseDurationMin(durStr){
+  if(!durStr)return 0;
+  const m=durStr.match(/(\d+)/);return m?parseInt(m[1]):0;
+}
+function estimateCalories(exercises,durationMin,effort,profile){
+  if(!profile?.weight||!durationMin)return null;
+  const kg=profile.weightUnit==='kg'
+    ?parseFloat(profile.weight)
+    :parseFloat(profile.weight)*0.453592;
+  if(!kg||kg<=0)return null;
+  // MET values for resistance training by effort level (1=Easy,2=Good,3=Hard,4=Max)
+  // Female MET values are slightly adjusted
+  const mets={1:3.0,2:4.5,3:5.5,4:7.0};
+  let met=mets[effort]||4.5;
+  if(profile.sex==='female')met*=0.9;
+  const baseCal=met*kg*(durationMin/60);
+  // Volume bonus: uses ACTUAL reps logged — 0-rep sets contribute 0 (b>0 guard)
+  let volumeLb=0;
+  (exercises||[]).forEach(ex=>{
+    const reps=(ex.repsLog||[]).reduce((a,b)=>a+(b>0?b:0),0);
+    volumeLb+=(ex.weight||0)*reps;
+  });
+  const volBonus=volumeLb*0.02;
+  return Math.round(baseCal+volBonus);
+}
+
+/* ═══════════════════════════════════════════
    SAVE
 ═══════════════════════════════════════════ */
 async function saveWorkout(){
   if(!active)return;
+  clearInterval(_timerInterval);
   flushStrength();flushCardio();flushFinish();
   const savedAt=new Date().toISOString();
+  // Auto-populate duration if left blank
+  if(!active.duration?.trim()&&active.startedAt){
+    const diffMin=Math.round((new Date(savedAt)-new Date(active.startedAt))/60000);
+    if(diffMin>0)active.duration=diffMin+' min';
+  }
+  // Auto-populate calories if left blank (requires body weight in profile)
+  let caloriesEst=false;
+  if(!active.calories&&cfg.profile?.weight){
+    const dMin=parseDurationMin(active.duration);
+    const est=estimateCalories(active.exercises,dMin,active.effort,cfg.profile);
+    if(est){active.calories=est;caloriesEst=true;}
+  }
   const session={
     id:Date.now(),date:active.date,
     startedAt:active.startedAt||null,savedAt,
-    effort:active.effort,duration:active.duration,calories:active.calories,notes:active.notes,
+    effort:active.effort,duration:active.duration,calories:active.calories,caloriesEst,notes:active.notes,
     cardio:active.cardio.machine?dc(active.cardio):null,
     exercises:active.exercises.map(ex=>({
       name:ex.name,group:ex.group,scheme:ex.scheme,
@@ -1893,6 +2033,8 @@ function renderWeekView(){
   const wExCount=wSessions.reduce((a,s)=>a+s.exercises.length,0);
   const wVol=wSessions.reduce((a,s)=>a+s.exercises.reduce((b,ex)=>b+(ex.weight*(ex.repsLog.reduce((c,r)=>c+r,0))),0),0);
   const volStr=wVol>=1000?`${(wVol/1000).toFixed(1)}k`:`${Math.round(wVol)}`;
+  const wCalories=Math.round(wSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const wCalStr=wCalories>=1000?`${(wCalories/1000).toFixed(1)}k`:`${wCalories}`;
 
   // Selected day detail
   const selSessions=byDate[weekSelectedDate]||[];
@@ -1912,7 +2054,7 @@ function renderWeekView(){
       const metaParts=[];
       if(s.effort)metaParts.push(`<span class="wsm-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`);
       if(s.duration)metaParts.push(`<span class="wsm-stat">⏱ ${s.duration}</span>`);
-      if(s.calories)metaParts.push(`<span class="wsm-stat">🔥 ${s.calories} cal</span>`);
+      if(s.calories)metaParts.push(`<span class="wsm-stat">🔥 ${fmtCal(s)}</span>`);
       const fmtT=iso=>{if(!iso)return null;return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
       const ts=fmtT(s.startedAt);
       if(ts)metaParts.push(`<span class="wsm-stat">🕐 ${ts}</span>`);
@@ -1971,11 +2113,12 @@ function renderWeekView(){
       <button class="week-nav-btn" onclick="weekNav(1)">›</button>
     </div>
     <div class="week-strip">${strip}</div>
-    <div class="week-summary">
+    <div class="week-summary${wCalories>0?' has-cal':''}">
       <div class="week-sum-item"><span class="week-sum-val">${wDaysWorked}</span><span class="week-sum-lbl">Days</span></div>
       <div class="week-sum-item"><span class="week-sum-val">${wSessions.length}</span><span class="week-sum-lbl">Sessions</span></div>
       <div class="week-sum-item"><span class="week-sum-val">${wExCount}</span><span class="week-sum-lbl">Exercises</span></div>
       <div class="week-sum-item"><span class="week-sum-val">${volStr}</span><span class="week-sum-lbl">Vol lb</span></div>
+      ${wCalories>0?`<div class="week-sum-item cal-item"><span class="week-sum-val" style="color:var(--accent);">🔥${wCalStr}</span><span class="week-sum-lbl">Cal</span></div>`:''}
     </div>
     ${detailHtml}`;
 }
@@ -2024,6 +2167,8 @@ function renderMonthView(){
   const monthSessions=sessions.filter(s=>s.date.startsWith(`${year}-${String(month+1).padStart(2,'0')}`));
   const monthDays=new Set(monthSessions.map(s=>s.date)).size;
   const monthExCount=monthSessions.reduce((a,s)=>a+s.exercises.length,0);
+  const monthCalories=Math.round(monthSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const monthCalStr=monthCalories>=1000?`${(monthCalories/1000).toFixed(1)}k`:`${monthCalories}`;
   const effortLabels=['','Easy','Good','Hard','Max'];
   const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
   let detailHtml='';
@@ -2064,7 +2209,7 @@ function renderMonthView(){
         const badge=s.effort?`<span class="h-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`:'';
         const ftParts=[];
         if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
-        if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${s.calories} cal</span></div>`);
+        if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${fmtCal(s)}</span></div>`);
         const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
         detailHtml+=`<div class="cal-detail" id="cal-detail">
           <div class="cal-detail-hdr">
@@ -2095,6 +2240,7 @@ function renderMonthView(){
         <div class="cal-sum-item"><span class="cal-sum-val">${monthSessions.length}</span><span class="cal-sum-lbl">Sessions</span></div>
         <div class="cal-sum-item"><span class="cal-sum-val">${monthDays}</span><span class="cal-sum-lbl">Days</span></div>
         <div class="cal-sum-item"><span class="cal-sum-val">${monthExCount}</span><span class="cal-sum-lbl">Exercises</span></div>
+        ${monthCalories>0?`<div class="cal-sum-item"><span class="cal-sum-val" style="color:var(--accent);">🔥${monthCalStr}</span><span class="cal-sum-lbl">Cal</span></div>`:''}
       </div>
       ${detailHtml}
     </div>`;
@@ -2112,8 +2258,10 @@ function renderListView(){
     </div><div class="hist-empty">No sessions yet</div>`;
     return;
   }
+  const listTotalCal=Math.round(sessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const calLabel=listTotalCal>0?` · 🔥${listTotalCal>=1000?(listTotalCal/1000).toFixed(1)+'k':listTotalCal} cal`:'';
   const toolbar=`<div class="hist-toolbar">
-    <span class="hist-count">${sessions.length} session${sessions.length!==1?'s':''}</span>
+    <span class="hist-count">${sessions.length} session${sessions.length!==1?'s':''}${calLabel}</span>
     <div style="display:flex;gap:7px;">
       <button class="hist-clear-btn" onclick="openManualEntry()" style="color:var(--j-acc);border-color:var(--j-acc);">+ Log Past</button>
       <button class="hist-clear-btn" onclick="clearHistory()">Clear History</button>
@@ -2146,7 +2294,7 @@ function renderListView(){
     const notesHtml=s.notes?`<div class="h-notes">"${s.notes}"</div>`:'';
     const ftParts=[];
     if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
-    if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${s.calories} cal</span></div>`);
+    if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${fmtCal(s)}</span></div>`);
     const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
     const fmtTime=iso=>{if(!iso)return null;const d=new Date(iso);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
     const tsStart=fmtTime(s.startedAt),tsEnd=fmtTime(s.savedAt);
@@ -2419,11 +2567,14 @@ function renderPRs(){
         if(diff>0)trendHtml=`<span style="font-size:9px;color:var(--up);font-weight:700;">↑${diff}lb</span>`;
         else if(diff<0)trendHtml=`<span style="font-size:9px;color:var(--dn);font-weight:700;">↓${Math.abs(diff)}lb</span>`;
       }
+      // Find calories from the PR session
+      const prSession=sessions.find(s=>s.date===pr.date&&s.exercises&&s.exercises.some(ex=>ex.name===pr.name));
+      const prCalHtml=prSession&&prSession.calories?`<span style="font-size:9px;color:var(--accent);font-weight:600;margin-left:6px;">🔥${prSession.caloriesEst?'~':''}${prSession.calories}${prSession.caloriesEst?' (est.)':''}</span>`:'';
       html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="pr-info">
             <div class="pr-name">${pr.name}</div>
-            <div class="pr-meta">${pr.scheme||''} · ${pr.date||''} ${trendHtml}</div>
+            <div class="pr-meta">${pr.scheme||''} · ${pr.date||''}${prCalHtml} ${trendHtml}</div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
             <div class="pr-weight">${pr.weight}</div>
@@ -2473,6 +2624,7 @@ function renderSettings(){
     acc('WORKOUT STRUCTURE','structure',renderStructure())+
     acc('GROUPS & POOL','pool',renderPool())+
     acc('CARDIO MACHINES','machines',renderMachines())+
+    acc('PROFILE','profile',renderProfile())+
     acc('PREFERENCES','prefs',renderPrefs())+
     acc('THEME','theme',renderTheme())+
     acc('DATA & RESET','data',renderDataManagement())+
@@ -2584,6 +2736,7 @@ function resetAcc(id){
     if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);}
     if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
     if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.workoutDays=[];sv('fj_cfg',cfg);}
+    if(id==='profile'){cfg.profile=dc(DEF_CFG.profile);sv('fj_cfg',cfg);}
     if(id==='theme'){theme='dark-red';sv('fj_theme',theme);document.body.className='theme-dark-red';}
     autoSaveSettings();
     toast('Reset complete');renderSettings();
@@ -2756,6 +2909,38 @@ function renderPrefs(){
       <div class="day-pills">${dayBtns}</div>
     </div>`;
 }
+function renderProfile(){
+  if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
+  const p=cfg.profile;
+  const wtUnitBtns=['lbs','kg'].map(u=>`<button class="inc-pill${(p.weightUnit||'lbs')===u?' active':''}" onclick="setProfileVal('weightUnit','${u}')">${u}</button>`).join('');
+  const htUnitBtns=['in','cm'].map(u=>`<button class="inc-pill${(p.heightUnit||'in')===u?' active':''}" onclick="setProfileVal('heightUnit','${u}')">${u}</button>`).join('');
+  const sexBtns=[['male','Male'],['female','Female'],['other','Other']].map(([v,l])=>`<button class="inc-pill${(p.sex||'male')===v?' active':''}" onclick="setProfileVal('sex','${v}')">${l}</button>`).join('');
+  return`
+    <div class="s-row"><div class="s-lbl">Body Weight<span class="s-sub">Required for calorie estimation</span></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.weightUnit||'lbs')==='lbs'?'e.g. 185':'e.g. 84'}" value="${p.weight||''}" oninput="setProfileVal('weight',this.value)">
+        <div class="inc-pills">${wtUnitBtns}</div>
+      </div>
+    </div>
+    <div class="s-row"><div class="s-lbl">Height <span style="font-weight:400;color:var(--text3);">(optional)</span><span class="s-sub">Used for future BMR refinement</span></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input class="gist-inp" type="number" inputmode="decimal" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="${(p.heightUnit||'in')==='in'?'e.g. 70':'e.g. 178'}" value="${p.height||''}" oninput="setProfileVal('height',this.value)">
+        <div class="inc-pills">${htUnitBtns}</div>
+      </div>
+    </div>
+    <div class="s-row"><div class="s-lbl">Age <span style="font-weight:400;color:var(--text3);">(optional)</span></div>
+      <input class="gist-inp" type="number" inputmode="numeric" style="width:72px;padding:7px 10px;font-size:14px;" placeholder="e.g. 30" value="${p.age||''}" oninput="setProfileVal('age',this.value)">
+    </div>
+    <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+      <div class="s-lbl">Biological Sex <span style="font-weight:400;color:var(--text3);">(optional)</span><span class="s-sub">Improves MET accuracy</span></div>
+      <div class="inc-pills">${sexBtns}</div>
+    </div>`;
+}
+function setProfileVal(key,val){
+  if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
+  cfg.profile[key]=val;
+  sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+}
 function renderTheme(){
   return`<div class="theme-grid">${THEMES.map(t=>`
     <button class="theme-btn${theme===t.id?' active':''}" onclick="setTheme('${t.id}')">
@@ -2861,6 +3046,17 @@ function renderStatSessions(){
     <div style="font-size:10px;color:var(--text2);">${durSessions.length} sessions with duration</div></div>
     <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">${totalMinutes>=60?Math.floor(totalMinutes/60)+'h '+(totalMinutes%60)+'m':totalMinutes+'m'}</div></div>
   </div>`:'';
+  // Total calories burned
+  const calSessions=sessions.filter(s=>s.calories);
+  const totalCal=Math.round(calSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const avgCal=calSessions.length?Math.round(totalCal/calSessions.length):0;
+  const totalCalStr=totalCal>=1000?`${(totalCal/1000).toFixed(1)}k`:`${totalCal}`;
+  const calHtml=totalCal>0?`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+    <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Total Calories Burned</div>
+    <div style="font-size:10px;color:var(--text2);">${calSessions.length} sessions · ~${avgCal} cal avg</div></div>
+    <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">🔥${totalCalStr}</div>
+    <div style="font-size:9px;color:var(--text3);">calories</div></div>
+  </div>`:'';
 
   return`<div class="stat-panel active">
     <!-- Hero -->
@@ -2899,6 +3095,7 @@ function renderStatSessions(){
       <div style="font-size:9px;color:var(--text3);">sessions</div></div>
     </div>
     ${durHtml}
+    ${calHtml}
     ${buildMonthlyChart()}
   </div>`;
 }
