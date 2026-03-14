@@ -1859,7 +1859,7 @@ function parseDurationMin(durStr){
   const m=durStr.match(/(\d+)/);return m?parseInt(m[1]):0;
 }
 function estimateCalories(exercises,durationMin,effort,profile){
-  if(!profile?.weight||!durationMin)return null;
+  if(!profile?.weight)return null;
   const kg=profile.weightUnit==='kg'
     ?parseFloat(profile.weight)
     :parseFloat(profile.weight)*0.453592;
@@ -1869,7 +1869,10 @@ function estimateCalories(exercises,durationMin,effort,profile){
   const mets={1:3.0,2:4.5,3:5.5,4:7.0};
   let met=mets[effort]||4.5;
   if(profile.sex==='female')met*=0.9;
-  const baseCal=met*kg*(durationMin/60);
+  // If no duration, estimate from sets (avg 2 min per set including rest)
+  const totalSets=(exercises||[]).reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
+  const effectiveDur=durationMin>0?durationMin:Math.max(1,totalSets*2);
+  const baseCal=met*kg*(effectiveDur/60);
   // Volume bonus: uses ACTUAL reps logged — 0-rep sets contribute 0 (b>0 guard)
   let volumeLb=0;
   (exercises||[]).forEach(ex=>{
@@ -1877,7 +1880,8 @@ function estimateCalories(exercises,durationMin,effort,profile){
     volumeLb+=(ex.weight||0)*reps;
   });
   const volBonus=volumeLb*0.02;
-  return Math.round(baseCal+volBonus);
+  const total=Math.round(baseCal+volBonus);
+  return total>0?total:null;
 }
 
 /* ═══════════════════════════════════════════
@@ -1890,8 +1894,8 @@ async function saveWorkout(){
   const savedAt=new Date().toISOString();
   // Auto-populate duration if left blank
   if(!active.duration?.trim()&&active.startedAt){
-    const diffMin=Math.round((new Date(savedAt)-new Date(active.startedAt))/60000);
-    if(diffMin>0)active.duration=diffMin+' min';
+    const diffMin=Math.ceil((new Date(savedAt)-new Date(active.startedAt))/60000);
+    active.duration=Math.max(1,diffMin)+' min';
   }
   // Auto-populate calories if left blank (requires body weight in profile)
   let caloriesEst=false;
