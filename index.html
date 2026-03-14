@@ -853,7 +853,7 @@ body{
 
 /* ── Sticky workout bar (replaces separate progress + ts-bar) ── */
 .j-sticky-bar{
-  position:sticky;top:0;z-index:100;
+  position:sticky;top:var(--hdr-h,72px);z-index:100;
   background:var(--j-sur);
   border-bottom:1px solid var(--j-bor);
   box-shadow:0 2px 8px rgba(0,0,0,.07);
@@ -1220,9 +1220,14 @@ async function init(){
     lerr.style.display='block';setSyncStatus('error');
   }
 }
+function setHdrH(){
+  const h=document.querySelector('.hdr');
+  if(h)document.documentElement.style.setProperty('--hdr-h',h.offsetHeight+'px');
+}
 function launchApp(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
+  setHdrH();
   // Restore any in-progress workout that was interrupted (refresh, crash, etc.)
   const savedActive=ld('fj_active_workout',null);
   if(savedActive&&savedActive.exercises){
@@ -1235,6 +1240,7 @@ function launchApp(){
   updateSyncUI();
   startAutoSync();
 }
+window.addEventListener('resize',setHdrH);
 
 /* ── AUTO-SYNC every 30s when active workout exists ── */
 let autoSyncInterval=null;
@@ -1340,6 +1346,19 @@ function parseScheme(s){const p=s.split('×');return{sets:+p[0],reps:+p[1]};}
 function arCls(a){return a==='up'?'up':a==='dn'?'dn':'eq';}
 function arSym(a){return a==='up'?'↑':a==='dn'?'↓':'=';}
 function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
+function sessionTotalCal(s){return(parseFloat(s.calories)||0)+(parseFloat(s.cardio?.calories)||0);}
+function fmtCalFull(s){
+  const strCal=parseFloat(s.calories)||0;
+  const crdCal=parseFloat(s.cardio?.calories)||0;
+  const tot=strCal+crdCal;
+  if(!tot)return'';
+  if(strCal&&crdCal){
+    const strTxt=s.caloriesEst?`~${strCal} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${strCal} cal`;
+    return `💪 ${strTxt} &nbsp;·&nbsp; 🏃 ${crdCal} cal &nbsp;·&nbsp; 🔥 ${tot} cal total`;
+  }
+  if(strCal)return'🔥 '+fmtCal(s);
+  return`🔥 ${crdCal} cal`;
+}
 function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
 function machById(id){return machines.find(m=>m.id===id);}
@@ -2062,7 +2081,7 @@ function renderWeekView(){
   const wExCount=wSessions.reduce((a,s)=>a+s.exercises.length,0);
   const wVol=wSessions.reduce((a,s)=>a+s.exercises.reduce((b,ex)=>b+(ex.weight*(ex.repsLog.reduce((c,r)=>c+r,0))),0),0);
   const volStr=wVol>=1000?`${(wVol/1000).toFixed(1)}k`:`${Math.round(wVol)}`;
-  const wCalories=Math.round(wSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const wCalories=Math.round(wSessions.reduce((a,s)=>a+sessionTotalCal(s),0));
   const wCalStr=wCalories>=1000?`${(wCalories/1000).toFixed(1)}k`:`${wCalories}`;
 
   // Selected day detail
@@ -2083,7 +2102,7 @@ function renderWeekView(){
       const metaParts=[];
       if(s.effort)metaParts.push(`<span class="wsm-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`);
       if(s.duration)metaParts.push(`<span class="wsm-stat">⏱ ${s.duration}</span>`);
-      if(s.calories)metaParts.push(`<span class="wsm-stat">🔥 ${fmtCal(s)}</span>`);
+      if(sessionTotalCal(s))metaParts.push(`<span class="wsm-stat">${fmtCalFull(s)}</span>`);
       const fmtT=iso=>{if(!iso)return null;return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
       const ts=fmtT(s.startedAt);
       if(ts)metaParts.push(`<span class="wsm-stat">🕐 ${ts}</span>`);
@@ -2196,7 +2215,7 @@ function renderMonthView(){
   const monthSessions=sessions.filter(s=>s.date.startsWith(`${year}-${String(month+1).padStart(2,'0')}`));
   const monthDays=new Set(monthSessions.map(s=>s.date)).size;
   const monthExCount=monthSessions.reduce((a,s)=>a+s.exercises.length,0);
-  const monthCalories=Math.round(monthSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const monthCalories=Math.round(monthSessions.reduce((a,s)=>a+sessionTotalCal(s),0));
   const monthCalStr=monthCalories>=1000?`${(monthCalories/1000).toFixed(1)}k`:`${monthCalories}`;
   const effortLabels=['','Easy','Good','Hard','Max'];
   const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
@@ -2238,7 +2257,7 @@ function renderMonthView(){
         const badge=s.effort?`<span class="h-badge" style="color:${effortColors[s.effort]}">${effortLabels[s.effort]}</span>`:'';
         const ftParts=[];
         if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
-        if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${fmtCal(s)}</span></div>`);
+        if(sessionTotalCal(s))ftParts.push(`<div class="h-fi"><span class="h-fv">${fmtCalFull(s)}</span></div>`);
         const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
         detailHtml+=`<div class="cal-detail" id="cal-detail">
           <div class="cal-detail-hdr">
@@ -2287,7 +2306,7 @@ function renderListView(){
     </div><div class="hist-empty">No sessions yet</div>`;
     return;
   }
-  const listTotalCal=Math.round(sessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const listTotalCal=Math.round(sessions.reduce((a,s)=>a+sessionTotalCal(s),0));
   const calLabel=listTotalCal>0?` · 🔥${listTotalCal>=1000?(listTotalCal/1000).toFixed(1)+'k':listTotalCal} cal`:'';
   const toolbar=`<div class="hist-toolbar">
     <span class="hist-count">${sessions.length} session${sessions.length!==1?'s':''}${calLabel}</span>
@@ -2323,7 +2342,7 @@ function renderListView(){
     const notesHtml=s.notes?`<div class="h-notes">"${s.notes}"</div>`:'';
     const ftParts=[];
     if(s.duration)ftParts.push(`<div class="h-fi">⏱ <span class="h-fv">${s.duration}</span></div>`);
-    if(s.calories)ftParts.push(`<div class="h-fi">🔥 <span class="h-fv">${fmtCal(s)}</span></div>`);
+    if(sessionTotalCal(s))ftParts.push(`<div class="h-fi"><span class="h-fv">${fmtCalFull(s)}</span></div>`);
     const footer=ftParts.length?`<div class="h-footer">${ftParts.join('')}</div>`:'';
     const fmtTime=iso=>{if(!iso)return null;const d=new Date(iso);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
     const tsStart=fmtTime(s.startedAt),tsEnd=fmtTime(s.savedAt);
@@ -3076,14 +3095,17 @@ function renderStatSessions(){
     <div style="font-size:10px;color:var(--text2);">${durSessions.length} sessions with duration</div></div>
     <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">${totalMinutes>=60?Math.floor(totalMinutes/60)+'h '+(totalMinutes%60)+'m':totalMinutes+'m'}</div></div>
   </div>`:'';
-  // Total calories burned
-  const calSessions=sessions.filter(s=>s.calories);
-  const totalCal=Math.round(calSessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  // Total calories burned (strength + cardio combined)
+  const calSessions=sessions.filter(s=>sessionTotalCal(s)>0);
+  const totalCal=Math.round(calSessions.reduce((a,s)=>a+sessionTotalCal(s),0));
+  const totalStrCal=Math.round(sessions.reduce((a,s)=>a+(parseFloat(s.calories)||0),0));
+  const totalCrdCal=Math.round(sessions.reduce((a,s)=>a+(parseFloat(s.cardio?.calories)||0),0));
   const avgCal=calSessions.length?Math.round(totalCal/calSessions.length):0;
   const totalCalStr=totalCal>=1000?`${(totalCal/1000).toFixed(1)}k`:`${totalCal}`;
+  const calBreakdown=totalStrCal&&totalCrdCal?`<div style="font-size:10px;color:var(--text3);margin-top:2px;">💪 ${totalStrCal} str &nbsp;·&nbsp; 🏃 ${totalCrdCal} cardio</div>`:'';
   const calHtml=totalCal>0?`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
     <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Total Calories Burned</div>
-    <div style="font-size:10px;color:var(--text2);">${calSessions.length} sessions · ~${avgCal} cal avg</div></div>
+    <div style="font-size:10px;color:var(--text2);">${calSessions.length} sessions · ~${avgCal} cal avg</div>${calBreakdown}</div>
     <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--accent);line-height:1;">🔥${totalCalStr}</div>
     <div style="font-size:9px;color:var(--text3);">calories</div></div>
   </div>`:'';
