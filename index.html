@@ -946,6 +946,52 @@ body{
 .setup-msg.err{background:rgba(239,68,68,.1);color:var(--dn);border:1px solid rgba(239,68,68,.2);}
 .setup-msg.info{background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2);}
 .setup-skip{margin-top:12px;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+/* ─── Settings Tabs ─── */
+.sett-tabs{display:flex;background:var(--surface);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10;}
+.sett-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 9px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .15s;}
+.sett-tab.active{border-bottom-color:var(--accent);}
+.sett-tab-icon{font-size:15px;line-height:1;}
+.sett-tab-lbl{font-size:7.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text3);}
+.sett-tab.active .sett-tab-lbl{color:var(--accent);}
+.sett-panel{padding:12px 12px 48px;animation:fadeIn .15s ease;}
+.sett-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;}
+.sett-card-title{font-family:'Black Ops One',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;}
+.sett-row-disabled{opacity:.4;pointer-events:none;}
+/* ─── Rest Timer Bar ─── */
+.rest-timer-bar{position:fixed;top:calc(var(--hdr-h) + 6px);left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:560px;background:var(--j-sur);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;z-index:50;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);overflow:hidden;}
+.rest-timer-time{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:2px;color:var(--accent);min-width:46px;}
+.rest-timer-label{font-size:10px;color:var(--j-mut);letter-spacing:1px;text-transform:uppercase;flex:1;}
+.rest-timer-prog{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);opacity:.6;transition:width 1s linear;}
+.rest-timer-skip{font-size:11px;font-weight:700;color:var(--accent);background:transparent;border:1.5px solid var(--accent);padding:5px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.rest-timer-bar.rt-done{border-color:var(--up);}
+.rest-timer-bar.rt-done .rest-timer-time,.rest-timer-bar.rt-done .rest-timer-skip{color:var(--up);}
+.rest-timer-bar.rt-done .rest-timer-prog{background:var(--up);}
+/* ─── Plateau Hint ─── */
+.plateau-hint{font-size:9px;font-weight:700;letter-spacing:.5px;color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);padding:2px 7px;border-radius:4px;white-space:nowrap;display:inline-block;margin-top:4px;}
+.plateau-hint.strong{color:#ef4444;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);}
+/* ─── Build Mode Toggle ─── */
+.build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:12px 12px 0;overflow:hidden;}
+.bm-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
+.bm-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
+/* ─── Custom Workout Cards ─── */
+.ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.ex-card-remove:hover{border-color:#ef4444;color:#ef4444;}
+.scheme-cycle{font-size:10px;font-weight:700;padding:3px 9px;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;}
+.scheme-cycle:hover{background:var(--accent-dim);}
+/* ─── Exercise Picker ─── */
+.picker-group-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--j-sur);cursor:pointer;user-select:none;border-bottom:1px solid var(--j-bor);}
+.picker-group-name{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--j-txt);flex:1;}
+.picker-group-count{font-size:10px;color:var(--j-mut);}
+.picker-group-chev{font-size:8px;color:var(--j-mut);transition:transform .2s;}
+.picker-group-hdr.open .picker-group-chev{transform:rotate(180deg);}
+.picker-ex-list{padding:0 8px;}
+.picker-ex-item{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--j-bor);cursor:pointer;transition:background .12s;border-radius:6px;margin:2px 0;}
+.picker-ex-item:last-child{border-bottom:none;}
+.picker-ex-item:hover{background:var(--j-tnt);}
+.picker-ex-item.selected{background:var(--j-tnt);}
+.picker-ex-name{flex:1;font-size:13px;color:var(--j-txt);}
+.picker-ex-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--j-bor2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:transparent;}
+.picker-ex-item.selected .picker-ex-check{background:var(--accent);border-color:var(--accent);color:#fff;}
 /* ─── Empty State Cards ─── */
 .empty-state-card{text-align:center;padding:56px 24px 40px;}
 .es-icon{font-size:38px;margin-bottom:14px;display:block;}
@@ -1023,6 +1069,10 @@ body{
 </div>
 
 <div class="view active" id="view-generate">
+  <div class="build-mode-bar">
+    <button class="bm-btn active" id="bm-random" onclick="setBuildMode('random')">⚡ Random</button>
+    <button class="bm-btn" id="bm-custom" onclick="setBuildMode('custom')">✎ Custom</button>
+  </div>
   <button class="gen-btn" id="gen-btn" onclick="generate()">
     <span class="shimmer"></span>⚡ GENERATE WORKOUT
   </button>
@@ -1108,7 +1158,7 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, workoutDays:[], profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}};
+const DEF_CFG = {bonusSlots:2, weightIncrement:5, workoutDays:[], restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
   {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
@@ -1140,6 +1190,8 @@ let groups   = ld('fj_groups',   DEF_GROUPS);
 let cfg      = ld('fj_cfg',      DEF_CFG);
 // Migrate: ensure profile sub-object exists for users upgrading from older versions
 if(!cfg.profile) cfg.profile=dc(DEF_CFG.profile);
+// Migrate: ensure restTimer sub-object exists
+if(!cfg.restTimer) cfg.restTimer=dc(DEF_CFG.restTimer);
 let machines = ld('fj_machines', DEF_MACHINES);
 let sessions = ld('fj_sessions', []);
 let stats    = ld('fj_stats',    {exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}});
@@ -1159,6 +1211,12 @@ const openGrp = {};
 const armed   = {};
 let _pendingDelete = null;
 let _pendingBackupPrompt = false;
+let settingsTab = 'profile';
+let buildMode = 'random';
+let _restTimerInterval = null;
+let _restTimerRemaining = 0;
+let _restTimerTotal = 0;
+const openPicker = {};
 
 document.body.className = 'theme-'+theme;
 
@@ -1356,7 +1414,7 @@ async function manualSync(){
     await gistPush();setSyncStatus('synced');toast('Synced with Gist ✓');
     const activeNav=document.querySelector('.tab.active');
     if(activeNav){const tabs=['generate','today','history','settings','stats'];tabs.forEach((t,i)=>{if(document.querySelectorAll('.tab')[i]?.classList.contains('active'))switchTab(t);});}
-  }catch(err){setSyncStatus('error');toast('Sync failed: '+err.message);}
+  }catch(err){setSyncStatus('error');toast(formatSyncError(err),4000);}
 }
 function openGistSetupModal(){
   const root=document.getElementById('modal-root');
@@ -1414,6 +1472,150 @@ function toastHtml(html,dur){
   t.innerHTML=html;t.style.pointerEvents='auto';t.classList.add('show');
   setTimeout(()=>{t.classList.remove('show');t.style.pointerEvents='';},dur||2500);
 }
+function formatSyncError(err){
+  const msg=(err&&err.message)||String(err);
+  if(msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('network'))return'No internet connection — data saved locally';
+  if(msg.includes('401')||msg.toLowerCase().includes('bad credentials')||msg.toLowerCase().includes('invalid token'))return'Invalid token — check your PAT in Settings → Data';
+  if(msg.includes('403'))return'Permission denied — ensure your PAT has "gist" scope';
+  if(msg.includes('404')||msg.toLowerCase().includes('not found'))return'Gist not found — verify the Gist ID in Settings → Data';
+  if(msg.includes('422'))return'GitHub rejected the data — try exporting a backup first';
+  if(msg.includes('429'))return'Rate limited by GitHub — wait a minute and try again';
+  return'Sync failed: '+msg;
+}
+function getPlateauCount(name,group){
+  const k=group+'::'+name;
+  const hist=stats.weightHistory[k]||[];
+  if(hist.length<3)return 0;
+  const last=hist[hist.length-1].weight;
+  let count=0;
+  for(let i=hist.length-1;i>=0;i--){if(hist[i].weight===last)count++;else break;}
+  return count;
+}
+/* ── Rest Timer ── */
+function startRestTimer(){
+  if(!cfg.restTimer||!cfg.restTimer.enabled)return;
+  clearRestTimer();
+  const dur=cfg.restTimer.duration||60;
+  _restTimerTotal=dur;
+  _restTimerRemaining=dur;
+  _renderRestTimer();
+  _restTimerInterval=setInterval(()=>{
+    _restTimerRemaining--;
+    if(_restTimerRemaining<=0){
+      _restTimerRemaining=0;_renderRestTimer(true);
+      clearInterval(_restTimerInterval);_restTimerInterval=null;
+      setTimeout(clearRestTimer,1500);
+    } else {_renderRestTimer();}
+  },1000);
+}
+function clearRestTimer(){
+  if(_restTimerInterval){clearInterval(_restTimerInterval);_restTimerInterval=null;}
+  document.getElementById('rest-timer-bar')?.remove();
+}
+function _renderRestTimer(done){
+  let bar=document.getElementById('rest-timer-bar');
+  if(!bar){
+    bar=document.createElement('div');bar.id='rest-timer-bar';bar.className='rest-timer-bar';
+    const wrap=document.getElementById('j-wrap');if(wrap)wrap.prepend(bar);else return;
+  }
+  const pct=_restTimerTotal>0?Math.round((_restTimerRemaining/_restTimerTotal)*100):0;
+  const m=Math.floor(_restTimerRemaining/60),s=_restTimerRemaining%60;
+  const display=m>0?`${m}:${String(s).padStart(2,'0')}`:`0:${String(_restTimerRemaining).padStart(2,'0')}`;
+  bar.className='rest-timer-bar'+(done?' rt-done':'');
+  bar.innerHTML=`<span class="rest-timer-time">${done?'GO!':display}</span><span class="rest-timer-label">Rest${done?' — GO!':''}</span><button class="rest-timer-skip" onclick="clearRestTimer()">${done?'✓':'Skip'}</button><div class="rest-timer-prog" style="width:${pct}%"></div>`;
+}
+function setRestTimerEnabled(v){if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);cfg.restTimer.enabled=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
+function setRestDuration(v){if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);cfg.restTimer.duration=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
+/* ── Build Mode / Custom Workout ── */
+function setBuildMode(mode){
+  buildMode=mode;
+  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
+  if(rBtn)rBtn.classList.toggle('active',mode==='random');
+  if(cBtn)cBtn.classList.toggle('active',mode==='custom');
+  const genBtn=document.getElementById('gen-btn');
+  if(genBtn)genBtn.style.display=mode==='random'?'':'none';
+  if(mode==='custom'&&(!pending||!pending.length)){
+    const c=document.getElementById('ex-cards');
+    if(c)c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
+    const sb=document.getElementById('start-btn');if(sb)sb.style.display='none';
+  }
+  if(mode==='random'&&(!pending||!pending.length))renderPending();
+}
+function openExercisePicker(){
+  if(active){toast('Finish active workout first');return;}
+  const root=document.getElementById('modal-root');
+  root.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closePickerModal()">
+    <div class="modal" onclick="event.stopPropagation()" style="max-height:90vh;">
+      <div class="modal-hdr" style="position:sticky;top:0;z-index:10;">
+        <span class="modal-title">ADD EXERCISES</span>
+        <button class="modal-close" onclick="closePickerModal()">×</button>
+      </div>
+      <div class="modal-body" style="padding:0 0 20px;">${renderPickerGroups()}</div>
+    </div>
+  </div>`;
+}
+function renderPickerGroups(){
+  if(!pending)pending=[];
+  const added=new Set(pending.map(e=>e.name));
+  return groups.filter(g=>g.active).map(g=>{
+    const open=openPicker[g.id];
+    const exItems=g.exercises.filter(e=>e.enabled).map(ex=>{
+      const sel=added.has(ex.name);
+      return`<div class="picker-ex-item${sel?' selected':''}" onclick="togglePickerEx('${esc(ex.name).replace(/'/g,"\\'")}','${esc(g.name).replace(/'/g,"\\'")}')">
+        <span class="picker-ex-name">${esc(ex.name)}</span>
+        <span class="picker-ex-check">${sel?'✓':''}</span>
+      </div>`;
+    }).join('');
+    return`<div class="picker-group">
+      <div class="picker-group-hdr${open?' open':''}" onclick="togglePickerGroup('${g.id}')">
+        <span class="picker-group-name">${esc(g.name)}</span>
+        <span class="picker-group-count">${g.exercises.filter(e=>e.enabled).length} exercises</span>
+        <span class="picker-group-chev">▼</span>
+      </div>
+      ${open?`<div class="picker-ex-list">${exItems}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function togglePickerGroup(gid){openPicker[gid]=!openPicker[gid];const root=document.getElementById('modal-root');if(root)root.querySelector('.modal-body').innerHTML=renderPickerGroups();}
+function togglePickerEx(name,group){
+  if(!pending)pending=[];
+  const idx=pending.findIndex(e=>e.name===name);
+  if(idx>-1){pending.splice(idx,1);}
+  else{pending.push({name,group,isBonus:false,scheme:SCHEMES[0]});}
+  const root=document.getElementById('modal-root');
+  if(root)root.querySelector('.modal-body').innerHTML=renderPickerGroups();
+  renderPending();
+  const sb=document.getElementById('start-btn');
+  if(sb)sb.style.display=pending.length>0?'block':'none';
+}
+function closePickerModal(){document.getElementById('modal-root').innerHTML='';}
+function cycleScheme(name){
+  const ex=pending&&pending.find(e=>e.name===name);if(!ex)return;
+  const idx=SCHEMES.indexOf(ex.scheme);ex.scheme=SCHEMES[(idx+1)%SCHEMES.length];
+  renderPending();
+}
+function removeCustomEx(name){
+  if(!pending)return;
+  pending=pending.filter(e=>e.name!==name);
+  renderPending();
+  const sb=document.getElementById('start-btn');
+  if(sb)sb.style.display=pending&&pending.length>0?'block':'none';
+}
+/* ── Repeat Session ── */
+function repeatSession(id){
+  if(active){toast('Finish or discard active workout first');return;}
+  const s=sessions.find(s=>String(s.id)===String(id));
+  if(!s||!s.exercises.length){toast('No exercises to repeat');return;}
+  pending=s.exercises.map(ex=>({name:ex.name,group:ex.group,scheme:ex.scheme,isBonus:false}));
+  buildMode='custom';
+  renderPending();
+  const sb=document.getElementById('start-btn');if(sb)sb.style.display='block';
+  const genBtn=document.getElementById('gen-btn');if(genBtn)genBtn.style.display='none';
+  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
+  if(rBtn)rBtn.classList.remove('active');if(cBtn)cBtn.classList.add('active');
+  switchTab('generate');
+  toast('Loaded '+s.exercises.length+' exercises from '+fmtDate(s.date));
+}
 function armReset(key,fn,render){
   if(armed[key]){
     clearTimeout(armed[key+'_t']);delete armed[key];delete armed[key+'_t'];fn();
@@ -1440,7 +1642,7 @@ function switchTab(tab){
   const todayBtn=document.getElementById('bnav-today');
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   if(tab!=='today') clearInterval(_timerInterval);
-  if(tab==='generate') renderActiveWorkoutBanner();
+  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);}
   if(tab==='today')    renderToday();
   if(tab==='history')  renderHistory();
   if(tab==='settings') renderSettings();
@@ -1453,6 +1655,7 @@ function switchTab(tab){
 ═══════════════════════════════════════════ */
 function generate(){
   if(active){toast('Finish or discard your active workout first');return;}
+  if(buildMode==='custom'){toast('Switch to Random mode to generate a workout');return;}
   const btn=document.getElementById('gen-btn');
   btn.classList.remove('rolling');void btn.offsetWidth;btn.classList.add('rolling');
   const used=new Set();
@@ -1482,24 +1685,43 @@ function generate(){
 
 function renderPending(){
   const c=document.getElementById('ex-cards');
+  // Sync mode toggle buttons
+  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
+  if(rBtn)rBtn.classList.toggle('active',buildMode==='random');
+  if(cBtn)cBtn.classList.toggle('active',buildMode==='custom');
+  const genBtn=document.getElementById('gen-btn');
+  if(genBtn)genBtn.style.display=buildMode==='random'?'':'none';
   if(!pending||!pending.length){
-    const firstTime=!sessions.length;
-    c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Customize your exercises in Settings, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('settings')">Go to Settings →</button>`:''}</div>`;return;
+    if(buildMode==='custom'){
+      c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
+    } else {
+      const firstTime=!sessions.length;
+      c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Customize your exercises in Settings, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('settings')">Go to Settings →</button>`:''}</div>`;
+    }
+    return;
   }
+  const isCustom=buildMode==='custom';
   c.innerHTML=pending.map(ex=>{
     const last=lastForEx(ex.name);
+    const plateau=getPlateauCount(ex.name,ex.group);
+    const plateauHtml=plateau>=3?`<span class="plateau-hint${plateau>=5?' strong':''}">↑ Push it! (${plateau}× same)</span>`:'';
     const lastHtml=last?`<div class="ex-last-bar">
       <span>Last:</span><span style="font-weight:700;color:var(--text);font-size:13px;">${last.weight}lb</span>
       <span style="font-size:15px;font-weight:700;color:${last.arrow==='up'?'#22c55e':last.arrow==='dn'?'#ef4444':'#64748b'}">${arSym(last.arrow)}</span>
-    </div>`:'';
-    return`<div class="ex-card${ex.isBonus?' bonus-card':''}">
+      ${plateauHtml}
+    </div>`:(plateauHtml?`<div class="ex-last-bar">${plateauHtml}</div>`:'');
+    const nameEsc=esc(ex.name).replace(/'/g,'&#39;');
+    return`<div class="ex-card${ex.isBonus&&!isCustom?' bonus-card':''}">
       <div class="ex-card-top">
-        <div><div class="ex-name">${esc(ex.name)}${ex.isBonus?'<span class="bonus-tag">BONUS</span>':''}</div>
+        <div style="flex:1;min-width:0;"><div class="ex-name">${esc(ex.name)}${ex.isBonus&&!isCustom?'<span class="bonus-tag">BONUS</span>':''}</div>
         <div class="ex-group-lbl">${esc(ex.group)}</div></div>
-        <div class="ex-scheme-lbl">${esc(ex.scheme)}</div>
+        ${isCustom?`<button class="scheme-cycle" onclick="cycleScheme('${nameEsc}')">${esc(ex.scheme)}</button><button class="ex-card-remove" onclick="removeCustomEx('${nameEsc}')">×</button>`:`<div class="ex-scheme-lbl">${esc(ex.scheme)}</div>`}
       </div>${lastHtml}
     </div>`;
   }).join('');
+  if(isCustom){
+    c.innerHTML+=`<div style="padding:8px 12px 4px;"><button class="es-secondary" style="width:100%;margin:0;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
+  }
 }
 
 function renderActiveWorkoutBanner(){
@@ -1806,6 +2028,7 @@ function toggleDone(ei,si){
   if(ctr)ctr.textContent=`${doneSets}/${totalSets}`;
   checkExComplete(ei);
   saveActiveToLocal();
+  if(done) startRestTimer();
 }
 function startEditReps(e,ei,si){
   e.stopPropagation();
@@ -1922,6 +2145,7 @@ function estimateCalories(exercises,durationMin,effort,profile){
 async function saveWorkout(){
   if(!active)return;
   clearInterval(_timerInterval);
+  clearRestTimer();
   flushStrength();flushCardio();flushFinish();
   const savedAt=new Date().toISOString();
   // Auto-populate duration if left blank
@@ -1995,7 +2219,7 @@ async function saveWorkout(){
   if(gistCfg.pat){
     setSyncStatus('syncing');
     try{await gistPush();setSyncStatus('synced');}
-    catch(err){setSyncStatus('error');toast('Gist sync failed: '+err.message,4000);}
+    catch(err){setSyncStatus('error');toast(formatSyncError(err),4000);}
   } else {
     _pendingBackupPrompt=true;
   }
@@ -2413,6 +2637,7 @@ function renderListView(){
         <div class="hsd-meta">${s.exercises.length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
         <div class="hsd-right">
           ${badge}
+          <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')" style="color:var(--j-acc);border-color:var(--j-acc)">↺</button>
           <button class="h-sess-edit" title="Edit session" onclick="event.stopPropagation();openEditSession('${s.id}')">✎</button>
           <button class="h-sess-del" title="Delete session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button>
           <span class="h-chev" id="hc-${si}">▼</span>
@@ -2732,55 +2957,81 @@ function renderPRs(){
 ═══════════════════════════════════════════ */
 function renderSettings(){
   const wrap=document.getElementById('sett-wrap');
-  const linked=!!(gistCfg.pat&&gistCfg.gistId);
-  wrap.innerHTML=
-    `<div class="gist-section">
-      <div class="gist-section-hdr">
-        <div class="gist-section-title">GIST SYNC ${linked?'<span style="color:var(--up);font-size:12px;">● CONNECTED</span>':''}</div>
-        <div class="gist-section-sub">${linked?`Syncing to Gist <code style="background:var(--surface3);padding:1px 5px;border-radius:3px;font-size:11px;">${gistCfg.gistId.slice(0,12)}…</code>`:'Connect a GitHub Gist to sync your data across devices.'}</div>
-      </div>
-      <div class="gist-body">
-        <div class="gist-field">
-          <label>Personal Access Token</label>
-          <input class="gist-inp" type="password" id="s-pat" placeholder="ghp_xxxxxxxxxxxx" value="${gistCfg.pat||''}" oninput="gistCfg.pat=this.value.trim();lsSet('fj_gist_cfg',gistCfg);">
-          <div class="gist-hint">GitHub → Settings → Developer settings → Personal access tokens (classic) — needs only <code>gist</code> scope</div>
-        </div>
-        <div class="gist-field">
-          <label>Gist ID <span style="font-weight:400;color:var(--text3);">(blank = create new on next push)</span></label>
-          <input class="gist-inp" type="text" id="s-gid" placeholder="Leave blank to auto-create" value="${gistCfg.gistId||''}" oninput="gistCfg.gistId=this.value.trim();lsSet('fj_gist_cfg',gistCfg);">
-        </div>
-        <div id="s-gist-msg"></div>
-        <div class="gist-btns">
-          <button class="gist-btn primary" onclick="settGistPush()">⬆ Push Now</button>
-          <button class="gist-btn" onclick="settGistPull()">⬇ Pull / Restore</button>
-        </div>
-      </div>
-    </div>`+
-    acc('WORKOUT STRUCTURE','structure',renderStructure())+
-    acc('GROUPS & POOL','pool',renderPool())+
-    acc('CARDIO MACHINES','machines',renderMachines())+
-    acc('PROFILE','profile',renderProfile())+
-    acc('PREFERENCES','prefs',renderPrefs())+
-    acc('THEME','theme',renderTheme())+
-    acc('DATA & RESET','data',renderDataManagement())+
-    `<div class="autosave">${linked?'Settings sync automatically when connected':'Changes saved locally · connect Gist to sync across devices'}</div>`;
+  const tabs=[
+    {id:'profile',icon:'👤',lbl:'Profile'},
+    {id:'workout',icon:'⚡',lbl:'Workout'},
+    {id:'exercises',icon:'🏋️',lbl:'Exercises'},
+    {id:'cardio',icon:'🏃',lbl:'Cardio'},
+    {id:'theme',icon:'🎨',lbl:'Theme'},
+    {id:'data',icon:'💾',lbl:'Data'},
+  ];
+  const tabBar=`<div class="sett-tabs">${tabs.map(t=>`<button class="sett-tab${settingsTab===t.id?' active':''}" onclick="setSettTab('${t.id}')"><span class="sett-tab-icon">${t.icon}</span><span class="sett-tab-lbl">${t.lbl}</span></button>`).join('')}</div>`;
+  let panel='';
+  if(settingsTab==='profile') panel=`<div class="sett-card">${renderProfile()}</div>`;
+  else if(settingsTab==='workout') panel=renderWorkoutSettings();
+  else if(settingsTab==='exercises') panel=renderPool();
+  else if(settingsTab==='cardio') panel=`<div class="sett-card">${renderMachines()}</div>`;
+  else if(settingsTab==='theme') panel=`<div class="sett-card">${renderTheme()}</div>`;
+  else if(settingsTab==='data') panel=renderDataTab();
+  wrap.innerHTML=tabBar+`<div class="sett-panel">${panel}</div>`;
 }
-function acc(title,id,body){
-  const open=openAcc[id];
-  return`<div class="acc">
-    <div class="acc-hdr${open?' open':''}" onclick="toggleAcc('${id}')">
-      <span class="acc-title">${title}</span>
-      <div class="acc-right">
-        ${id!=='data'?`<button class="rst-btn${armed['rst_'+id]?' armed':''}" onclick="event.stopPropagation();resetAcc('${id}')">
-          ${armed['rst_'+id]?'CONFIRM':'RESET'}
-        </button>`:''}
-        <span class="acc-chev">▲</span>
-      </div>
+function setSettTab(t){settingsTab=t;renderSettings();}
+function renderWorkoutSettings(){
+  const coreTotal=groups.filter(g=>g.active&&g.mode==='core').reduce((a,g)=>a+(g.required||1),0);
+  const total=coreTotal+(cfg.bonusSlots||2);
+  const incOpts=[2.5,5,10].map(v=>`<button class="inc-pill${(cfg.weightIncrement||5)===v?' active':''}" onclick="setIncrement(${v})">${v}lb</button>`).join('');
+  const dayBtns=DAYS_OF_WEEK.map(d=>`<button class="day-pill${(cfg.workoutDays||[]).includes(d)?' active':''}" onclick="toggleDay('${d}')">${d}</button>`).join('');
+  const rt=cfg.restTimer||{enabled:false,duration:60};
+  const durOpts=[[30,'30s'],[45,'45s'],[60,'1m'],[90,'1:30'],[120,'2m'],[180,'3m']].map(([v,l])=>`<button class="inc-pill${rt.duration===v?' active':''}" onclick="setRestDuration(${v})">${l}</button>`).join('');
+  return`<div class="sett-card">
+    <div class="sett-card-title">Workout Structure</div>
+    <div class="s-row"><div class="s-lbl">Bonus Slots<span class="s-sub">Extra exercises beyond core requirements</span></div>
+      <div class="num-ctrl"><button class="num-btn" onclick="adjCfg('bonusSlots',-1)">−</button><span class="num-val">${cfg.bonusSlots}</span><button class="num-btn" onclick="adjCfg('bonusSlots',1)">+</button></div>
     </div>
-    <div class="acc-body${open?' open':''}">${body}</div>
+    <div class="s-row"><div class="s-lbl">Core Exercises<span class="s-sub">Sum of required per active core group</span></div><span style="font-size:13px;font-weight:700;color:var(--accent)">${coreTotal}</span></div>
+    <div class="s-row"><div class="s-lbl">Total Per Workout<span class="s-sub">Core + Bonus</span></div><span style="font-size:13px;font-weight:700;color:var(--accent)">${total}</span></div>
+  </div>
+  <div class="sett-card">
+    <div class="sett-card-title">Weight &amp; Schedule</div>
+    <div class="s-row"><div class="s-lbl">Weight Increment<span class="s-sub">Amount ± buttons change weight by</span></div><div class="inc-pills">${incOpts}</div></div>
+    <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px;"><div class="s-lbl">Training Days<span class="s-sub">Tag your usual workout days</span></div><div class="day-pills">${dayBtns}</div></div>
+  </div>
+  <div class="sett-card">
+    <div class="sett-card-title">Rest Timer</div>
+    <div class="s-row"><div class="s-lbl">Enable Rest Timer<span class="s-sub">Auto-countdown after each completed set</span></div>
+      <label class="tog"><input type="checkbox" ${rt.enabled?'checked':''} onchange="setRestTimerEnabled(this.checked)"><span class="tog-track"></span></label>
+    </div>
+    <div class="s-row${rt.enabled?'':' sett-row-disabled'}" style="flex-direction:column;align-items:flex-start;gap:10px;">
+      <div class="s-lbl">Rest Duration<span class="s-sub">How long to rest between sets</span></div>
+      <div class="inc-pills" style="flex-wrap:wrap;">${durOpts}</div>
+    </div>
   </div>`;
 }
-function toggleAcc(id){openAcc[id]=!openAcc[id];renderSettings();}
+function renderDataTab(){
+  const linked=!!(gistCfg.pat&&gistCfg.gistId);
+  return`<div class="sett-card">
+    <div class="sett-card-title">GitHub Gist Sync ${linked?'<span style="color:var(--up);font-size:10px;">● Connected</span>':''}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5;">${linked?`Syncing to <code style="background:var(--surface3);padding:1px 5px;border-radius:3px;">${gistCfg.gistId.slice(0,12)}…</code>`:'Connect a GitHub Gist to sync across devices.'}</div>
+    <div class="gist-field" style="margin-bottom:10px;">
+      <label>Personal Access Token</label>
+      <input class="gist-inp" type="password" id="s-pat" placeholder="ghp_xxxxxxxxxxxx" value="${gistCfg.pat||''}" oninput="gistCfg.pat=this.value.trim();lsSet('fj_gist_cfg',gistCfg);">
+      <div class="gist-hint">GitHub → Settings → Developer settings → PAT (classic) — needs only <code>gist</code> scope</div>
+    </div>
+    <div class="gist-field" style="margin-bottom:10px;">
+      <label>Gist ID <span style="font-weight:400;color:var(--text3);">(blank = create new on next push)</span></label>
+      <input class="gist-inp" type="text" id="s-gid" placeholder="Leave blank to auto-create" value="${gistCfg.gistId||''}" oninput="gistCfg.gistId=this.value.trim();lsSet('fj_gist_cfg',gistCfg);">
+    </div>
+    <div id="s-gist-msg" style="margin-bottom:8px;"></div>
+    <div class="gist-btns">
+      <button class="gist-btn primary" onclick="settGistPush()">⬆ Push Now</button>
+      <button class="gist-btn" onclick="settGistPull()">⬇ Pull / Restore</button>
+    </div>
+  </div>
+  <div class="sett-card">
+    <div class="sett-card-title">Backup &amp; Import</div>
+    ${renderDataManagement()}
+  </div>`;
+}
 function renderDataManagement(){
   return`<div class="data-btns">
     <button class="data-btn" onclick="exportData()">
@@ -3541,7 +3792,7 @@ async function settGistPush(){
   if(!gistCfg.pat){setSettMsg('Enter your PAT first','err');return;}
   setSettMsg('Pushing…','info');setSyncStatus('syncing');
   try{const d=await gistPush();const idInp=document.getElementById('s-gid');if(idInp)idInp.value=gistCfg.gistId;setSettMsg(`✅ Pushed! <a href="${d.html_url}" target="_blank" style="color:var(--accent);">View Gist ↗</a>`,'ok');setSyncStatus('synced');toast('Synced ✓');}
-  catch(err){setSettMsg(`❌ ${err.message}`,'err');setSyncStatus('error');}
+  catch(err){setSettMsg(`❌ ${formatSyncError(err)}`,'err');setSyncStatus('error');}
 }
 async function settGistPull(){
   const pat=document.getElementById('s-pat')?.value.trim();const gid=document.getElementById('s-gid')?.value.trim();
@@ -3549,7 +3800,7 @@ async function settGistPull(){
   if(!gistCfg.pat||!gistCfg.gistId){setSettMsg('Need both PAT and Gist ID','err');return;}
   setSettMsg('Pulling…','info');
   try{const data=await gistPull();applyPayload(data);setSettMsg(`✅ Restored ${sessions.length} sessions`,'ok');toast('Restored ✓');setSyncStatus('synced');renderHistory();}
-  catch(err){setSettMsg(`❌ ${err.message}`,'err');}
+  catch(err){setSettMsg(`❌ ${formatSyncError(err)}`,'err');}
 }
 function setSettMsg(msg,type){const el=document.getElementById('s-gist-msg');if(el){el.className='gist-msg '+type;el.innerHTML=msg;}}
 
