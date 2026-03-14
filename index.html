@@ -60,7 +60,7 @@ body.theme-light{
 body{
   background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
   min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  padding-bottom:72px;overflow-x:hidden;
+  padding-bottom:72px;overflow-x:clip;
   transition:background .3s,color .3s;
 }
 
@@ -1344,10 +1344,10 @@ function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
 function machById(id){return machines.find(m=>m.id===id);}
 
-function toast(msg){
+function toast(msg,dur){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  setTimeout(()=>t.classList.remove('show'),dur||2500);
 }
 function armReset(key,fn,render){
   if(armed[key]){
@@ -1895,10 +1895,12 @@ async function saveWorkout(){
   }
   // Auto-populate calories if left blank (requires body weight in profile)
   let caloriesEst=false;
-  if(!active.calories&&cfg.profile?.weight){
-    const dMin=parseDurationMin(active.duration);
-    const est=estimateCalories(active.exercises,dMin,active.effort,cfg.profile);
-    if(est){active.calories=est;caloriesEst=true;}
+  if(!active.calories){
+    if(cfg.profile?.weight){
+      const dMin=parseDurationMin(active.duration);
+      const est=estimateCalories(active.exercises,dMin,active.effort,cfg.profile);
+      if(est){active.calories=est;caloriesEst=true;}
+    }
   }
   const session={
     id:Date.now(),date:active.date,
@@ -1938,7 +1940,13 @@ async function saveWorkout(){
   renderPending();
   document.getElementById('start-btn').style.display='none';
   switchTab('history');
-  toast('Workout saved! 💪');
+  if(caloriesEst){
+    toast('Workout saved! 💪  🔥'+session.calories+' cal estimated');
+  } else if(!session.calories&&!cfg.profile?.weight){
+    toast('Workout saved! 💪  — Add body weight in Settings → Profile for calorie estimates',5000);
+  } else {
+    toast('Workout saved! 💪');
+  }
   // Auto-push to Gist
   if(gistCfg.pat){
     setSyncStatus('syncing');
