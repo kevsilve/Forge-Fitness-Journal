@@ -64,6 +64,92 @@ body{
   transition:background .3s,color .3s;
 }
 
+/* ════════════════════════
+   GAMIFICATION
+════════════════════════ */
+/* Header Level Badge */
+.hdr-level{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);gap:2px;transition:border-color .2s,background .2s;min-width:54px;}
+.hdr-level:hover{border-color:var(--accent);background:var(--accent-dim);}
+.hdr-level-tier{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-weight:700;}
+.hdr-level-num{font-family:'Black Ops One',sans-serif;font-size:15px;color:var(--accent);line-height:1;}
+.hdr-level-bar{width:100%;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.hdr-level-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;}
+/* Profile Modal */
+.profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.profile-sheet{width:100%;max-width:580px;background:var(--bg);border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;animation:slideUp .22s ease;}
+.profile-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;}
+.profile-hdr-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--accent);}
+.profile-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border3);background:transparent;font-size:20px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.profile-close:hover{border-color:var(--accent);color:var(--accent);}
+.profile-body{padding:16px 16px 40px;}
+/* Archetype Card */
+.archetype-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.archetype-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:var(--accent-glow);filter:blur(50px);pointer-events:none;}
+.archetype-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.archetype-icon{font-size:30px;line-height:1;flex-shrink:0;}
+.archetype-info{flex:1;margin-left:12px;}
+.archetype-name{font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:2px;color:var(--text);}
+.archetype-tagline{font-size:11px;color:var(--text2);margin-top:3px;font-style:italic;line-height:1.4;}
+.archetype-level{text-align:right;flex-shrink:0;}
+.archetype-lv-num{font-family:'Black Ops One',sans-serif;font-size:26px;color:var(--accent);line-height:1;}
+.archetype-lv-tier{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
+.archetype-xp{font-size:10px;color:var(--text3);margin-top:3px;}
+.xp-bar{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s ease;}
+.xp-meta{font-size:9px;color:var(--text3);text-align:right;margin-top:3px;margin-bottom:10px;letter-spacing:.5px;}
+/* Sub-stats */
+.substats{display:flex;flex-direction:column;gap:7px;}
+.substat-row{display:flex;align-items:center;gap:8px;}
+.substat-lbl{font-size:9px;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:var(--text3);width:32px;flex-shrink:0;}
+.substat-bar{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
+.substat-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .6s ease;}
+.substat-val{font-size:10px;font-weight:700;color:var(--text2);width:24px;text-align:right;flex-shrink:0;}
+/* Section Title */
+.gamif-section-title{font-size:9px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+/* Badge Grid */
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:border-color .15s,background .15s;text-align:center;min-height:74px;justify-content:center;}
+.badge-item.earned{border-color:var(--accent);background:var(--accent-dim);}
+.badge-item.hidden-badge{opacity:.35;}
+.badge-icon{font-size:22px;line-height:1;}
+.badge-name{font-size:8px;letter-spacing:.5px;font-weight:700;text-transform:uppercase;color:var(--text2);line-height:1.2;}
+.badge-item.earned .badge-name{color:var(--accent);}
+.badge-tier-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.tier-bronze{background:#cd7f32;}.tier-silver{background:#94a3b8;}.tier-gold{background:#f59e0b;}.tier-platinum{background:linear-gradient(135deg,#a5b4fc,#60a5fa);}
+/* Calling Card */
+.calling-card-section{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.card-preview{border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#181010 100%);border:1px solid #2a2a2a;padding:18px;margin-bottom:12px;position:relative;}
+.card-accent-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.card-top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.card-archetype-name{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;color:#fff;}
+.card-archetype-tag{font-size:10px;color:#666;margin-top:2px;}
+.card-level-badge{background:var(--accent);color:#fff;font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1px;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+.card-substats-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.card-stat-row{display:flex;align-items:center;gap:6px;}
+.card-stat-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:#666;width:28px;}
+.card-stat-bar{flex:1;height:5px;background:#222;border-radius:3px;overflow:hidden;}
+.card-stat-fill{height:100%;border-radius:3px;}
+.card-stat-val{font-size:9px;color:#666;width:20px;text-align:right;}
+.card-badges-row{display:flex;gap:8px;margin-bottom:12px;min-height:28px;align-items:center;}
+.card-badge-icon{font-size:20px;}
+.card-footer{border-top:1px solid #222;padding-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;}
+.card-footer-stat{text-align:center;}
+.card-footer-val{font-family:'Black Ops One',sans-serif;font-size:13px;color:#eee;}
+.card-footer-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:2px;}
+.card-export-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:opacity .15s;}
+.card-export-btn:active{opacity:.8;}
+/* Level-up Modal */
+.levelup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:700;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.levelup-modal{background:var(--surface);border:1.5px solid var(--accent);border-radius:16px;padding:32px 24px;text-align:center;max-width:300px;width:88%;animation:levelupPop .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 60px var(--accent-glow);}
+@keyframes levelupPop{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}
+.levelup-icon{font-size:44px;margin-bottom:6px;}
+.levelup-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.levelup-level{font-family:'Black Ops One',sans-serif;font-size:52px;color:var(--accent);line-height:1;text-shadow:0 0 30px var(--accent-glow);}
+.levelup-tier{font-family:'Black Ops One',sans-serif;font-size:14px;color:var(--text2);letter-spacing:3px;margin-top:4px;margin-bottom:12px;}
+.levelup-desc{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.levelup-close{background:var(--accent);color:#fff;border:none;padding:12px 32px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;border-radius:6px;transition:opacity .15s;}
+.levelup-close:active{opacity:.8;}
+
 /* ── HEADER ── */
 .hdr{
   width:100%;background:var(--surface);border-bottom:1px solid var(--border);
@@ -1062,10 +1148,17 @@ body{
     <div class="hdr-title">FORGE</div>
     <div class="hdr-sub">Workout Journal</div>
   </div>
-  <button class="sync-btn" id="sync-btn" onclick="manualSync()">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-    <span id="sync-lbl">Sync</span>
-  </button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="hdr-level" id="hdr-level" onclick="openProfileModal()" title="Player Card">
+      <span class="hdr-level-tier">RECRUIT</span>
+      <span class="hdr-level-num">LV 1</span>
+      <div class="hdr-level-bar"><div class="hdr-level-fill" style="width:0%"></div></div>
+    </div>
+    <button class="sync-btn" id="sync-btn" onclick="manualSync()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      <span id="sync-lbl">Sync</span>
+    </button>
+  </div>
 </div>
 
 <div class="view active" id="view-generate">
@@ -1339,6 +1432,9 @@ function launchApp(){
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   updateSyncUI();
   startAutoSync();
+  // Initialize gamification — migrate existing users, then render header badge
+  migrateGamification();
+  renderHeaderLevel();
 }
 window.addEventListener('resize',setHdrH);
 
@@ -2208,6 +2304,9 @@ async function saveWorkout(){
     const now=stats.prs[k];
     if(now&&(!was||now.weight>was.weight)){newPRs.push({name:ex.name,weight:now.weight,prev:was?was.weight:0});}
   });
+
+  // Process gamification (XP + badges) — must happen after stats are updated
+  processGamification(session,newPRs);
 
   active=null;pending=null;
   lsSet('fj_active_workout',null);
@@ -3805,6 +3904,427 @@ async function settGistPull(){
   catch(err){setSettMsg(`❌ ${formatSyncError(err)}`,'err');}
 }
 function setSettMsg(msg,type){const el=document.getElementById('s-gist-msg');if(el){el.className='gist-msg '+type;el.innerHTML=msg;}}
+
+/* ═══════════════════════════════════════════
+   GAMIFICATION
+═══════════════════════════════════════════ */
+const DEF_GAMIFICATION={xp:0,level:1,earnedBadges:[],unlockedItems:[],activeTitle:'',activeBadge:'',activeBackground:'default',lastProcessedSession:0};
+let gamification=ld('fj_gamification',DEF_GAMIFICATION);
+if(!gamification.earnedBadges)gamification.earnedBadges=[];
+if(!gamification.unlockedItems)gamification.unlockedItems=[];
+
+const LEVEL_THRESHOLDS=(()=>{
+  const t=[0];
+  for(let i=0;i<4;i++)t.push(t[t.length-1]+120);   // Recruit: Lv 2–5
+  for(let i=0;i<10;i++)t.push(t[t.length-1]+240);  // Iron:    Lv 6–15
+  for(let i=0;i<15;i++)t.push(t[t.length-1]+600);  // Steel:   Lv 16–30
+  for(let i=0;i<15;i++)t.push(t[t.length-1]+1200); // Forge:   Lv 31–45
+  for(let i=0;i<5;i++)t.push(t[t.length-1]+3000);  // Legend:  Lv 46–50
+  return t;
+})();
+
+function xpToLevel(xp){
+  let lv=1;
+  for(let i=1;i<LEVEL_THRESHOLDS.length;i++){if(xp>=LEVEL_THRESHOLDS[i])lv=i+1;else break;}
+  return Math.min(lv,50);
+}
+function getLevelProgress(xp,level){
+  const idx=level-1;
+  const curr=LEVEL_THRESHOLDS[idx]||0;
+  const next=LEVEL_THRESHOLDS[idx+1];
+  if(!next)return{pct:100,xpInLevel:0,xpNeeded:0};
+  const inLevel=xp-curr;const needed=next-curr;
+  return{pct:Math.round(inLevel/needed*100),inLevel,needed};
+}
+function getTier(level){
+  if(level<=5)return{name:'RECRUIT',idx:0};
+  if(level<=15)return{name:'IRON',idx:1};
+  if(level<=30)return{name:'STEEL',idx:2};
+  if(level<=45)return{name:'FORGE',idx:3};
+  return{name:'LEGEND',idx:4};
+}
+
+const ARCHETYPES={
+  iron_titan:{name:'Iron Titan',icon:'⚔️',tagline:'You lift heavy and push hard. PRs are your currency.'},
+  volume_engine:{name:'Volume Engine',icon:'🔩',tagline:'You outwork everyone. Volume is your superpower.'},
+  cardio_ghost:{name:'Cardio Ghost',icon:'💨',tagline:"You're built for distance. Endurance is your edge."},
+  forge_athlete:{name:'Forge Athlete',icon:'🔥',tagline:'You do it all. No weakness, no skipped days.'},
+};
+
+const BADGES=[
+  {id:'first_forge',name:'First Forge',icon:'🔨',tier:'bronze',desc:'Log your first session',hidden:false},
+  {id:'week_warrior',name:'Week Warrior',icon:'📅',tier:'bronze',desc:'7-day streak',hidden:false},
+  {id:'pr_breaker',name:'PR Breaker',icon:'💥',tier:'bronze',desc:'Set your first personal record',hidden:false},
+  {id:'iron_mind',name:'Iron Mind',icon:'🧠',tier:'silver',desc:'30-day streak',hidden:false},
+  {id:'centurion',name:'Centurion',icon:'💯',tier:'silver',desc:'100 sessions logged',hidden:false},
+  {id:'pr_machine',name:'PR Machine',icon:'🏆',tier:'silver',desc:'Set 25 total PRs',hidden:false},
+  {id:'max_out',name:'Max Out',icon:'🔴',tier:'silver',desc:'10 Max-effort sessions',hidden:false},
+  {id:'volume_freak',name:'Volume Freak',icon:'📦',tier:'gold',desc:'50,000 total reps logged',hidden:false},
+  {id:'forge_elite',name:'Forge Elite',icon:'⚡',tier:'gold',desc:'Reach Level 30',hidden:false},
+  {id:'savage_mode',name:'Savage Mode',icon:'💀',tier:'gold',desc:'Max effort + 3 PRs in one session',hidden:false},
+  {id:'unstoppable',name:'Unstoppable',icon:'🌊',tier:'platinum',desc:'90-day streak',hidden:false},
+  {id:'living_legend',name:'Living Legend',icon:'👑',tier:'platinum',desc:'Reach Level 50',hidden:false},
+  {id:'long_haul',name:'Long Haul',icon:'⏳',tier:'silver',desc:'Session over 2 hours',hidden:true},
+  {id:'night_iron',name:'Night Iron',icon:'🌙',tier:'gold',desc:'Log a session midnight–4am',hidden:true},
+  {id:'mirror_match',name:'Mirror Match',icon:'🪞',tier:'bronze',desc:'Log the exact same workout as a previous session',hidden:true},
+];
+
+function calcBuild(){
+  if(!stats||stats.total<3)return null;
+  // PWR: top PR vs body weight
+  let pwr=0;
+  const prVals=Object.values(stats.prs||{}).map(p=>p.weight).filter(w=>w>0);
+  if(prVals.length>0){
+    const topPR=Math.max(...prVals);
+    const bwLbs=cfg.profile?.weightUnit==='kg'?(parseFloat(cfg.profile?.weight)||68)*2.20462:(parseFloat(cfg.profile?.weight)||150);
+    pwr=Math.min(100,Math.round((topPR/bwLbs)*35));
+  }
+  // VOL: total lifetime reps (log scale)
+  const totalReps=Object.values(stats.totalReps||{}).reduce((a,b)=>a+b,0);
+  const vol=Math.min(100,Math.max(0,Math.round((Math.log10(Math.max(10,totalReps))-1)*20)));
+  // END: cardio ratio + avg session duration
+  const cardioSess=sessions.filter(s=>s.cardio&&s.cardio.machine).length;
+  const totalDur=sessions.reduce((a,s)=>a+parseDurationMin(s.duration||''),0);
+  const avgDur=sessions.length>0?totalDur/sessions.length:0;
+  const end=Math.min(100,Math.round(Math.min(50,cardioSess*0.6)+Math.min(50,avgDur*0.8)));
+  // GRN: avg effort × total sessions
+  const effortSess=sessions.filter(s=>s.effort);
+  const avgEffort=effortSess.length>0?effortSess.reduce((a,s)=>a+s.effort,0)/effortSess.length:2;
+  const grn=Math.min(100,Math.round((avgEffort/4)*50+Math.min(50,stats.total*0.5)));
+  // CNS: streak + sessions per week
+  const streaks=computeStreaks();
+  const msRange=sessions.length>1?Math.max(1,Math.ceil((new Date(sessions[0].date)-new Date(sessions[sessions.length-1].date))/(7*24*60*60*1000))):1;
+  const freq=sessions.length/msRange;
+  const cns=Math.min(100,Math.round(Math.min(50,freq*12)+Math.min(50,streaks.longest*0.55)));
+  const subStats={pwr,vol,end,grn,cns};
+  // Archetype: cardio ghost if heavy cardio, iron titan if high PRs, volume engine if high reps, otherwise forge athlete
+  const cardioRatio=cardioSess/Math.max(1,sessions.length);
+  let archetype;
+  if(cardioRatio>0.4&&end>35)archetype='cardio_ghost';
+  else if(pwr>vol&&pwr>end&&pwr>=25)archetype='iron_titan';
+  else if(vol>=pwr&&vol>=end&&vol>=30)archetype='volume_engine';
+  else archetype='forge_athlete';
+  return{archetype,subStats};
+}
+
+function checkBadges(session,newPRs){
+  const newB=[];
+  const earned=gamification.earnedBadges||[];
+  function earn(id){if(!earned.includes(id)&&!newB.includes(id))newB.push(id);}
+  if(stats.total>=1)earn('first_forge');
+  if(newPRs&&newPRs.length>0)earn('pr_breaker');
+  const streaks=computeStreaks();
+  if(streaks.current>=7)earn('week_warrior');
+  if(streaks.current>=30)earn('iron_mind');
+  if(streaks.current>=90)earn('unstoppable');
+  if(stats.total>=100)earn('centurion');
+  if(Object.keys(stats.prs||{}).length>=25)earn('pr_machine');
+  const maxCount=sessions.filter(s=>s.effort===4).length;
+  if(maxCount>=10)earn('max_out');
+  const totalReps=Object.values(stats.totalReps||{}).reduce((a,b)=>a+b,0);
+  if(totalReps>=50000)earn('volume_freak');
+  if((gamification.level||1)>=30)earn('forge_elite');
+  if(session.effort===4&&newPRs&&newPRs.length>=3)earn('savage_mode');
+  if((gamification.level||1)>=50)earn('living_legend');
+  // Hidden badges
+  const durMin=parseDurationMin(session.duration||'');
+  if(durMin>=120)earn('long_haul');
+  if(session.savedAt){const h=new Date(session.savedAt).getHours();if(h>=0&&h<4)earn('night_iron');}
+  if(sessions.length>=2){
+    const cur=new Set(session.exercises.map(e=>e.name));
+    const match=sessions.find(s=>s.id!==session.id&&s.exercises.length===session.exercises.length&&s.exercises.every(e=>cur.has(e.name)));
+    if(match)earn('mirror_match');
+  }
+  return newB;
+}
+
+function processGamification(session,newPRs){
+  if(!gamification)gamification=dc(DEF_GAMIFICATION);
+  if(gamification.lastProcessedSession===session.id)return;
+  gamification.lastProcessedSession=session.id;
+  // XP
+  let xp=50;
+  const mults=[0,1.0,1.25,1.5,2.0];
+  xp=Math.floor(xp*(mults[session.effort||1]||1.0));
+  xp+=((newPRs&&newPRs.length)||0)*100;
+  const streaks=computeStreaks();
+  if(streaks.current>=30)xp+=250;
+  else if(streaks.current>=7)xp+=75;
+  if(parseDurationMin(session.duration||'')>=90)xp+=50;
+  // First session of the week bonus
+  const sDate=new Date((session.date||todayISO())+'T12:00:00');
+  const weekStart=new Date(sDate);weekStart.setDate(sDate.getDate()-sDate.getDay());weekStart.setHours(0,0,0,0);
+  const weekPrev=sessions.filter(s=>s.id!==session.id&&new Date(s.date+'T12:00:00')>=weekStart&&new Date(s.date+'T12:00:00')<sDate);
+  if(weekPrev.length===0)xp+=25;
+  const prevLevel=gamification.level||1;
+  gamification.xp=(gamification.xp||0)+xp;
+  gamification.level=xpToLevel(gamification.xp);
+  // Badges
+  const newBadges=checkBadges(session,newPRs);
+  newBadges.forEach(bid=>{if(!gamification.earnedBadges.includes(bid))gamification.earnedBadges.push(bid);});
+  sv('fj_gamification',gamification);
+  renderHeaderLevel();
+  // Notifications
+  if(gamification.level>prevLevel){setTimeout(()=>showLevelUpModal(gamification.level),1800);}
+  const delay=gamification.level>prevLevel?3500:1800;
+  newBadges.forEach((bid,i)=>{
+    const badge=BADGES.find(b=>b.id===bid);
+    if(badge)setTimeout(()=>showBadgeToast(badge),delay+i*1400);
+  });
+}
+
+function migrateGamification(){
+  // For existing users who have sessions but haven't run gamification yet
+  if(gamification.xp>0||!sessions.length)return;
+  let xp=0;
+  sessions.forEach(s=>{
+    const mults=[0,1.0,1.25,1.5,2.0];
+    xp+=Math.floor(50*(mults[s.effort||1]||1.0));
+    if(parseDurationMin(s.duration||'')>=90)xp+=50;
+  });
+  // Retroactive partial PR bonus (half rate — you didn't earn them in real-time)
+  xp+=Object.keys(stats.prs||{}).length*50;
+  // Streak milestone bonus
+  const streaks=computeStreaks();
+  if(streaks.longest>=90)xp+=3000;
+  else if(streaks.longest>=30)xp+=1000;
+  else if(streaks.longest>=7)xp+=250;
+  gamification.xp=xp;
+  gamification.level=xpToLevel(xp);
+  gamification.lastProcessedSession=sessions.length>0?sessions[0].id:-1;
+  // Grant retroactive badges based on current stats
+  const fakeSess={effort:sessions[0]?.effort||1,duration:sessions[0]?.duration||'60 min',savedAt:new Date().toISOString(),exercises:sessions[0]?.exercises||[]};
+  const allPRs=Object.values(stats.prs||{}).map(p=>({name:'',weight:p.weight,prev:0}));
+  const retroBadges=checkBadges(fakeSess,allPRs);
+  gamification.earnedBadges=[...new Set([...gamification.earnedBadges,...retroBadges])];
+  sv('fj_gamification',gamification);
+}
+
+function renderHeaderLevel(){
+  const el=document.getElementById('hdr-level');if(!el)return;
+  const lv=gamification.level||1;
+  const xp=gamification.xp||0;
+  const tier=getTier(lv);
+  const prog=getLevelProgress(xp,lv);
+  el.innerHTML=`<span class="hdr-level-tier">${tier.name}</span><span class="hdr-level-num">LV ${lv}</span><div class="hdr-level-bar"><div class="hdr-level-fill" style="width:${prog.pct}%"></div></div>`;
+}
+
+function openProfileModal(){
+  const root=document.getElementById('modal-root');
+  const build=calcBuild();
+  const lv=gamification.level||1;
+  const xp=gamification.xp||0;
+  const tier=getTier(lv);
+  const prog=getLevelProgress(xp,lv);
+  const archData=build?ARCHETYPES[build.archetype]:null;
+  const ss=build?build.subStats:{pwr:0,vol:0,end:0,grn:0,cns:0};
+  // Archetype card
+  let archetypeHtml='';
+  if(archData&&build){
+    archetypeHtml=`<div class="archetype-card">
+      <div class="archetype-top">
+        <span class="archetype-icon">${archData.icon}</span>
+        <div class="archetype-info">
+          <div class="archetype-name">${archData.name}</div>
+          <div class="archetype-tagline">${archData.tagline}</div>
+        </div>
+        <div class="archetype-level">
+          <div class="archetype-lv-num">LV ${lv}</div>
+          <div class="archetype-lv-tier">${tier.name}</div>
+          <div class="archetype-xp">${xp.toLocaleString()} XP</div>
+        </div>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" style="width:${prog.pct}%"></div></div>
+      <div class="xp-meta">${prog.inLevel} / ${prog.needed} XP to LV ${lv+1<51?lv+1:'MAX'}</div>
+      <div class="substats">
+        ${[['PWR',ss.pwr],['VOL',ss.vol],['END',ss.end],['GRN',ss.grn],['CNS',ss.cns]].map(([l,v])=>`<div class="substat-row"><span class="substat-lbl">${l}</span><div class="substat-bar"><div class="substat-fill" style="width:${v}%"></div></div><span class="substat-val">${v}</span></div>`).join('')}
+      </div>
+    </div>`;
+  } else {
+    archetypeHtml=`<div class="archetype-card" style="text-align:center;padding:24px 16px;">
+      <div style="font-size:32px;margin-bottom:10px">⚙️</div>
+      <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;color:var(--text2)">BUILD UNLOCKS AT 3 SESSIONS</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.5">Keep training — your archetype is taking shape</div>
+      <div class="xp-bar" style="margin-top:14px"><div class="xp-fill" style="width:${prog.pct}%"></div></div>
+      <div class="xp-meta">LV ${lv} · ${tier.name} · ${xp.toLocaleString()} XP · ${prog.inLevel}/${prog.needed} to next level</div>
+    </div>`;
+  }
+  // Badge grid
+  const earnedIds=gamification.earnedBadges||[];
+  const badgeHtml=BADGES.map(b=>{
+    const isEarned=earnedIds.includes(b.id);
+    const isHidden=b.hidden&&!isEarned;
+    return `<div class="badge-item${isEarned?' earned':''}${isHidden?' hidden-badge':''}" title="${isHidden?'Keep training to discover this':esc(b.desc)}">
+      <span class="badge-icon">${isHidden?'🔒':b.icon}</span>
+      <span class="badge-name">${isHidden?'???':esc(b.name)}</span>
+      <div class="badge-tier-dot tier-${b.tier}"></div>
+    </div>`;
+  }).join('');
+  // Calling card data
+  const prVals=Object.entries(stats.prs||{});
+  let topPR={name:'—',weight:0};
+  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight};}
+  const streaks=computeStreaks();
+  const cardArchIcon=archData?archData.icon:'❓';
+  const cardArchName=archData?archData.name:'Unknown';
+  const displayBadges=earnedIds.slice(-3).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean);
+  const cardStatColors={pwr:'#ef4444',vol:'#f59e0b',end:'#22c55e',grn:'#e8271f',cns:'#3b82f6'};
+  const cardStatsHtml=[['PWR',ss.pwr,cardStatColors.pwr],['VOL',ss.vol,cardStatColors.vol],['END',ss.end,cardStatColors.end],['GRN',ss.grn,cardStatColors.grn],['CNS',ss.cns,cardStatColors.cns]].map(([l,v,c])=>`<div class="card-stat-row"><span class="card-stat-lbl">${l}</span><div class="card-stat-bar"><div class="card-stat-fill" style="width:${v}%;background:${c}"></div></div><span class="card-stat-val">${v}</span></div>`).join('');
+  root.innerHTML=`<div class="profile-overlay" onclick="if(event.target===this)document.getElementById('modal-root').innerHTML=''">
+  <div class="profile-sheet" onclick="event.stopPropagation()">
+    <div class="profile-hdr">
+      <span class="profile-hdr-title">PLAYER CARD</span>
+      <button class="profile-close" onclick="document.getElementById('modal-root').innerHTML=''">×</button>
+    </div>
+    <div class="profile-body">
+      ${archetypeHtml}
+      <div class="gamif-section-title">ACCOLADES &nbsp;·&nbsp; ${earnedIds.length} / ${BADGES.length}</div>
+      <div class="badge-grid">${badgeHtml}</div>
+      <div class="gamif-section-title" style="margin-top:20px">CALLING CARD</div>
+      <div class="calling-card-section">
+        <div class="card-preview">
+          <div class="card-accent-bar"></div>
+          <div class="card-top-row">
+            <div>
+              <div class="card-archetype-name">${cardArchIcon} ${esc(cardArchName)}</div>
+              <div class="card-archetype-tag">${esc(tier.name)}</div>
+            </div>
+            <div class="card-level-badge">LV ${lv}</div>
+          </div>
+          <div class="card-substats-row">${cardStatsHtml}</div>
+          <div class="card-badges-row">${displayBadges.map(b=>`<span class="card-badge-icon" title="${esc(b.name)}">${b.icon}</span>`).join('')}${!displayBadges.length?`<span style="font-size:10px;color:#444">Earn badges to display here</span>`:''}</div>
+          <div class="card-footer">
+            <div class="card-footer-stat"><div class="card-footer-val">${stats.total||0}</div><div class="card-footer-lbl">Sessions</div></div>
+            <div class="card-footer-stat"><div class="card-footer-val">${streaks.longest}</div><div class="card-footer-lbl">Best Streak</div></div>
+            <div class="card-footer-stat"><div class="card-footer-val">${topPR.weight>0?topPR.weight+'lb':'—'}</div><div class="card-footer-lbl">Top PR</div></div>
+          </div>
+        </div>
+        <button class="card-export-btn" onclick="exportCallingCard()">⬇ EXPORT CARD AS PNG</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+function exportCallingCard(){
+  const build=calcBuild();
+  const archData=build?ARCHETYPES[build.archetype]:null;
+  const lv=gamification.level||1;
+  const xp=gamification.xp||0;
+  const tier=getTier(lv);
+  const ss=build?build.subStats:{pwr:0,vol:0,end:0,grn:0,cns:0};
+  const earnedIds=gamification.earnedBadges||[];
+  const displayBadges=earnedIds.slice(-3).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean);
+  const prVals=Object.entries(stats.prs||{});
+  let topPR={name:'—',weight:0};
+  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight};}
+  const streaks=computeStreaks();
+  const prog=getLevelProgress(xp,lv);
+  const W=360,H=520;
+  const canvas=document.createElement('canvas');
+  canvas.width=W*2;canvas.height=H*2;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(2,2);
+  // Background
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#1a1010');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Accent color from CSS variable
+  const accentColor=getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#e8271f';
+  // Top accent bar
+  const barGrad=ctx.createLinearGradient(0,0,W,0);barGrad.addColorStop(0,accentColor);barGrad.addColorStop(1,accentColor+'88');
+  ctx.fillStyle=barGrad;ctx.fillRect(0,0,W,4);
+  // Glow
+  const radGrad=ctx.createRadialGradient(W,0,0,W,0,200);radGrad.addColorStop(0,accentColor+'25');radGrad.addColorStop(1,'transparent');
+  ctx.fillStyle=radGrad;ctx.fillRect(0,0,W,H);
+  // Archetype name + tagline
+  ctx.font='bold 28px serif';ctx.fillStyle='#fff';ctx.fillText(archData?archData.icon:'❓',20,54);
+  ctx.font='bold 15px Arial';ctx.fillStyle='#fff';ctx.fillText((archData?archData.name:'UNKNOWN').toUpperCase(),58,48);
+  ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText(archData?archData.tagline:'Log 3+ sessions to discover your build',58,64);
+  // Level badge
+  ctx.fillStyle=accentColor;_rrect(ctx,W-70,16,58,26,5);ctx.fill();
+  ctx.font='bold 13px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('LV '+lv,W-41,34);ctx.textAlign='left';
+  // Tier + XP
+  ctx.font='bold 9px Arial';ctx.fillStyle='#555';ctx.fillText(tier.name+' TIER',20,90);
+  ctx.font='9px Arial';ctx.fillStyle='#444';ctx.textAlign='right';ctx.fillText(xp.toLocaleString()+' XP',W-20,90);ctx.textAlign='left';
+  // XP bar
+  ctx.fillStyle='#2a2a2a';_rrect(ctx,20,97,W-40,6,3);ctx.fill();
+  ctx.fillStyle=accentColor;_rrect(ctx,20,97,Math.max(6,(W-40)*prog.pct/100),6,3);ctx.fill();
+  // Stat bars
+  const statDefs=[['PWR',ss.pwr,'#ef4444'],['VOL',ss.vol,'#f59e0b'],['END',ss.end,'#22c55e'],['GRN',ss.grn,accentColor],['CNS',ss.cns,'#3b82f6']];
+  let sy=118;
+  statDefs.forEach(([lbl,val,clr])=>{
+    ctx.font='bold 8px Arial';ctx.fillStyle='#666';ctx.fillText(lbl,20,sy+7);
+    ctx.fillStyle='#2a2a2a';_rrect(ctx,54,sy,W-96,8,4);ctx.fill();
+    if(val>0){ctx.fillStyle=clr;_rrect(ctx,54,sy,(W-96)*val/100,8,4);ctx.fill();}
+    ctx.font='bold 9px Arial';ctx.fillStyle='#777';ctx.textAlign='right';ctx.fillText(String(val),W-20,sy+8);ctx.textAlign='left';
+    sy+=18;
+  });
+  // Divider
+  sy+=6;ctx.fillStyle='#222';ctx.fillRect(20,sy,W-40,1);sy+=14;
+  // Badge row
+  if(displayBadges.length>0){
+    ctx.font='22px serif';
+    displayBadges.forEach((b,i)=>{ctx.fillText(b.icon,20+i*38,sy+22);});
+    sy+=36;
+  } else {
+    ctx.font='10px Arial';ctx.fillStyle='#333';ctx.fillText('Earn accolades to show here',20,sy+14);sy+=22;
+  }
+  // Footer
+  sy+=8;ctx.fillStyle='#1e1e1e';ctx.fillRect(20,sy,W-40,1);sy+=14;
+  const footStats=[['SESSIONS',String(stats.total||0)],['BEST STREAK',String(streaks.longest)],['TOP PR',topPR.weight>0?topPR.weight+'lb':'—']];
+  const colW=(W-40)/3;
+  footStats.forEach(([label,val],i)=>{
+    const cx=20+i*colW+colW/2;
+    ctx.font='bold 14px Arial';ctx.fillStyle='#eee';ctx.textAlign='center';ctx.fillText(val,cx,sy+14);
+    ctx.font='7px Arial';ctx.fillStyle='#444';ctx.fillText(label,cx,sy+25);
+  });
+  ctx.textAlign='left';
+  // Watermark
+  ctx.font='bold 8px Arial';ctx.fillStyle='#2a2a2a';ctx.letterSpacing='3px';
+  ctx.fillText('FORGE FITNESS JOURNAL',20,H-12);
+  // Download
+  const a=document.createElement('a');a.download='forge-card.png';a.href=canvas.toDataURL('image/png');a.click();
+  toast('Card exported ✓');
+}
+function _rrect(ctx,x,y,w,h,r){
+  if(w<2*r)r=w/2;if(h<2*r)r=h/2;
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+}
+
+function showBadgeToast(badge){
+  const c={bronze:'#cd7f32',silver:'#94a3b8',gold:'#f59e0b',platinum:'#a5b4fc'}[badge.tier]||'var(--accent)';
+  toastHtml(`<span style="font-size:16px">${badge.icon}</span>&nbsp;<span style="color:${c};font-weight:700">${esc(badge.name)}</span>&nbsp;<span style="color:var(--text2);font-size:10px">Unlocked!</span>`,3500);
+}
+
+function showLevelUpModal(newLevel){
+  const tier=getTier(newLevel);
+  const div=document.createElement('div');
+  div.id='levelup-overlay';div.className='levelup-overlay';
+  div.innerHTML=`<div class="levelup-modal">
+    <div class="levelup-icon">⚡</div>
+    <div class="levelup-label">LEVEL UP</div>
+    <div class="levelup-level">${newLevel}</div>
+    <div class="levelup-tier">${tier.name}</div>
+    <div class="levelup-desc">${esc(_getLevelDesc(newLevel,tier))}</div>
+    <button class="levelup-close" onclick="document.getElementById('levelup-overlay').remove()">LET'S GO</button>
+  </div>`;
+  document.body.appendChild(div);
+}
+function _getLevelDesc(level,tier){
+  if(level===5)return"Recruit complete. You're no longer a beginner.";
+  if(level===6)return'Welcome to Iron. The real work begins here.';
+  if(level===15)return'Iron mastered. Steel awaits.';
+  if(level===16)return'Steel unlocked. You\'re building something real.';
+  if(level===30)return'Forge Elite badge earned. You\'re in rare company.';
+  if(level===31)return'Forge tier. You\'ve earned respect in this gym.';
+  if(level===46)return'LEGEND tier. You are what others aspire to be.';
+  if(level===50)return'Level 50. Living Legend. This is the peak.';
+  if(tier.name==='IRON')return'The grind is paying off. Keep building.';
+  if(tier.name==='STEEL')return'Steel-forged. This is consistency personified.';
+  if(tier.name==='FORGE')return'Elite level. Your build speaks for itself.';
+  if(tier.name==='LEGEND')return'A Living Legend in the making.';
+  return'Keep pushing. The gym remembers.';
+}
 
 // ═══════════════════════════════════════════
 // BOOT
