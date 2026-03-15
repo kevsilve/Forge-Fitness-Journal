@@ -45,6 +45,14 @@ body.theme-dark-green{
   --j-acc:#16a34a;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#edf7ee;
   --j-tnt2:#ddeedd;--j-card:#fff;
 }
+/* Dark themes: remap journal vars to dark equivalents everywhere EXCEPT the active log view */
+body.theme-dark-red #view-history,
+body.theme-dark-blue #view-history,
+body.theme-dark-green #view-history{
+  --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
+  --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
+  --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
+}
 body.theme-light{
   --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
   --border:#ddd9d3;--border2:#ccc8c2;--border3:#bbb6b0;
@@ -108,7 +116,8 @@ body{
 .gamif-section-title{font-size:9px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
 /* Badge Grid */
 .badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
-.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:border-color .15s,background .15s;text-align:center;min-height:74px;justify-content:center;}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:border-color .15s,background .15s;text-align:center;min-height:74px;justify-content:center;cursor:pointer;}
+.badge-item:active{transform:scale(.95);}
 .badge-item.earned{border-color:var(--accent);background:var(--accent-dim);}
 .badge-item.hidden-badge{opacity:.35;}
 .badge-icon{font-size:22px;line-height:1;}
@@ -116,6 +125,18 @@ body{
 .badge-item.earned .badge-name{color:var(--accent);}
 .badge-tier-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 .tier-bronze{background:#cd7f32;}.tier-silver{background:#94a3b8;}.tier-gold{background:#f59e0b;}.tier-platinum{background:linear-gradient(135deg,#a5b4fc,#60a5fa);}
+/* Badge detail sheet */
+.badge-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:650;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.badge-detail-sheet{width:100%;max-width:580px;background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px 40px;animation:slideUp .2s ease;text-align:center;}
+.badge-detail-icon{font-size:56px;margin-bottom:12px;display:block;}
+.badge-detail-name{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:2px;color:var(--text);margin-bottom:6px;}
+.badge-detail-tier{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+.badge-detail-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;padding:0 8px;}
+.badge-detail-status{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 20px;border-radius:20px;display:inline-block;}
+.badge-detail-status.earned{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);}
+.badge-detail-status.locked{background:var(--surface2);color:var(--text3);border:1px solid var(--border2);}
+.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:border-color .15s;}
+.badge-detail-close:hover{border-color:var(--border3);}
 /* Calling Card */
 .calling-card-section{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
 .card-preview{border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#181010 100%);border:1px solid #2a2a2a;padding:18px;margin-bottom:12px;position:relative;}
@@ -153,21 +174,24 @@ body{
 /* ── HEADER ── */
 .hdr{
   width:100%;background:var(--surface);border-bottom:1px solid var(--border);
-  padding:14px 16px 10px;
-  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px 8px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
   position:sticky;top:0;z-index:200;
 }
+.hdr-left{min-width:0;flex-shrink:1;overflow:hidden;}
+.hdr-right{flex-shrink:0;display:flex;align-items:center;gap:6px;}
 .hdr-title{
-  font-family:'Black Ops One',sans-serif;font-size:36px;letter-spacing:10px;
+  font-family:'Black Ops One',sans-serif;font-size:30px;letter-spacing:7px;
   color:var(--accent);line-height:1;
   text-shadow:0 0 30px var(--accent-glow);
+  white-space:nowrap;overflow:hidden;
 }
 .hdr-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--text3);margin-top:2px;}
 .sync-btn{
-  display:flex;align-items:center;gap:5px;padding:5px 10px;
+  display:flex;align-items:center;gap:5px;padding:5px 8px;
   background:var(--surface2);border:1px solid var(--border2);border-radius:4px;
   cursor:pointer;transition:all .2s;color:var(--text3);font-size:10px;font-weight:600;
-  font-family:'Inter',sans-serif;letter-spacing:.5px;
+  font-family:'Inter',sans-serif;letter-spacing:.5px;white-space:nowrap;
 }
 .sync-btn.synced{border-color:var(--up);color:var(--up);}
 .sync-btn.syncing{border-color:var(--accent);color:var(--accent);animation:pulse .8s infinite;}
@@ -803,11 +827,23 @@ body{
 .inc-pill{flex:1;padding:6px 4px;background:transparent;border:none;border-right:1px solid var(--border2);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
 .inc-pill:last-child{border-right:none;}
 .inc-pill.active{background:var(--accent-dim);color:var(--accent);}
-.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.theme-btn{padding:14px 10px;border:2px solid var(--border2);border-radius:6px;background:transparent;cursor:pointer;text-align:center;transition:all .2s;font-family:'Inter',sans-serif;}
-.theme-btn.active{border-color:var(--accent);}
-.theme-swatch{width:100%;height:6px;border-radius:3px;margin-bottom:8px;}
-.theme-name{font-size:11px;font-weight:600;color:var(--text);}
+.theme-grid{display:flex;flex-direction:column;gap:10px;}
+.theme-card{width:100%;border:2px solid var(--border2);border-radius:10px;background:transparent;cursor:pointer;text-align:left;transition:all .2s;font-family:'Inter',sans-serif;overflow:hidden;padding:0;}
+.theme-card.active{border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow);}
+.theme-card:active{transform:scale(.99);}
+.theme-card-preview{height:52px;position:relative;overflow:hidden;}
+.theme-card-bar{position:absolute;bottom:0;left:0;right:0;height:3px;}
+.theme-card-dots{position:absolute;top:10px;left:12px;display:flex;gap:5px;}
+.theme-card-dot{width:8px;height:8px;border-radius:50%;}
+.theme-card-title-mock{position:absolute;top:10px;left:36px;width:50px;height:8px;border-radius:4px;opacity:.7;}
+.theme-card-bars-mock{position:absolute;bottom:12px;left:12px;right:12px;display:flex;align-items:flex-end;gap:4px;}
+.theme-card-bar-mock{flex:1;border-radius:2px 2px 0 0;opacity:.5;}
+.theme-card-body{padding:10px 14px 12px;display:flex;justify-content:space-between;align-items:center;}
+.theme-card-name{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.5px;}
+.theme-card-desc{font-size:10px;color:var(--text3);margin-top:2px;}
+.theme-card-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.theme-card.active .theme-card-check{background:var(--accent);border-color:var(--accent);color:#fff;}
+.theme-note{font-size:10px;color:var(--text3);text-align:center;margin-top:14px;line-height:1.6;padding:0 4px;}
 .rst-btn{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 8px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;}
 .rst-btn:hover{border-color:var(--accent);color:var(--accent);}
 .rst-btn.armed{border-color:var(--accent);color:var(--accent);}
@@ -1144,11 +1180,11 @@ body{
 
 <!-- HEADER -->
 <div class="hdr">
-  <div>
+  <div class="hdr-left">
     <div class="hdr-title">FORGE</div>
     <div class="hdr-sub">Workout Journal</div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div class="hdr-right">
     <div class="hdr-level" id="hdr-level" onclick="openProfileModal()" title="Player Card">
       <span class="hdr-level-tier">RECRUIT</span>
       <span class="hdr-level-num">LV 1</span>
@@ -1180,7 +1216,7 @@ body{
 
 <div class="view" id="view-today"><div class="j-wrap" id="j-wrap"></div></div>
 <div class="view" id="view-history">
-  <div style="background:var(--j-bg);min-height:100vh;">
+  <div style="background:var(--j-bg);min-height:100vh;transition:background .3s;">
     <div id="hist-view-toggle"></div>
     <div id="week-section" style="display:none;"></div>
     <div id="cal-section" style="display:none;"></div>
@@ -3445,11 +3481,50 @@ function setProfileVal(key,val,noRender){
   if(!noRender)renderSettings();
 }
 function renderTheme(){
-  return`<div class="theme-grid">${THEMES.map(t=>`
-    <button class="theme-btn${theme===t.id?' active':''}" onclick="setTheme('${t.id}')">
-      <div class="theme-swatch" style="background:${t.swatch}"></div>
-      <div class="theme-name">${t.name}</div>
-    </button>`).join('')}</div>`;
+  const themeData={
+    'dark-red':{
+      bg:'#080808',surface:'#0f0f0f',accent:'#e8271f',accent2:'#ff4438',
+      text:'#ececec',text2:'#aaa',desc:'Deep black with a blood-red accent. High contrast, intense focus.'
+    },
+    'dark-blue':{
+      bg:'#06080f',surface:'#0c0f1a',accent:'#3b6fff',accent2:'#5580ff',
+      text:'#e8eeff',text2:'#8899cc',desc:'Midnight dark with an electric blue accent. Cold, sharp, precise.'
+    },
+    'dark-green':{
+      bg:'#060b07',surface:'#0a0f0b',accent:'#22c55e',accent2:'#34d972',
+      text:'#e2f0e4',text2:'#7aaa80',desc:'Forest dark with a neon green accent. Raw power, primal energy.'
+    },
+    'light':{
+      bg:'#f0eeeb',surface:'#faf9f7',accent:'#c8102e',accent2:'#e01530',
+      text:'#1a1a1a',text2:'#555',desc:'Clean parchment with a crimson accent. Minimal, distraction-free.'
+    }
+  };
+  const barHeights=[60,80,50,70,90,55];
+  const cards=THEMES.map(t=>{
+    const d=themeData[t.id]||{};
+    const isActive=theme===t.id;
+    const barsHtml=barHeights.map(h=>`<div class="theme-card-bar-mock" style="height:${h}%;background:${d.accent}"></div>`).join('');
+    return`<button class="theme-card${isActive?' active':''}" onclick="setTheme('${t.id}')">
+      <div class="theme-card-preview" style="background:${d.bg}">
+        <div class="theme-card-dots">
+          <div class="theme-card-dot" style="background:${d.accent}"></div>
+          <div class="theme-card-dot" style="background:${d.text2}"></div>
+          <div class="theme-card-dot" style="background:${d.surface}"></div>
+        </div>
+        <div class="theme-card-title-mock" style="background:${d.accent}"></div>
+        <div class="theme-card-bars-mock">${barsHtml}</div>
+        <div class="theme-card-bar" style="background:linear-gradient(90deg,${d.accent},${d.accent2})"></div>
+      </div>
+      <div class="theme-card-body">
+        <div>
+          <div class="theme-card-name">${t.name}</div>
+          <div class="theme-card-desc">${d.desc||''}</div>
+        </div>
+        <div class="theme-card-check">${isActive?'✓':''}</div>
+      </div>
+    </button>`;
+  }).join('');
+  return`<div class="theme-grid">${cards}</div><div class="theme-note">The Log tab uses a light journal style in all themes for readability during workouts.</div>`;
 }
 
 /* ═══════════════════════════════════════════
@@ -4169,7 +4244,7 @@ function openProfileModal(){
   const badgeHtml=BADGES.map(b=>{
     const isEarned=earnedIds.includes(b.id);
     const isHidden=b.hidden&&!isEarned;
-    return `<div class="badge-item${isEarned?' earned':''}${isHidden?' hidden-badge':''}" title="${isHidden?'Keep training to discover this':esc(b.desc)}">
+    return `<div class="badge-item${isEarned?' earned':''}${isHidden?' hidden-badge':''}" onclick="showBadgeDetail('${b.id}')">
       <span class="badge-icon">${isHidden?'🔒':b.icon}</span>
       <span class="badge-name">${isHidden?'???':esc(b.name)}</span>
       <div class="badge-tier-dot tier-${b.tier}"></div>
@@ -4309,6 +4384,29 @@ function _rrect(ctx,x,y,w,h,r){
 function showBadgeToast(badge){
   const c={bronze:'#cd7f32',silver:'#94a3b8',gold:'#f59e0b',platinum:'#a5b4fc'}[badge.tier]||'var(--accent)';
   toastHtml(`<span style="font-size:16px">${badge.icon}</span>&nbsp;<span style="color:${c};font-weight:700">${esc(badge.name)}</span>&nbsp;<span style="color:var(--text2);font-size:10px">Unlocked!</span>`,3500);
+}
+function showBadgeDetail(id){
+  const badge=BADGES.find(b=>b.id===id);if(!badge)return;
+  const isEarned=(gamification.earnedBadges||[]).includes(id);
+  const isHidden=badge.hidden&&!isEarned;
+  const tierColors={bronze:'#cd7f32',silver:'#94a3b8',gold:'#f59e0b',platinum:'#a5b4fc'};
+  const tierLabels={bronze:'Bronze',silver:'Silver',gold:'Gold',platinum:'Platinum'};
+  const tc=tierColors[badge.tier]||'var(--text3)';
+  const div=document.createElement('div');
+  div.className='badge-detail-overlay';
+  div.onclick=(e)=>{if(e.target===div)div.remove();};
+  div.innerHTML=`<div class="badge-detail-sheet" onclick="event.stopPropagation()">
+    <span class="badge-detail-icon">${isHidden?'🔒':badge.icon}</span>
+    <div class="badge-detail-name">${isHidden?'???':esc(badge.name)}</div>
+    <div class="badge-detail-tier">
+      <div class="badge-tier-dot tier-${badge.tier}"></div>
+      <span style="color:${tc}">${tierLabels[badge.tier]}</span>
+    </div>
+    <div class="badge-detail-desc">${isHidden?'Keep training — this one reveals itself when the time is right.':esc(badge.desc)}</div>
+    <div class="badge-detail-status ${isEarned?'earned':'locked'}">${isEarned?'✓ Unlocked':'Locked'}</div>
+    <button class="badge-detail-close" onclick="this.closest('.badge-detail-overlay').remove()">Close</button>
+  </div>`;
+  document.body.appendChild(div);
 }
 
 function showLevelUpModal(newLevel){
