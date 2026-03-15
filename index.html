@@ -12,7 +12,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ── THEME VARIABLES ── */
-body.theme-dark-red{
+body.base-dark{
   --bg:#080808;--surface:#0f0f0f;--surface2:#141414;--surface3:#1a1a1a;
   --border:#1e1e1e;--border2:#2a2a2a;--border3:#333;
   --text:#ececec;--text2:#aaa;--text3:#555;
@@ -20,89 +20,16 @@ body.theme-dark-red{
   --up:#22c55e;--dn:#ef4444;--eq:#64748b;
   --j-bg:#f7f6f4;--j-sur:#fff;--j-bor:#eae7e2;--j-bor2:#d8d4ce;
   --j-txt:#111;--j-txt2:#555;--j-mut:#999;
-  --j-acc:#c8102e;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0ede8;
+  --j-acc:#e8271f;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0ede8;
   --j-tnt2:#e8e4de;--j-card:#fff;
 }
-body.theme-dark-blue{
-  --bg:#06080f;--surface:#0c0f1a;--surface2:#111520;--surface3:#161b28;
-  --border:#1a2035;--border2:#222840;--border3:#2d3655;
-  --text:#e8eeff;--text2:#8899cc;--text3:#334466;
-  --accent:#3b6fff;--accent2:#5580ff;--accent-dim:rgba(59,111,255,0.1);--accent-glow:rgba(59,111,255,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#f5f6ff;--j-sur:#fff;--j-bor:#e0e4f5;--j-bor2:#c8cfee;
-  --j-txt:#111;--j-txt2:#445;--j-mut:#889;
-  --j-acc:#2952cc;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#eef0ff;
-  --j-tnt2:#e0e4f5;--j-card:#fff;
-}
-body.theme-dark-green{
-  --bg:#060b07;--surface:#0a0f0b;--surface2:#0f1510;--surface3:#141b15;
-  --border:#1a2a1b;--border2:#223324;--border3:#2d4430;
-  --text:#e2f0e4;--text2:#7aaa80;--text3:#2d4a30;
-  --accent:#22c55e;--accent2:#34d972;--accent-dim:rgba(34,197,94,0.1);--accent-glow:rgba(34,197,94,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#f5faf5;--j-sur:#fff;--j-bor:#ddeedd;--j-bor2:#c4ddc6;
-  --j-txt:#111;--j-txt2:#445544;--j-mut:#778877;
-  --j-acc:#16a34a;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#edf7ee;
-  --j-tnt2:#ddeedd;--j-card:#fff;
-}
-body.theme-dark-purple{
-  --bg:#08060f;--surface:#0f0c1a;--surface2:#141020;--surface3:#1a1528;
-  --border:#1e1a2e;--border2:#2a2440;--border3:#362f55;
-  --text:#ede8ff;--text2:#9988cc;--text3:#443366;
-  --accent:#8b5cf6;--accent2:#a07aff;--accent-dim:rgba(139,92,246,0.1);--accent-glow:rgba(139,92,246,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#f7f5ff;--j-sur:#fff;--j-bor:#e8e4f8;--j-bor2:#d4ccf0;
-  --j-txt:#111;--j-txt2:#554466;--j-mut:#998;
-  --j-acc:#7c3aed;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0eeff;
-  --j-tnt2:#e4dcff;--j-card:#fff;
-}
-body.theme-dark-orange{
-  --bg:#0f0700;--surface:#1a0e00;--surface2:#221400;--surface3:#2a1a00;
-  --border:#331f00;--border2:#442900;--border3:#5c3800;
-  --text:#fff0d9;--text2:#cc9955;--text3:#664422;
-  --accent:#f97316;--accent2:#fb923c;--accent-dim:rgba(249,115,22,0.1);--accent-glow:rgba(249,115,22,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#fffaf5;--j-sur:#fff;--j-bor:#f5e8d8;--j-bor2:#ead0b0;
-  --j-txt:#111;--j-txt2:#665544;--j-mut:#997755;
-  --j-acc:#ea6c0a;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#fff0e0;
-  --j-tnt2:#f5e4cc;--j-card:#fff;
-}
-body.theme-dark-teal{
-  --bg:#060f0e;--surface:#0a1917;--surface2:#0f2220;--surface3:#142b28;
-  --border:#1a3330;--border2:#224440;--border3:#2d5a55;
-  --text:#e0f7f5;--text2:#66aaa5;--text3:#224440;
-  --accent:#14b8a6;--accent2:#2dd4c0;--accent-dim:rgba(20,184,166,0.1);--accent-glow:rgba(20,184,166,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#f0fdfb;--j-sur:#fff;--j-bor:#ccf0ec;--j-bor2:#aae4de;
-  --j-txt:#111;--j-txt2:#336660;--j-mut:#668880;
-  --j-acc:#0d9488;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#e0f9f6;
-  --j-tnt2:#ccf0ec;--j-card:#fff;
-}
-body.theme-dark-gold{
-  --bg:#0a0800;--surface:#160f00;--surface2:#1e1500;--surface3:#261b00;
-  --border:#332200;--border2:#443000;--border3:#5c4400;
-  --text:#fff8e0;--text2:#ccaa44;--text3:#665500;
-  --accent:#eab308;--accent2:#facc15;--accent-dim:rgba(234,179,8,0.1);--accent-glow:rgba(234,179,8,0.25);
-  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
-  --j-bg:#fffde8;--j-sur:#fff;--j-bor:#f5edcc;--j-bor2:#e8d9a0;
-  --j-txt:#111;--j-txt2:#665500;--j-mut:#887700;
-  --j-acc:#c89b00;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#fff8d0;
-  --j-tnt2:#f5edcc;--j-card:#fff;
-}
-/* Dark themes: remap journal vars to dark equivalents for all views */
-body.theme-dark-red #view-today,body.theme-dark-red #view-history,
-body.theme-dark-blue #view-today,body.theme-dark-blue #view-history,
-body.theme-dark-green #view-today,body.theme-dark-green #view-history,
-body.theme-dark-purple #view-today,body.theme-dark-purple #view-history,
-body.theme-dark-orange #view-today,body.theme-dark-orange #view-history,
-body.theme-dark-teal #view-today,body.theme-dark-teal #view-history,
-body.theme-dark-gold #view-today,body.theme-dark-gold #view-history{
+body.base-dark #view-today,body.base-dark #view-history{
   --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
   --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
   --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
   --j-acc:var(--accent);
 }
-body.theme-light{
+body.base-light{
   --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
   --border:#ddd9d3;--border2:#ccc8c2;--border3:#bbb6b0;
   --text:#1a1a1a;--text2:#555;--text3:#aaa;
@@ -114,18 +41,6 @@ body.theme-light{
   --j-tnt2:#ddd9d3;--j-card:#faf9f7;
 }
 
-/* ── COMPACT DENSITY MODE ── */
-.density-compact .sett-card{padding:10px 12px;}
-.density-compact .s-row{padding:8px 0;}
-.density-compact .j-ex{padding:10px 12px;}
-.density-compact .ex-card{padding:10px 12px;}
-.density-compact .pr-row{padding:8px 0;}
-.density-compact .pr-group{margin-bottom:10px;}
-.density-compact .badge-item{padding:8px 4px;}
-.density-compact .j-wt-row{padding:8px 12px;}
-.density-compact .j-next-row{padding:8px 12px;}
-.density-compact .sett-card-title{margin-bottom:8px;padding-bottom:6px;}
-
 /* ── ACCENT PICKER UI ── */
 .accent-swatches{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0;}
 .accent-swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0;}
@@ -135,9 +50,13 @@ body.theme-light{
 .accent-hex-inp{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:6px 9px;border-radius:4px;width:100px;transition:border-color .2s;}
 .accent-hex-inp:focus{outline:none;border-color:var(--accent);}
 .accent-preview{width:32px;height:32px;border-radius:4px;border:1px solid var(--border2);flex-shrink:0;transition:background .2s;}
-.theme-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.theme-grid-2 .theme-card-preview{height:40px;}
-.theme-grid-2 .theme-card-body{padding:7px 10px 8px;}
+.base-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.base-btn{border-radius:10px;border:2px solid var(--border2);padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s;position:relative;}
+.base-btn.active{border-color:var(--accent);box-shadow:0 0 14px var(--accent-glow);}
+.base-btn-label{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;}
+.base-btn-dots{display:flex;gap:4px;margin-top:2px;}
+.base-btn-dot{width:8px;height:8px;border-radius:50%;}
+.base-btn-check{position:absolute;top:8px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;}
 
 body{
   background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
@@ -1426,7 +1345,7 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, displayDensity:'default', cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}};
+const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
   {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
@@ -1435,15 +1354,9 @@ const DEF_MACHINES = [
 ];
 const SCHEMES = ['3×10','3×12','4×10'];
 const DAYS_OF_WEEK = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const THEMES = [
-  {id:'dark-red',    name:'Dark Red'},
-  {id:'dark-blue',   name:'Dark Blue'},
-  {id:'dark-green',  name:'Dark Green'},
-  {id:'dark-purple', name:'Dark Purple'},
-  {id:'dark-orange', name:'Dark Orange'},
-  {id:'dark-teal',   name:'Dark Teal'},
-  {id:'dark-gold',   name:'Dark Gold'},
-  {id:'light',       name:'Minimal Light'},
+const THEME_BASES = [
+  {id:'dark',  label:'DARK',  bg:'#080808', text:'#ececec', dots:['#e8271f','#aaa','#0f0f0f']},
+  {id:'light', label:'LIGHT', bg:'#f0eeeb', text:'#1a1a1a', dots:['#c8102e','#555','#faf9f7']},
 ];
 const EFFORT_LABELS=['','Easy','Good','Hard','Max'];
 const EFFORT_COLORS=['','#16a34a','#ca8a04','#dc2626','#aaa'];
@@ -1470,7 +1383,6 @@ if(!cfg.restTimer) cfg.restTimer=dc(DEF_CFG.restTimer);
 if(cfg.streakMode==null){cfg.streakMode='weekly';cfg.streakGoal=Math.max(1,(cfg.workoutDays||[]).length)||3;}
 // Migrate: new customization fields
 if(cfg.accentColor===undefined) cfg.accentColor=null;
-if(!cfg.displayDensity) cfg.displayDensity='default';
 if(!cfg.cardPrefs) cfg.cardPrefs=dc(DEF_CFG.cardPrefs);
 if(cfg.cardPrefs.showCues===undefined) cfg.cardPrefs.showCues=true;
 if(cfg.cardPrefs.showLastSession===undefined) cfg.cardPrefs.showLastSession=true;
@@ -1481,7 +1393,13 @@ if(cfg.gamificationPrefs.showXPBar===undefined) cfg.gamificationPrefs.showXPBar=
 let machines = ld('fj_machines', DEF_MACHINES);
 let sessions = ld('fj_sessions', []);
 let stats    = ld('fj_stats',    {exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}});
-let theme    = ld('fj_theme',    'dark-red');
+let theme    = ld('fj_theme',    'dark');
+// Migrate legacy theme name strings → base system
+{const _lm={'dark-red':'dark','dark-blue':'dark','dark-green':'dark','dark-purple':'dark','dark-orange':'dark','dark-teal':'dark','dark-gold':'dark','light':'light'};
+const _la={'dark-red':'#e8271f','dark-blue':'#3b6fff','dark-green':'#22c55e','dark-purple':'#8b5cf6','dark-orange':'#f97316','dark-teal':'#14b8a6','dark-gold':'#eab308'};
+if(_lm[theme]!==undefined){if(!cfg.accentColor&&_la[theme])cfg.accentColor=_la[theme];theme=_lm[theme];sv('fj_theme',theme);sv('fj_cfg',cfg);}
+if(theme!=='dark'&&theme!=='light')theme='dark';}
+
 
 let pending  = null;
 let active   = null;
@@ -1510,9 +1428,7 @@ const openPicker = {};
    BODY CLASS & ACCENT UTILITIES
 ═══════════════════════════════════════════ */
 function applyBodyClasses(){
-  const classes=['theme-'+theme];
-  if(cfg.displayDensity==='compact') classes.push('density-compact');
-  document.body.className=classes.join(' ');
+  document.body.className='base-'+theme;
 }
 function hexToRgb(hex){
   const h=hex.replace('#','');
@@ -1531,17 +1447,16 @@ function lightenHex(hex,amount){
   return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
 }
 function applyCustomAccent(hex){
-  const el=document.getElementById('custom-accent-style')||(() => {
-    const s=document.createElement('style');
-    s.id='custom-accent-style';
-    document.head.appendChild(s);
-    return s;
-  })();
-  if(!hex){el.textContent='';return;}
+  const props=['--accent','--accent2','--accent-dim','--accent-glow','--j-acc'];
+  if(!hex){props.forEach(p=>document.body.style.removeProperty(p));return;}
   const accent2=lightenHex(hex,0.18);
   const accentDim=hexToRgba(hex,0.1);
   const accentGlow=hexToRgba(hex,0.25);
-  el.textContent=`body{--accent:${hex};--accent2:${accent2};--accent-dim:${accentDim};--accent-glow:${accentGlow};--j-acc:${hex};}`;
+  document.body.style.setProperty('--accent',hex);
+  document.body.style.setProperty('--accent2',accent2);
+  document.body.style.setProperty('--accent-dim',accentDim);
+  document.body.style.setProperty('--accent-glow',accentGlow);
+  document.body.style.setProperty('--j-acc',hex);
 }
 function fmtWt(n,noUnit){
   if(n==null||n==='') return '—';
@@ -1569,7 +1484,13 @@ function applyPayload(data){
   if(Array.isArray(data.groups)&&data.groups.length){groups=data.groups;lsSet('fj_groups',groups);}
   if(data.cfg&&typeof data.cfg==='object'){cfg=data.cfg;lsSet('fj_cfg',cfg);}
   if(Array.isArray(data.machines)){machines=data.machines;lsSet('fj_machines',machines);}
-  if(data.theme&&typeof data.theme==='string'){theme=data.theme;lsSet('fj_theme',theme);applyBodyClasses();if(cfg.accentColor)applyCustomAccent(cfg.accentColor);}
+  if(data.theme&&typeof data.theme==='string'){
+    const _lm2={'dark-red':'dark','dark-blue':'dark','dark-green':'dark','dark-purple':'dark','dark-orange':'dark','dark-teal':'dark','dark-gold':'dark','light':'light'};
+    const _la2={'dark-red':'#e8271f','dark-blue':'#3b6fff','dark-green':'#22c55e','dark-purple':'#8b5cf6','dark-orange':'#f97316','dark-teal':'#14b8a6','dark-gold':'#eab308'};
+    theme=_lm2[data.theme]||(_la2[data.theme]?'dark':data.theme);
+    if(_la2[data.theme]&&!cfg.accentColor)cfg.accentColor=_la2[data.theme];
+    lsSet('fj_theme',theme);applyBodyClasses();if(cfg.accentColor)applyCustomAccent(cfg.accentColor);
+  }
   if(data.gamification&&typeof data.gamification==='object'){
     // Merge conflict: keep higher XP (more progress wins), union badge arrays
     const incoming=data.gamification;
@@ -3662,9 +3583,8 @@ function adjStreakGoal(delta){
   sv('fj_cfg',cfg);autoSaveSettings();renderSettings();renderGenStreakChip();
 }
 function setIncrement(v){cfg.weightIncrement=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
-function setTheme(t){theme=t;sv('fj_theme',theme);cfg.accentColor=null;sv('fj_cfg',cfg);applyBodyClasses();applyCustomAccent(null);autoSaveSettings();renderSettings();}
+function setThemeBase(b){theme=b;sv('fj_theme',theme);applyBodyClasses();if(cfg.accentColor)applyCustomAccent(cfg.accentColor);else applyCustomAccent(null);renderSettings();}
 function setCustomAccent(hex){cfg.accentColor=hex||null;sv('fj_cfg',cfg);applyCustomAccent(cfg.accentColor);renderSettings();}
-function setDisplayDensity(v){cfg.displayDensity=v;sv('fj_cfg',cfg);applyBodyClasses();renderSettings();}
 function setCardPref(key,val){if(!cfg.cardPrefs)cfg.cardPrefs=dc(DEF_CFG.cardPrefs);cfg.cardPrefs[key]=val;sv('fj_cfg',cfg);renderSettings();}
 function setGamifPref(key,val){if(!cfg.gamificationPrefs)cfg.gamificationPrefs=dc(DEF_CFG.gamificationPrefs);cfg.gamificationPrefs[key]=val;sv('fj_cfg',cfg);renderHeaderLevel();renderSettings();}
 function resetAcc(id){
@@ -3674,7 +3594,7 @@ function resetAcc(id){
     if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
     if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.streakMode=DEF_CFG.streakMode;cfg.streakGoal=DEF_CFG.streakGoal;sv('fj_cfg',cfg);}
     if(id==='profile'){cfg.profile=dc(DEF_CFG.profile);sv('fj_cfg',cfg);}
-    if(id==='theme'){theme='dark-red';sv('fj_theme',theme);cfg.accentColor=null;sv('fj_cfg',cfg);applyBodyClasses();applyCustomAccent(null);}
+    if(id==='theme'){theme='dark';sv('fj_theme',theme);cfg.accentColor=null;sv('fj_cfg',cfg);applyBodyClasses();applyCustomAccent(null);}
     autoSaveSettings();
     toast('Reset complete');renderSettings();
   },renderSettings);
@@ -3742,7 +3662,7 @@ async function _doNuclearReset(){
   groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
   sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
   gamification=dc(DEF_GAMIFICATION);
-  theme='dark-red';
+  theme='dark';
   sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
   sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
   sv('fj_gamification',gamification);
@@ -3927,39 +3847,6 @@ function setProfileVal(key,val,noRender){
   if(!noRender)renderSettings();
 }
 function renderTheme(){
-  const themeData={
-    'dark-red':    {bg:'#080808',surface:'#0f0f0f',accent:'#e8271f',accent2:'#ff4438',text:'#ececec',text2:'#aaa'},
-    'dark-blue':   {bg:'#06080f',surface:'#0c0f1a',accent:'#3b6fff',accent2:'#5580ff',text:'#e8eeff',text2:'#8899cc'},
-    'dark-green':  {bg:'#060b07',surface:'#0a0f0b',accent:'#22c55e',accent2:'#34d972',text:'#e2f0e4',text2:'#7aaa80'},
-    'dark-purple': {bg:'#08060f',surface:'#0f0c1a',accent:'#8b5cf6',accent2:'#a07aff',text:'#ede8ff',text2:'#9988cc'},
-    'dark-orange': {bg:'#0f0700',surface:'#1a0e00',accent:'#f97316',accent2:'#fb923c',text:'#fff0d9',text2:'#cc9955'},
-    'dark-teal':   {bg:'#060f0e',surface:'#0a1917',accent:'#14b8a6',accent2:'#2dd4c0',text:'#e0f7f5',text2:'#66aaa5'},
-    'dark-gold':   {bg:'#0a0800',surface:'#160f00',accent:'#eab308',accent2:'#facc15',text:'#fff8e0',text2:'#ccaa44'},
-    'light':       {bg:'#f0eeeb',surface:'#faf9f7',accent:'#c8102e',accent2:'#e01530',text:'#1a1a1a',text2:'#555'},
-  };
-  const barHeights=[60,80,50,70,90,55];
-  const cards=THEMES.map(t=>{
-    const d=themeData[t.id]||{};
-    const isActive=theme===t.id&&!cfg.accentColor;
-    const barsHtml=barHeights.map(h=>`<div class="theme-card-bar-mock" style="height:${h}%;background:${d.accent}"></div>`).join('');
-    return`<button class="theme-card${isActive?' active':''}" onclick="setTheme('${t.id}')">
-      <div class="theme-card-preview" style="background:${d.bg}">
-        <div class="theme-card-dots">
-          <div class="theme-card-dot" style="background:${d.accent}"></div>
-          <div class="theme-card-dot" style="background:${d.text2}"></div>
-          <div class="theme-card-dot" style="background:${d.surface}"></div>
-        </div>
-        <div class="theme-card-title-mock" style="background:${d.accent}"></div>
-        <div class="theme-card-bars-mock">${barsHtml}</div>
-        <div class="theme-card-bar" style="background:linear-gradient(90deg,${d.accent},${d.accent2})"></div>
-      </div>
-      <div class="theme-card-body">
-        <div class="theme-card-name">${t.name}</div>
-        <div class="theme-card-check">${isActive?'✓':''}</div>
-      </div>
-    </button>`;
-  }).join('');
-
   const ACCENT_PRESETS=[
     {hex:'#e8271f',name:'Red'},
     {hex:'#f97316',name:'Orange'},
@@ -3975,6 +3862,18 @@ function renderTheme(){
     {hex:'#e2e8f0',name:'Silver'},
   ];
   const curAccent=cfg.accentColor||null;
+  const activeAccent=curAccent||getComputedStyle(document.body).getPropertyValue('--accent').trim();
+
+  const baseBtns=THEME_BASES.map(b=>{
+    const isActive=theme===b.id;
+    const dotsHtml=b.dots.map(c=>`<div class="base-btn-dot" style="background:${c}"></div>`).join('');
+    return`<button class="base-btn${isActive?' active':''}" onclick="setThemeBase('${b.id}')" style="background:${b.bg};">
+      <div class="base-btn-label" style="color:${b.text}">${b.label}</div>
+      <div class="base-btn-dots">${dotsHtml}</div>
+      ${isActive?`<div class="base-btn-check">✓</div>`:''}
+    </button>`;
+  }).join('');
+
   const swatches=ACCENT_PRESETS.map(a=>{
     const isActive=curAccent&&curAccent.toLowerCase()===a.hex.toLowerCase();
     return`<button class="accent-swatch${isActive?' active':''}" style="background:${a.hex}" title="${a.name}" onclick="setCustomAccent('${a.hex}')"></button>`;
@@ -3982,13 +3881,11 @@ function renderTheme(){
   const hexVal=curAccent||'';
   const previewBg=curAccent||'var(--accent)';
 
-  const density=cfg.displayDensity||'default';
-
   return`
-    <div class="sett-card-title">Quick Themes</div>
-    <div class="theme-grid-2">${cards}</div>
-    <div class="sett-card-title" style="margin-top:18px;">Custom Accent</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Override any theme's accent color. Pick a preset swatch or enter a custom hex value.</div>
+    <div class="sett-card-title">Base</div>
+    <div class="base-picker">${baseBtns}</div>
+    <div class="sett-card-title" style="margin-top:18px;">Accent Color</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Pick your highlight color — applied everywhere across the app.</div>
     <div class="accent-swatches">${swatches}</div>
     <div class="accent-custom-row">
       <input class="accent-hex-inp" type="text" maxlength="7" placeholder="#e8271f" value="${esc(hexVal)}"
@@ -4002,11 +3899,6 @@ function renderTheme(){
         ">
       <div class="accent-preview" id="accent-preview-box" style="background:${previewBg}"></div>
       ${curAccent?`<button class="inc-pill" onclick="setCustomAccent(null)" style="font-size:10px;">Reset</button>`:''}
-    </div>
-    <div class="sett-card-title" style="margin-top:18px;">Interface</div>
-    <div class="s-row">
-      <div class="s-lbl">Compact Mode<span class="s-sub">Tighter spacing — more content on screen</span></div>
-      <label class="tog"><input type="checkbox" ${density==='compact'?'checked':''} onchange="setDisplayDensity(this.checked?'compact':'default')"><span class="tog-track"></span></label>
     </div>`;
 }
 
