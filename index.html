@@ -1548,6 +1548,8 @@ function launchApp(){
   // Initialize gamification — migrate existing users, then render header badge
   migrateGamification();
   renderHeaderLevel();
+  // Generate tab is the default active view — populate it on load
+  renderActiveWorkoutBanner();renderGenStreakChip();renderTemplates();
 }
 window.addEventListener('resize',setHdrH);
 
