@@ -1401,7 +1401,7 @@ const openGrp = {};
 const armed   = {};
 let _pendingDelete = null;
 let _pendingBackupPrompt = false;
-let templates = ld('fj_templates')||[];
+let templates = ld('fj_templates',[])||[];
 let histFilter = {effort:0,group:''};
 let settingsTab = 'profile';
 let buildMode = 'random';
@@ -2553,7 +2553,7 @@ async function saveWorkout(){
     try{await gistPush();setSyncStatus('synced');}
     catch(err){setSyncStatus('error');toast(formatSyncError(err),4000);}
   } else {
-    const lastSeen=parseInt(ld('fj_backup_seen_count')||'0');
+    const lastSeen=parseInt(ld('fj_backup_seen_count',0)||0);
     if(sessions.length===1||sessions.length-lastSeen>=10)_pendingBackupPrompt=true;
   }
 }
