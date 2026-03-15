@@ -1126,19 +1126,24 @@ body{
 .build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:0 0 12px;overflow:hidden;}
 .bm-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
 .bm-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
-#gen-streak-chip{display:flex;justify-content:center;padding:10px 0 0;}
-.gen-streak-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--up);background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:20px;padding:5px 14px;}
+#gen-streak-chip{margin:0 0 10px;}
+.gen-streak-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;}
+.gen-streak-count{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:1px;color:var(--up);display:flex;align-items:center;gap:7px;}
+.gen-streak-fire{font-size:15px;line-height:1;}
+.gen-streak-idle{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.gen-streak-prog{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);}
+.gen-streak-prog.done{color:var(--up);}
 .start-row{display:flex;gap:8px;align-items:stretch;padding:12px 0 0;}
 .save-tpl-btn{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:4px;font-family:'Black Ops One',sans-serif;font-size:10px;letter-spacing:1.5px;padding:0 14px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;}
 .save-tpl-btn:hover{border-color:var(--accent);color:var(--accent);}
-.tpl-bar{padding:0 0 8px;display:flex;flex-direction:column;gap:6px;}
+.tpl-bar{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;margin:0 0 10px;}
 .tpl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
 .tpl-chips{display:flex;flex-wrap:wrap;gap:6px;}
-.tpl-chip{display:flex;align-items:center;border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
-.tpl-load{background:var(--surface2);border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
-.tpl-load:hover{background:var(--accent-dim);color:var(--accent);}
+.tpl-chip{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border2);border-radius:6px;overflow:hidden;}
+.tpl-load{background:transparent;border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.tpl-load:hover{color:var(--accent);}
 .tpl-count{font-size:9px;color:var(--text3);}
-.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:var(--text3);padding:6px 8px;cursor:pointer;font-size:14px;}
+.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:var(--text3);padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
 .tpl-del:hover{color:#ef4444;}
 /* ─── Custom Workout Cards ─── */
 .ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
@@ -1931,16 +1936,14 @@ function renderGenStreakChip(){
   const {current,periodProgress,periodGoal,periodLabel}=computeStreaks();
   const mode=cfg.streakMode||'weekly';
   const done=periodProgress>=periodGoal;
-  const progColor=done?'var(--up)':'var(--text2)';
   const unit=mode==='daily'?'day':mode==='weekly'?'week':'month';
-  let html='';
-  if(current>0)html+=`<div class="gen-streak-chip">🔥 ${current}-${unit} streak — keep it going!</div>`;
-  if(mode==='daily'){
-    html+=`<div class="gen-streak-chip" style="background:none;border-color:var(--border2);color:${progColor};">${done?'Logged today ✓':'Not logged yet today'}</div>`;
-  }else{
-    html+=`<div class="gen-streak-chip" style="background:none;border-color:var(--border2);color:${progColor};">${periodProgress}/${periodGoal} ${periodLabel}${done?' ✓':''}</div>`;
-  }
-  el.innerHTML=html;
+  const left=current>0
+    ?`<div class="gen-streak-count"><span class="gen-streak-fire">🔥</span>${current}-${unit} streak</div>`
+    :`<div class="gen-streak-idle">No active streak</div>`;
+  const right=mode==='daily'
+    ?`<div class="gen-streak-prog${done?' done':''}">${done?'Logged today ✓':'Log today'}</div>`
+    :`<div class="gen-streak-prog${done?' done':''}">${periodProgress}/${periodGoal} ${periodLabel}${done?' ✓':''}</div>`;
+  el.innerHTML=`<div class="gen-streak-row">${left}${right}</div>`;
 }
 function renderTemplates(){
   const el=document.getElementById('templates-section');if(!el)return;
