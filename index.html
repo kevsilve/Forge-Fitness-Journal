@@ -403,6 +403,7 @@ body{
   border-right:1px solid var(--j-bor);
 }
 .j-sets-col-hdr-cell:last-child{border-right:none;}
+.j-sets-row-continuation{border-top:2px solid var(--j-bor2);}
 
 /* Set cell — full tap = toggle done; tap the number = edit reps */
 .j-cell-set{
@@ -1812,6 +1813,37 @@ function todayISO(){return new Date().toISOString().split('T')[0];}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
+// Estimate suggested weight for a new scheme given last session data.
+// Uses Epley 1RM formula plus a per-set fatigue factor (~2.5% per additional set).
+function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
+  if(!lastWeight||lastWeight<=0||!lastReps)return lastWeight||0;
+  const orm=lastWeight*(1+lastReps/30)*(1+(lastSets-1)*0.025);
+  const raw=orm/((1+newReps/30)*(1+(newSets-1)*0.025));
+  const inc=cfg.weightIncrement||5;
+  return Math.round(raw/inc)*inc;
+}
+// Build the sets column-headers + grid HTML, wrapping into rows of SETS_ROW_SIZE when there are many sets.
+const SETS_ROW_SIZE=5;
+function buildSetsArea(ex,ei){
+  function cellHtml(s){
+    const done=ex.setsDone[s];
+    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
+  }
+  if(ex.sets<=SETS_ROW_SIZE){
+    const hdrs=Array.from({length:ex.sets},(_,s)=>`<div class="j-sets-col-hdr-cell">S${s+1}</div>`).join('');
+    const cells=Array.from({length:ex.sets},(_,s)=>cellHtml(s)).join('');
+    return`<div class="j-sets-col-hdr">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
+  }
+  const rowCount=Math.ceil(ex.sets/SETS_ROW_SIZE);
+  let html='';
+  for(let r=0;r<rowCount;r++){
+    const start=r*SETS_ROW_SIZE;const end=Math.min(start+SETS_ROW_SIZE,ex.sets);
+    const hdrs=Array.from({length:end-start},(_,i)=>`<div class="j-sets-col-hdr-cell">S${start+i+1}</div>`).join('');
+    const cells=Array.from({length:end-start},(_,i)=>cellHtml(start+i)).join('');
+    html+=`<div class="j-sets-col-hdr${r>0?' j-sets-row-continuation':''}">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
+  }
+  return html;
+}
 
 function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
 function sessionTotalCal(s){return(parseFloat(s.calories)||0)+(parseFloat(s.cardio?.calories)||0);}
@@ -2191,9 +2223,14 @@ function startWorkout(){
       const last=lastForEx(ex.name);
       const grp=groups.find(g=>g.name===ex.group);
       const exDef=grp?grp.exercises.find(e=>e.name===ex.name):null;
+      let weight=0;
+      if(last){
+        const{sets:ls,reps:lr}=parseScheme(last.scheme);
+        weight=calcSuggestedWeight(last.weight,lr,ls,reps,sets);
+      }
       return{
         name:ex.name,group:ex.group,scheme:ex.scheme,
-        weight:last?last.weight:0,sets,targetReps:reps,
+        weight,sets,targetReps:reps,
         repsLog:Array(sets).fill(reps),setsDone:Array(sets).fill(false),
         arrow:null,last:last||null,cue:exDef?exDef.cue||'':''
       };
@@ -2254,32 +2291,9 @@ function renderToday(){
     const allDone=ex.setsDone.every(Boolean);
     const cp=cfg.cardPrefs||DEF_CFG.cardPrefs;
     const lastInfo=(cp.showLastSession!==false)&&ex.last
-      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight)}</span></div>`
+      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight)}</span>${ex.last.scheme&&ex.last.scheme!==ex.scheme?`<span style="font-size:9px;color:var(--j-mut);margin-left:3px;">(${esc(ex.last.scheme)})</span>`:''}</div>`
       :'';
 
-    // column headers: one per set
-    const colHdrs=Array.from({length:ex.sets},(_,s)=>`<div class="j-sets-col-hdr-cell">S${s+1}</div>`).join('');
-
-    // set cells
-    let setCells='';
-    for(let s=0;s<ex.sets;s++){
-      const done=ex.setsDone[s];
-      setCells+=`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})">
-        <div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})">
-          <span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span>
-          <span class="j-set-slash">/</span>
-          <span class="j-set-target">${ex.targetReps}</span>
-        </div>
-        <input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric"
-          value="${ex.repsLog[s]}"
-          onchange="commitReps(${ei},${s},this.value)"
-          onblur="blurReps(${ei},${s})"
-          onclick="event.stopPropagation()">
-        <div class="j-set-chk">✓</div>
-      </div>`;
-    }
-
-    const asel=a=>ex.arrow===a?` a${a}`:'';
     const prKey=ex.group+'::'+ex.name;
     const prW=(stats.prs&&stats.prs[prKey])?stats.prs[prKey].weight:0;
     const isPR=ex.weight>0&&ex.weight>prW;
@@ -2306,8 +2320,7 @@ function renderToday(){
         <button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>
       </div>
       <div class="j-pr-badge" id="pr-badge-${ei}" style="${isPR?'':'display:none'}">🔥 NEW PR!</div>
-      <div class="j-sets-col-hdr">${colHdrs}</div>
-      <div class="j-sets-grid">${setCells}</div>
+      ${buildSetsArea(ex,ei)}
     </div>`;
   });
   html+='</div>'; // close exercises wrapper
@@ -3615,7 +3628,7 @@ function adjCfg(k,d){
 }
 let _newSchemeSets=3,_newSchemeReps=10;
 function adjNewScheme(field,d){
-  if(field==='sets'){_newSchemeSets=Math.max(1,Math.min(20,_newSchemeSets+d));const el=document.getElementById('ns-sets');if(el)el.textContent=_newSchemeSets;}
+  if(field==='sets'){_newSchemeSets=Math.max(1,Math.min(8,_newSchemeSets+d));const el=document.getElementById('ns-sets');if(el)el.textContent=_newSchemeSets;}
   else{_newSchemeReps=Math.max(1,Math.min(100,_newSchemeReps+d));const el=document.getElementById('ns-reps');if(el)el.textContent=_newSchemeReps;}
 }
 function addScheme(){
