@@ -1738,17 +1738,7 @@ function setRestDuration(v){if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer
 /* ── Build Mode / Custom Workout ── */
 function setBuildMode(mode){
   buildMode=mode;
-  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
-  if(rBtn)rBtn.classList.toggle('active',mode==='random');
-  if(cBtn)cBtn.classList.toggle('active',mode==='custom');
-  const genBtn=document.getElementById('gen-btn');
-  if(genBtn)genBtn.style.display=mode==='random'?'':'none';
-  if(mode==='custom'&&(!pending||!pending.length)){
-    const c=document.getElementById('ex-cards');
-    if(c)c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
-    const sb=document.getElementById('start-row');if(sb)sb.style.display='none';
-  }
-  if(mode==='random'&&(!pending||!pending.length))renderPending();
+  renderPending();
 }
 function openExercisePicker(){
   if(active){toast('Finish active workout first');return;}
@@ -1807,8 +1797,6 @@ function removeCustomEx(name){
   if(!pending)return;
   pending=pending.filter(e=>e.name!==name);
   renderPending();
-  const sb=document.getElementById('start-row');
-  if(sb)sb.style.display=pending&&pending.length>0?'block':'none';
 }
 /* ── Repeat Session ── */
 function repeatSession(id){
@@ -1817,11 +1805,6 @@ function repeatSession(id){
   if(!s||!s.exercises.length){toast('No exercises to repeat');return;}
   pending=s.exercises.map(ex=>({name:ex.name,group:ex.group,scheme:ex.scheme,isBonus:false}));
   buildMode='custom';
-  renderPending();
-  const sb=document.getElementById('start-row');if(sb)sb.style.display='block';
-  const genBtn=document.getElementById('gen-btn');if(genBtn)genBtn.style.display='none';
-  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
-  if(rBtn)rBtn.classList.remove('active');if(cBtn)cBtn.classList.add('active');
   switchTab('generate');
   toast('Loaded '+s.exercises.length+' exercises from '+fmtDate(s.date));
 }
@@ -1889,7 +1872,6 @@ function generate(){
   }
   if(!result.length){toast('No exercises available! Check Settings → Exercise Pool');return;}
   pending=result;renderPending();
-  document.getElementById('start-row').style.display='block';
 }
 
 function renderPending(){
@@ -1900,6 +1882,7 @@ function renderPending(){
   if(cBtn)cBtn.classList.toggle('active',buildMode==='custom');
   const genBtn=document.getElementById('gen-btn');
   if(genBtn)genBtn.style.display=buildMode==='random'?'':'none';
+  const sb=document.getElementById('start-row');
   if(!pending||!pending.length){
     if(buildMode==='custom'){
       c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
@@ -1907,6 +1890,7 @@ function renderPending(){
       const firstTime=!sessions.length;
       c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Customize your exercises in Settings, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('settings')">Go to Settings →</button>`:''}</div>`;
     }
+    if(sb)sb.style.display='none';
     return;
   }
   const isCustom=buildMode==='custom';
@@ -1931,6 +1915,8 @@ function renderPending(){
   if(isCustom){
     c.innerHTML+=`<div style="padding:8px 12px 4px;"><button class="es-secondary" style="width:100%;margin:0;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
   }
+  // Start row: visible when exercises are queued and no workout is already running
+  if(sb)sb.style.display=active?'none':'flex';
 }
 
 function renderGenStreakChip(){
@@ -1972,6 +1958,7 @@ function loadTemplate(id){
       weight:last?last.weight:0,last:last||null,
       cue:matched?matched.cue||'':''};
   });
+  buildMode='custom';
   renderPending();
   toast(`"${t.name}" loaded`);
 }
@@ -1984,16 +1971,9 @@ function renderActiveWorkoutBanner(){
   const container=document.getElementById('view-generate');
   const existing=document.getElementById('active-workout-banner');
   if(existing)existing.remove();
-  // Toggle generate button and start button state
+  // Dim the generate button while a workout is in progress
   const genBtn=document.getElementById('gen-btn');
-  const startBtn=document.getElementById('start-row');
-  if(active){
-    if(genBtn){genBtn.style.opacity='.35';genBtn.style.cursor='not-allowed';}
-    if(startBtn)startBtn.style.display='none';
-  } else {
-    if(genBtn){genBtn.style.opacity='';genBtn.style.cursor='';}
-    // start btn visibility managed by generate/discard logic
-  }
+  if(genBtn){genBtn.style.opacity=active?'.35':'';genBtn.style.cursor=active?'not-allowed':'';}
   if(!active)return;
   const exDone=active.exercises.filter(ex=>ex.setsDone.every(Boolean)&&ex.arrow!==null).length;
   const banner=document.createElement('div');
@@ -2019,7 +1999,6 @@ function discardActiveWorkout(){
     active=null;pending=null;
     lsSet('fj_active_workout',null);
     renderPending();
-    document.getElementById('start-row').style.display='none';
     renderActiveWorkoutBanner();
     toast('Workout discarded');
   } else {
