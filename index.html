@@ -1348,7 +1348,7 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, workoutDays:[], restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}};
+const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
   {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
@@ -1384,6 +1384,8 @@ let cfg      = ld('fj_cfg',      DEF_CFG);
 if(!cfg.profile) cfg.profile=dc(DEF_CFG.profile);
 // Migrate: ensure restTimer sub-object exists
 if(!cfg.restTimer) cfg.restTimer=dc(DEF_CFG.restTimer);
+// Migrate: replace workoutDays array with streakMode/streakGoal
+if(cfg.streakMode==null){cfg.streakMode='weekly';cfg.streakGoal=Math.max(1,(cfg.workoutDays||[]).length)||3;}
 let machines = ld('fj_machines', DEF_MACHINES);
 let sessions = ld('fj_sessions', []);
 let stats    = ld('fj_stats',    {exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}});
@@ -1925,12 +1927,19 @@ function renderPending(){
 
 function renderGenStreakChip(){
   const el=document.getElementById('gen-streak-chip');if(!el)return;
-  const {current}=computeStreaks();
-  if(current>0){
-    el.innerHTML=`<div class="gen-streak-chip">🔥 ${current}-day streak — keep it going!</div>`;
-  } else {
-    el.innerHTML='';
+  const {current,periodProgress,periodGoal,periodLabel}=computeStreaks();
+  const mode=cfg.streakMode||'weekly';
+  const done=periodProgress>=periodGoal;
+  const progColor=done?'var(--up)':'var(--text2)';
+  const unit=mode==='daily'?'day':mode==='weekly'?'week':'month';
+  let html='';
+  if(current>0)html+=`<div class="gen-streak-chip">🔥 ${current}-${unit} streak — keep it going!</div>`;
+  if(mode==='daily'){
+    html+=`<div class="gen-streak-chip" style="background:none;border-color:var(--border2);color:${progColor};">${done?'Logged today ✓':'Not logged yet today'}</div>`;
+  }else{
+    html+=`<div class="gen-streak-chip" style="background:none;border-color:var(--border2);color:${progColor};">${periodProgress}/${periodGoal} ${periodLabel}${done?' ✓':''}</div>`;
   }
+  el.innerHTML=html;
 }
 function renderTemplates(){
   const el=document.getElementById('templates-section');if(!el)return;
@@ -3343,9 +3352,10 @@ function renderWorkoutSettings(){
   const coreTotal=groups.filter(g=>g.active&&g.mode==='core').reduce((a,g)=>a+(g.required||1),0);
   const total=coreTotal+(cfg.bonusSlots||2);
   const incOpts=[2.5,5,10].map(v=>`<button class="inc-pill${(cfg.weightIncrement||5)===v?' active':''}" onclick="setIncrement(${v})">${v}lb</button>`).join('');
-  const dayBtns=DAYS_OF_WEEK.map(d=>`<button class="day-pill${(cfg.workoutDays||[]).includes(d)?' active':''}" onclick="toggleDay('${d}')">${d}</button>`).join('');
+  const mode=cfg.streakMode||'weekly';
   const rt=cfg.restTimer||{enabled:false,duration:60};
   const durOpts=[[30,'30s'],[45,'45s'],[60,'1m'],[90,'1:30'],[120,'2m'],[180,'3m']].map(([v,l])=>`<button class="inc-pill${rt.duration===v?' active':''}" onclick="setRestDuration(${v})">${l}</button>`).join('');
+  const goalStepper=mode!=='daily'?`<div class="s-row"><div class="s-lbl">Sessions per ${mode==='weekly'?'Week':'Month'}<span class="s-sub">Minimum workouts needed to count the ${mode==='weekly'?'week':'month'}</span></div><div class="num-ctrl"><button class="num-btn" onclick="adjStreakGoal(-1)">−</button><span class="num-val">${cfg.streakGoal||3}</span><button class="num-btn" onclick="adjStreakGoal(1)">+</button></div></div>`:'';
   return`<div class="sett-card">
     <div class="sett-card-title">Workout Structure</div>
     <div class="s-row"><div class="s-lbl">Bonus Slots<span class="s-sub">Extra exercises beyond core requirements</span></div>
@@ -3357,7 +3367,8 @@ function renderWorkoutSettings(){
   <div class="sett-card">
     <div class="sett-card-title">Weight &amp; Schedule</div>
     <div class="s-row"><div class="s-lbl">Weight Increment<span class="s-sub">Amount ± buttons change weight by</span></div><div class="inc-pills">${incOpts}</div></div>
-    <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px;"><div class="s-lbl">Training Days<span class="s-sub">Tag your usual workout days</span></div><div class="day-pills">${dayBtns}</div></div>
+    <div class="s-row"><div class="s-lbl">Streak Period<span class="s-sub">How your streak is measured</span></div><div class="inc-pills"><button class="inc-pill${mode==='daily'?' active':''}" onclick="setStreakMode('daily')">Daily</button><button class="inc-pill${mode==='weekly'?' active':''}" onclick="setStreakMode('weekly')">Weekly</button><button class="inc-pill${mode==='monthly'?' active':''}" onclick="setStreakMode('monthly')">Monthly</button></div></div>
+    ${goalStepper}
   </div>
   <div class="sett-card">
     <div class="sett-card-title">Rest Timer</div>
@@ -3475,11 +3486,11 @@ function deleteMachine(mid){
   if(machines.length<=1){toast('Must keep at least one');return;}
   machines=machines.filter(m=>m.id!==mid);sv('fj_machines',machines);autoSaveSettings();renderSettings();
 }
-function toggleDay(d){
-  const days=cfg.workoutDays||[];
-  const idx=days.indexOf(d);
-  if(idx>-1)days.splice(idx,1);else days.push(d);
-  cfg.workoutDays=days;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+function setStreakMode(m){cfg.streakMode=m;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();renderGenStreakChip();}
+function adjStreakGoal(delta){
+  const max=cfg.streakMode==='monthly'?28:7;
+  cfg.streakGoal=Math.min(max,Math.max(1,(cfg.streakGoal||3)+delta));
+  sv('fj_cfg',cfg);autoSaveSettings();renderSettings();renderGenStreakChip();
 }
 function setIncrement(v){cfg.weightIncrement=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
 function setTheme(t){theme=t;sv('fj_theme',theme);document.body.className='theme-'+t;autoSaveSettings();renderSettings();}
@@ -3488,7 +3499,7 @@ function resetAcc(id){
     if(id==='structure'){cfg.bonusSlots=DEF_CFG.bonusSlots;sv('fj_cfg',cfg);}
     if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);}
     if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
-    if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.workoutDays=[];sv('fj_cfg',cfg);}
+    if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.streakMode=DEF_CFG.streakMode;cfg.streakGoal=DEF_CFG.streakGoal;sv('fj_cfg',cfg);}
     if(id==='profile'){cfg.profile=dc(DEF_CFG.profile);sv('fj_cfg',cfg);}
     if(id==='theme'){theme='dark-red';sv('fj_theme',theme);document.body.className='theme-dark-red';}
     autoSaveSettings();
@@ -3656,18 +3667,16 @@ function renderMachines(){
     <button class="add-btn" style="width:100%;margin-top:7px;" onclick="addMachine()">+ ADD MACHINE</button>`;
 }
 function renderPrefs(){
-  const dayBtns=DAYS_OF_WEEK.map(d=>`
-    <button class="day-pill${(cfg.workoutDays||[]).includes(d)?' active':''}" onclick="toggleDay('${d}')">${d}</button>`).join('');
+  const mode=cfg.streakMode||'weekly';
   const incOpts=[2.5,5,10].map(v=>`
     <button class="inc-pill${(cfg.weightIncrement||5)===v?' active':''}" onclick="setIncrement(${v})">${v}lb</button>`).join('');
+  const goalStepper=mode!=='daily'?`<div class="s-row"><div class="s-lbl">Sessions per ${mode==='weekly'?'Week':'Month'}<span class="s-sub">Minimum workouts needed to count the ${mode==='weekly'?'week':'month'}</span></div><div class="num-ctrl"><button class="num-btn" onclick="adjStreakGoal(-1)">−</button><span class="num-val">${cfg.streakGoal||3}</span><button class="num-btn" onclick="adjStreakGoal(1)">+</button></div></div>`:'';
   return`
     <div class="s-row"><div class="s-lbl">Weight Increment<span class="s-sub">Amount ± buttons change weight by</span></div>
       <div class="inc-pills">${incOpts}</div>
     </div>
-    <div class="s-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
-      <div class="s-lbl">Training Days<span class="s-sub">Tag your usual workout days</span></div>
-      <div class="day-pills">${dayBtns}</div>
-    </div>`;
+    <div class="s-row"><div class="s-lbl">Streak Period<span class="s-sub">How your streak is measured</span></div><div class="inc-pills"><button class="inc-pill${mode==='daily'?' active':''}" onclick="setStreakMode('daily')">Daily</button><button class="inc-pill${mode==='weekly'?' active':''}" onclick="setStreakMode('weekly')">Weekly</button><button class="inc-pill${mode==='monthly'?' active':''}" onclick="setStreakMode('monthly')">Monthly</button></div></div>
+    ${goalStepper}`;
 }
 function renderProfile(){
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
@@ -3815,35 +3824,73 @@ function setStatTab(t){statTab=t;renderStats();}
 
 
 function computeStreaks(){
-  if(!sessions.length)return{current:0,longest:0};
-  const ISO_RE=/^\d{4}-\d{2}-\d{2}$/;
-  // Get unique sorted dates descending — filter out any malformed dates
-  const dates=[...new Set(sessions.map(s=>s.date).filter(d=>d&&ISO_RE.test(d)))].sort((a,b)=>b.localeCompare(a));
-  if(!dates.length)return{current:0,longest:0};
+  const mode=cfg.streakMode||'weekly';
+  const goal=mode==='daily'?1:Math.max(1,cfg.streakGoal||3);
+
+  function getPeriodKey(dateStr){
+    if(mode==='daily')return dateStr;
+    if(mode==='monthly')return dateStr.slice(0,7);
+    // weekly: Monday of that week
+    const d=new Date(dateStr+'T12:00:00');
+    const day=d.getDay();
+    d.setDate(d.getDate()+(day===0?-6:1-day));
+    return isoFromDate(d);
+  }
+
+  function shiftPeriod(key,n){
+    if(mode==='daily'){
+      const d=new Date(key+'T12:00:00');d.setDate(d.getDate()+n);return isoFromDate(d);
+    }
+    if(mode==='monthly'){
+      const [y,m]=key.split('-').map(Number);
+      const d=new Date(y,m-1+n,1);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    }
+    // weekly
+    const d=new Date(key+'T12:00:00');d.setDate(d.getDate()+n*7);return isoFromDate(d);
+  }
+
   const today=todayISO();
-  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
-  const yesterdayISO=isoFromDate(yesterday);
-  // Current streak: consecutive days ending today or yesterday
-  let current=0;
-  let cursor=dates[0];
-  if(cursor!==today&&cursor!==yesterdayISO){current=0;}
-  else{
+  const thisPeriod=getPeriodKey(today);
+  const lastPeriod=shiftPeriod(thisPeriod,-1);
+
+  const periodMap={};
+  sessions.forEach(s=>{
+    if(!s.date)return;
+    const k=getPeriodKey(s.date);
+    periodMap[k]=(periodMap[k]||0)+1;
+  });
+
+  const periodProgress=periodMap[thisPeriod]||0;
+  const periodLabel=mode==='daily'?'today':mode==='weekly'?'this week':'this month';
+
+  if(!Object.keys(periodMap).length)return{current:0,longest:0,periodProgress,periodGoal:goal,periodLabel};
+
+  const periods=Object.keys(periodMap).sort();
+
+  // Longest streak
+  let longest=0,streak=0;
+  for(let i=0;i<periods.length;i++){
+    if(periodMap[periods[i]]>=goal){
+      streak=(i>0&&shiftPeriod(periods[i-1],1)===periods[i])?streak+1:1;
+      longest=Math.max(longest,streak);
+    }else{streak=0;}
+  }
+
+  // Current streak: anchor on this period (if complete) or last period, walk back
+  let current=0,anchor=null;
+  if((periodMap[thisPeriod]||0)>=goal)anchor=thisPeriod;
+  else if((periodMap[lastPeriod]||0)>=goal)anchor=lastPeriod;
+  if(anchor){
     current=1;
-    for(let i=1;i<dates.length;i++){
-      const prev=new Date(cursor+'T12:00:00');prev.setDate(prev.getDate()-1);
-      const prevISO=isoFromDate(prev);
-      if(dates[i]===prevISO){current++;cursor=dates[i];}
+    let expect=shiftPeriod(anchor,-1);
+    for(let i=periods.indexOf(anchor)-1;i>=0;i--){
+      if(periods[i]===expect&&periodMap[periods[i]]>=goal){current++;expect=shiftPeriod(periods[i],-1);}
       else break;
     }
   }
-  // Longest streak ever
-  let longest=1,streak=1;
-  for(let i=1;i<dates.length;i++){
-    const prev=new Date(dates[i-1]+'T12:00:00');prev.setDate(prev.getDate()-1);
-    if(isoFromDate(prev)===dates[i]){streak++;longest=Math.max(longest,streak);}
-    else streak=1;
-  }
-  return{current,longest};
+
+  return{current,longest,periodProgress,periodGoal:goal,periodLabel};
 }
 function buildVolumeChart(){
   const now=new Date();
@@ -3898,7 +3945,9 @@ function buildMonthlyChart(){
 }
 function renderStatSessions(){
   const total=stats.total||0;
-  const {current,longest}=computeStreaks();
+  const {current,longest,periodProgress,periodGoal,periodLabel}=computeStreaks();
+  const streakMode=cfg.streakMode||'weekly';
+  const streakUnit=streakMode==='daily'?'day':streakMode==='weekly'?'week':'month';
   // Avg per week (last 4 weeks vs all time)
   const now=new Date();
   const fourWeeksAgo=new Date(now);fourWeeksAgo.setDate(now.getDate()-28);
@@ -3946,17 +3995,28 @@ function renderStatSessions(){
       <span class="sess-num">${total}</span>
       <span class="sess-lbl">Total Sessions Logged</span>
     </div>
+    <!-- Period progress card -->
+    ${streakMode!=='daily'?`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">${streakMode==='weekly'?'This Week':'This Month'}</div>
+      <div style="font-size:10px;color:var(--text2);">Goal: ${periodGoal} session${periodGoal!==1?'s':''} per ${streakUnit}</div></div>
+      <div style="text-align:right;"><div style="font-family:'Black Ops One',sans-serif;font-size:26px;color:${periodProgress>=periodGoal?'var(--up)':'var(--accent)'};line-height:1;">${periodProgress}/${periodGoal}</div>
+      <div style="font-size:9px;color:var(--text3);">${periodProgress>=periodGoal?'goal met ✓':'sessions'}</div></div>
+    </div>`:`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;">Today</div>
+      <div style="font-size:10px;color:var(--text2);">Daily streak mode</div></div>
+      <div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:${periodProgress>0?'var(--up)':'var(--text3)'};">${periodProgress>0?'Logged ✓':'Not yet'}</div></div>
+    </div>`}
     <!-- 4-box grid -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
         <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Current Streak</div>
         <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:${current>0?'var(--up)':'var(--text3)'};line-height:1;">${current}</div>
-        <div style="font-size:9px;color:var(--text3);margin-top:3px;">day${current!==1?'s':''}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">${streakUnit}${current!==1?'s':''}</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
         <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Longest Streak</div>
         <div style="font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${longest}</div>
-        <div style="font-size:9px;color:var(--text3);margin-top:3px;">day${longest!==1?'s':''}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:3px;">${streakUnit}${longest!==1?'s':''}</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:14px;text-align:center;">
         <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Avg / Week (4wk)</div>
@@ -4417,9 +4477,10 @@ function checkBadges(session,newPRs){
   if(stats.total>=1)earn('first_forge');
   if(newPRs&&newPRs.length>0)earn('pr_breaker');
   const streaks=computeStreaks();
-  if(streaks.current>=7)earn('week_warrior');
-  if(streaks.current>=30)earn('iron_mind');
-  if(streaks.current>=90)earn('unstoppable');
+  const [t1,t2,t3]=({daily:[7,30,90],weekly:[4,12,26],monthly:[3,6,12]})[cfg.streakMode||'weekly'];
+  if(streaks.current>=t1)earn('week_warrior');
+  if(streaks.current>=t2)earn('iron_mind');
+  if(streaks.current>=t3)earn('unstoppable');
   if(stats.total>=100)earn('centurion');
   if(Object.keys(stats.prs||{}).length>=25)earn('pr_machine');
   const maxCount=sessions.filter(s=>s.effort===4).length;
@@ -4451,8 +4512,9 @@ function processGamification(session,newPRs){
   xp=Math.floor(xp*(mults[session.effort||1]||1.0));
   xp+=((newPRs&&newPRs.length)||0)*100;
   const streaks=computeStreaks();
-  if(streaks.current>=30)xp+=250;
-  else if(streaks.current>=7)xp+=75;
+  const [xpT1,xpT2]=({daily:[7,30],weekly:[4,12],monthly:[3,6]})[cfg.streakMode||'weekly'];
+  if(streaks.current>=xpT2)xp+=250;
+  else if(streaks.current>=xpT1)xp+=75;
   if(parseDurationMin(session.duration||'')>=90)xp+=50;
   // First session of the week bonus
   const sDate=new Date((session.date||todayISO())+'T12:00:00');
