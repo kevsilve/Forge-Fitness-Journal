@@ -1474,7 +1474,7 @@ async function gistPush(){
 async function init(){
   const ls=document.getElementById('loading-screen');
   const lmsg=document.getElementById('loading-msg');
-  const lspinner=document.getElementById('loading-spinner');
+  const lspinner=document.querySelector('.loading-spinner');
   const lerr=document.getElementById('loading-err');
   const lerrmsg=document.getElementById('loading-err-msg');
   if(!gistCfg.pat){
@@ -4774,7 +4774,15 @@ function _getLevelDesc(level,tier){
 // ═══════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════
-init();
+init().catch(err=>{
+  const lmsg=document.getElementById('loading-msg');
+  const lerr=document.getElementById('loading-err');
+  const lerrmsg=document.getElementById('loading-err-msg');
+  if(lmsg)lmsg.style.display='none';
+  if(lerrmsg)lerrmsg.textContent='App failed to start: '+err.message;
+  if(lerr)lerr.style.display='block';
+  console.error('init() failed:',err);
+});
 </script>
 </body>
 </html>
