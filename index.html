@@ -49,10 +49,12 @@ body.base-light{
 .accent-custom-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
 .accent-hex-inp{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:6px 9px;border-radius:4px;width:100px;transition:border-color .2s;}
 .accent-hex-inp:focus{outline:none;border-color:var(--accent);}
-.accent-preview{width:32px;height:32px;border-radius:4px;border:1px solid var(--border2);flex-shrink:0;transition:background .2s,box-shadow .2s;cursor:pointer;}
-.accent-preview:hover{box-shadow:0 0 0 2px var(--accent);}
-.accent-color-inp{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
-.accent-preview-wrap{position:relative;flex-shrink:0;}
+.accent-preview{width:32px;height:32px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;transition:background .2s,border-color .2s,box-shadow .2s;cursor:pointer;}
+.accent-preview:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.accent-preview.fcp-open{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.fcp-panel{margin-top:14px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);background:var(--surface2);}
+.fcp-sv{display:block;width:100%;cursor:crosshair;touch-action:none;user-select:none;}
+.fcp-hue{display:block;width:100%;height:20px;cursor:ew-resize;touch-action:none;user-select:none;border-top:1px solid var(--border2);}
 .base-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
 .base-btn{border-radius:10px;border:2px solid var(--border2);padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s;position:relative;}
 .base-btn.active{border-color:var(--accent);box-shadow:0 0 14px var(--accent-glow);}
@@ -1448,6 +1450,113 @@ function lightenHex(hex,amount){
   g=Math.min(255,Math.round(g+(255-g)*amount));
   b=Math.min(255,Math.round(b+(255-b)*amount));
   return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function hsvToRgb(h,s,v){
+  h=h%360;s/=100;v/=100;
+  const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;
+  let r,g,b;
+  if(h<60)[r,g,b]=[c,x,0];else if(h<120)[r,g,b]=[x,c,0];
+  else if(h<180)[r,g,b]=[0,c,x];else if(h<240)[r,g,b]=[0,x,c];
+  else if(h<300)[r,g,b]=[x,0,c];else [r,g,b]=[c,0,x];
+  return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+function rgbToHsv(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+  let h=0,s=max===0?0:d/max,v=max;
+  if(d){if(max===r)h=((g-b)/d%6+6)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;}
+  return[Math.round(h),Math.round(s*100),Math.round(v*100)];
+}
+function hexToHsv(hex){const{r,g,b}=hexToRgb(hex);return rgbToHsv(r,g,b);}
+function hsvToHex(h,s,v){const[r,g,b]=hsvToRgb(h,s,v);return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');}
+
+const _fcp={hue:0,sat:100,val:100,open:false};
+function _fcpDrawSV(){
+  const c=document.getElementById('fcp-sv');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle=hsvToHex(_fcp.hue,100,100);ctx.fillRect(0,0,w,h);
+  const wg=ctx.createLinearGradient(0,0,w,0);
+  wg.addColorStop(0,'rgba(255,255,255,1)');wg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=wg;ctx.fillRect(0,0,w,h);
+  const bg=ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'rgba(0,0,0,0)');bg.addColorStop(1,'rgba(0,0,0,1)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  const cx=(_fcp.sat/100)*w,cy=(1-_fcp.val/100)*h;
+  ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+}
+function _fcpDrawHue(){
+  const c=document.getElementById('fcp-hue');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  const g=ctx.createLinearGradient(0,0,w,0);
+  for(let i=0;i<=360;i+=30)g.addColorStop(i/360,`hsl(${i},100%,50%)`);
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  const tx=Math.round((_fcp.hue/360)*w);
+  ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=1.5;ctx.strokeRect(tx-5,1,10,h-2);
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.strokeRect(tx-4,1,8,h-2);
+}
+function _fcpApplyLive(){
+  const hex=hsvToHex(_fcp.hue,_fcp.sat,_fcp.val);
+  _fcpDrawSV();_fcpDrawHue();
+  const inp=document.querySelector('.accent-hex-inp');
+  const prev=document.getElementById('accent-preview-box');
+  if(inp)inp.value=hex;
+  if(prev)prev.style.background=hex;
+  cfg.accentColor=hex;sv('fj_cfg',cfg);applyCustomAccent(hex);
+}
+function _fcpSVAt(e,c){
+  const r=c.getBoundingClientRect();
+  const px=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  const py=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  _fcp.sat=Math.round(Math.max(0,Math.min(1,px/r.width))*100);
+  _fcp.val=Math.round(Math.max(0,Math.min(1,1-py/r.height))*100);
+  _fcpApplyLive();
+}
+function _fcpHueAt(e,c){
+  const r=c.getBoundingClientRect();
+  const px=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  _fcp.hue=Math.round(Math.max(0,Math.min(1,px/r.width))*360);
+  _fcpApplyLive();
+}
+(function(){
+  let drag=null;
+  function mm(e){
+    if(!drag)return;e.preventDefault();
+    const sv=document.getElementById('fcp-sv'),hu=document.getElementById('fcp-hue');
+    if(drag==='sv'&&sv)_fcpSVAt(e,sv);
+    else if(drag==='hue'&&hu)_fcpHueAt(e,hu);
+  }
+  function mu(){drag=null;}
+  document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+  document.addEventListener('touchmove',mm,{passive:false});document.addEventListener('touchend',mu);
+  document._fcpSetDrag=v=>{drag=v;};
+})();
+function initForgePicker(hex){
+  const[h,s,v]=hexToHsv(hex||'#e8271f');
+  _fcp.hue=h;_fcp.sat=s;_fcp.val=v;
+  requestAnimationFrame(()=>{
+    const sv=document.getElementById('fcp-sv');
+    const hu=document.getElementById('fcp-hue');
+    if(!sv||!hu)return;
+    sv.width=sv.clientWidth||280;sv.height=Math.round(sv.clientWidth*0.6)||168;
+    hu.width=hu.clientWidth||280;hu.height=20;
+    _fcpDrawSV();_fcpDrawHue();
+    sv.onmousedown=e=>{document._fcpSetDrag('sv');_fcpSVAt(e,sv);};
+    sv.ontouchstart=e=>{document._fcpSetDrag('sv');_fcpSVAt(e,sv);};
+    hu.onmousedown=e=>{document._fcpSetDrag('hue');_fcpHueAt(e,hu);};
+    hu.ontouchstart=e=>{document._fcpSetDrag('hue');_fcpHueAt(e,hu);};
+  });
+}
+function toggleForgePicker(){
+  _fcp.open=!_fcp.open;
+  const el=document.getElementById('fcp-panel');
+  const btn=document.getElementById('accent-preview-box');
+  if(!el)return;
+  el.style.display=_fcp.open?'block':'none';
+  if(btn)btn.classList.toggle('fcp-open',_fcp.open);
+  if(_fcp.open)initForgePicker(cfg.accentColor||'#e8271f');
 }
 function applyCustomAccent(hex){
   const props=['--accent','--accent2','--accent-dim','--accent-glow','--j-acc'];
@@ -3427,6 +3536,11 @@ function renderSettings(){
   else if(settingsTab==='theme') panel=`<div class="sett-card">${renderTheme()}</div><div style="height:24px"></div>`;
   else if(settingsTab==='data') panel=renderDataTab();
   wrap.innerHTML=tabBar+`<div class="sett-panel">${panel}</div>`;
+  if(settingsTab==='theme'&&_fcp.open){
+    const fp=document.getElementById('fcp-panel');
+    const pb=document.getElementById('accent-preview-box');
+    if(fp){fp.style.display='block';if(pb)pb.classList.add('fcp-open');initForgePicker(cfg.accentColor||'#e8271f');}
+  }
 }
 function setSettTab(t){settingsTab=t;renderSettings();}
 function renderWorkoutSettings(){
@@ -3894,20 +4008,16 @@ function renderTheme(){
       <input class="accent-hex-inp" type="text" maxlength="7" placeholder="#e8271f" value="${esc(hexVal)}"
         oninput="
           const v=this.value.trim();
-          if(v.match(/^#[0-9a-fA-F]{6}$/)){document.getElementById('accent-preview-box').style.background=v;document.getElementById('accent-color-picker').value=v;}
+          if(v.match(/^#[0-9a-fA-F]{6}$/)){document.getElementById('accent-preview-box').style.background=v;if(_fcp.open){const[h,s,vv]=hexToHsv(v);_fcp.hue=h;_fcp.sat=s;_fcp.val=vv;_fcpDrawSV();_fcpDrawHue();}}
           else document.getElementById('accent-preview-box').style.background='var(--accent)';
         "
-        onchange="
-          const v=this.value.trim();
-          if(v.match(/^#[0-9a-fA-F]{6}$/))setCustomAccent(v);
-        ">
-      <div class="accent-preview-wrap">
-        <input class="accent-color-inp" type="color" id="accent-color-picker" value="${curAccent||'#e8271f'}"
-          oninput="const v=this.value;document.getElementById('accent-preview-box').style.background=v;document.querySelector('.accent-hex-inp').value=v;setCustomAccent(v);">
-        <div class="accent-preview" id="accent-preview-box" style="background:${previewBg}" title="Click to open color picker"
-          onclick="document.getElementById('accent-color-picker').click()"></div>
-      </div>
+        onchange="const v=this.value.trim();if(v.match(/^#[0-9a-fA-F]{6}$/))setCustomAccent(v);">
+      <div class="accent-preview${_fcp.open?' fcp-open':''}" id="accent-preview-box" style="background:${previewBg}" title="Open color picker" onclick="toggleForgePicker()"></div>
       ${curAccent?`<button class="inc-pill" onclick="setCustomAccent(null)" style="font-size:10px;">Reset</button>`:''}
+    </div>
+    <div id="fcp-panel" style="display:none">
+      <canvas id="fcp-sv" class="fcp-sv"></canvas>
+      <canvas id="fcp-hue" class="fcp-hue"></canvas>
     </div>`;
 }
 
