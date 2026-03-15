@@ -1444,6 +1444,7 @@ function applyPayload(data){
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
+  if(cfg.streakMode==null){cfg.streakMode='weekly';cfg.streakGoal=Math.max(1,(cfg.workoutDays||[]).length)||3;}
   if(!stats.exercises)stats.exercises={};
   if(!stats.weightHistory)stats.weightHistory={};
   if(!stats.totalReps)stats.totalReps={};
@@ -4458,7 +4459,8 @@ function calcBuild(){
   const streaks=computeStreaks();
   const msRange=sessions.length>1?Math.max(1,Math.ceil((new Date(sessions[0].date)-new Date(sessions[sessions.length-1].date))/(7*24*60*60*1000))):1;
   const freq=sessions.length/msRange;
-  const cns=Math.min(100,Math.round(Math.min(50,freq*12)+Math.min(50,streaks.longest*0.55)));
+  const streakMult=({daily:0.55,weekly:1.9,monthly:8})[cfg.streakMode||'weekly']||1.9;
+  const cns=Math.min(100,Math.round(Math.min(50,freq*12)+Math.min(50,streaks.longest*streakMult)));
   const subStats={pwr,vol,end,grn,cns};
   // Archetype: cardio ghost if heavy cardio, iron titan if high PRs, volume engine if high reps, otherwise forge athlete
   const cardioRatio=cardioSess/Math.max(1,sessions.length);
@@ -4553,9 +4555,10 @@ function migrateGamification(){
   xp+=Object.keys(stats.prs||{}).length*50;
   // Streak milestone bonus
   const streaks=computeStreaks();
-  if(streaks.longest>=90)xp+=3000;
-  else if(streaks.longest>=30)xp+=1000;
-  else if(streaks.longest>=7)xp+=250;
+  const [mT1,mT2,mT3]=({daily:[7,30,90],weekly:[4,12,26],monthly:[3,6,12]})[cfg.streakMode||'weekly'];
+  if(streaks.longest>=mT3)xp+=3000;
+  else if(streaks.longest>=mT2)xp+=1000;
+  else if(streaks.longest>=mT1)xp+=250;
   gamification.xp=xp;
   gamification.level=xpToLevel(xp);
   gamification.lastProcessedSession=sessions.length>0?sessions[0].id:-1;
