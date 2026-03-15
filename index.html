@@ -45,13 +45,14 @@ body.theme-dark-green{
   --j-acc:#16a34a;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#edf7ee;
   --j-tnt2:#ddeedd;--j-card:#fff;
 }
-/* Dark themes: remap journal vars to dark equivalents everywhere EXCEPT the active log view */
-body.theme-dark-red #view-history,
-body.theme-dark-blue #view-history,
-body.theme-dark-green #view-history{
+/* Dark themes: remap journal vars to dark equivalents for all views */
+body.theme-dark-red #view-today,body.theme-dark-red #view-history,
+body.theme-dark-blue #view-today,body.theme-dark-blue #view-history,
+body.theme-dark-green #view-today,body.theme-dark-green #view-history{
   --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
   --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
   --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
+  --j-acc:var(--accent);
 }
 body.theme-light{
   --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
@@ -1297,11 +1298,13 @@ const DEF_MACHINES = [
 const SCHEMES = ['3×10','3×12','4×10'];
 const DAYS_OF_WEEK = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const THEMES = [
-  {id:'dark-red',  name:'Dark Red',   swatch:'linear-gradient(90deg,#0a0a0a 50%,#e8271f)'},
-  {id:'dark-blue', name:'Dark Blue',  swatch:'linear-gradient(90deg,#06080f 50%,#3b6fff)'},
-  {id:'dark-green',name:'Dark Green', swatch:'linear-gradient(90deg,#060b07 50%,#22c55e)'},
-  {id:'light',     name:'Minimal Light', swatch:'linear-gradient(90deg,#f0eeeb 50%,#c8102e)'},
+  {id:'dark-red',  name:'Dark Red'},
+  {id:'dark-blue', name:'Dark Blue'},
+  {id:'dark-green',name:'Dark Green'},
+  {id:'light',     name:'Minimal Light'},
 ];
+const EFFORT_LABELS=['','Easy','Good','Hard','Max'];
+const EFFORT_COLORS=['','#16a34a','#ca8a04','#dc2626','#aaa'];
 
 /* ═══════════════════════════════════════════
    STATE
@@ -2374,8 +2377,8 @@ async function saveWorkout(){
   }
 }
 function showWorkoutSummary(session,newPRs){
-  const effortLabels=['','Easy','Good','Hard','Max'];
-  const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
+  const effortLabels=EFFORT_LABELS;
+  const effortColors=EFFORT_COLORS;
   const totalSets=session.exercises.reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const calHtml=session.calories?`<div class="summ-stat"><div class="summ-stat-val">🔥${session.calories}</div><div class="summ-stat-lbl">cal${session.caloriesEst?' (est)':''}</div></div>`:'';
   const effortHtml=session.effort?`<div class="summ-effort" style="color:${effortColors[session.effort]}">${effortLabels[session.effort]}</div>`:'';
@@ -2513,8 +2516,8 @@ function renderWeekView(){
 
   // Selected day detail
   const selSessions=byDate[weekSelectedDate]||[];
-  const effortLabels=['','Easy','Good','Hard','Max'];
-  const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
+  const effortLabels=EFFORT_LABELS;
+  const effortColors=EFFORT_COLORS;
   let detailHtml=`<div class="week-detail">
     <div class="week-detail-hdr">
       <span class="wdh-dow">${dotw(weekSelectedDate)}</span>
@@ -2644,8 +2647,8 @@ function renderMonthView(){
   const monthExCount=monthSessions.reduce((a,s)=>a+s.exercises.length,0);
   const monthCalories=Math.round(monthSessions.reduce((a,s)=>a+sessionTotalCal(s),0));
   const monthCalStr=monthCalories>=1000?`${(monthCalories/1000).toFixed(1)}k`:`${monthCalories}`;
-  const effortLabels=['','Easy','Good','Hard','Max'];
-  const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
+  const effortLabels=EFFORT_LABELS;
+  const effortColors=EFFORT_COLORS;
   let detailHtml='';
   if(calSelectedDate){
     const daySessions=sessionsByDate[calSelectedDate]||[];
@@ -2724,8 +2727,8 @@ function renderMonthView(){
 /* ─── LIST VIEW ─── */
 function renderListView(){
   const histWrap=document.getElementById('hist-wrap');
-  const effortLabels=['','Easy','Good','Hard','Max'];
-  const effortColors=['','#16a34a','#ca8a04','#dc2626','#aaa'];
+  const effortLabels=EFFORT_LABELS;
+  const effortColors=EFFORT_COLORS;
   if(!sessions.length){
     histWrap.innerHTML=`<div class="empty-state-card">
       <span class="es-icon">📋</span>
@@ -2896,7 +2899,7 @@ function openEditSession(id){
 function renderEditModal(){
   const root=document.getElementById('modal-root');
   const s=editSessionData;
-  const effortLabels=['','Easy','Good','Hard','Max'];
+  const effortLabels=EFFORT_LABELS;
   const gmap=getGroupExerciseMap();
   const allGroupNames=gmap.map(g=>g.name);
   const exHtml=s.exercises.map((ex,i)=>{
@@ -3524,7 +3527,7 @@ function renderTheme(){
       </div>
     </button>`;
   }).join('');
-  return`<div class="theme-grid">${cards}</div><div class="theme-note">The Log tab uses a light journal style in all themes for readability during workouts.</div>`;
+  return`<div class="theme-grid">${cards}</div>`;
 }
 
 /* ═══════════════════════════════════════════
