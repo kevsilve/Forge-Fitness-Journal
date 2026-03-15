@@ -49,7 +49,10 @@ body.base-light{
 .accent-custom-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
 .accent-hex-inp{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:6px 9px;border-radius:4px;width:100px;transition:border-color .2s;}
 .accent-hex-inp:focus{outline:none;border-color:var(--accent);}
-.accent-preview{width:32px;height:32px;border-radius:4px;border:1px solid var(--border2);flex-shrink:0;transition:background .2s;}
+.accent-preview{width:32px;height:32px;border-radius:4px;border:1px solid var(--border2);flex-shrink:0;transition:background .2s,box-shadow .2s;cursor:pointer;}
+.accent-preview:hover{box-shadow:0 0 0 2px var(--accent);}
+.accent-color-inp{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.accent-preview-wrap{position:relative;flex-shrink:0;}
 .base-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
 .base-btn{border-radius:10px;border:2px solid var(--border2);padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s;position:relative;}
 .base-btn.active{border-color:var(--accent);box-shadow:0 0 14px var(--accent-glow);}
@@ -3891,13 +3894,19 @@ function renderTheme(){
       <input class="accent-hex-inp" type="text" maxlength="7" placeholder="#e8271f" value="${esc(hexVal)}"
         oninput="
           const v=this.value.trim();
-          document.getElementById('accent-preview-box').style.background=v.match(/^#[0-9a-fA-F]{6}$/)?v:'var(--accent)';
+          if(v.match(/^#[0-9a-fA-F]{6}$/)){document.getElementById('accent-preview-box').style.background=v;document.getElementById('accent-color-picker').value=v;}
+          else document.getElementById('accent-preview-box').style.background='var(--accent)';
         "
         onchange="
           const v=this.value.trim();
           if(v.match(/^#[0-9a-fA-F]{6}$/))setCustomAccent(v);
         ">
-      <div class="accent-preview" id="accent-preview-box" style="background:${previewBg}"></div>
+      <div class="accent-preview-wrap">
+        <input class="accent-color-inp" type="color" id="accent-color-picker" value="${curAccent||'#e8271f'}"
+          oninput="const v=this.value;document.getElementById('accent-preview-box').style.background=v;document.querySelector('.accent-hex-inp').value=v;setCustomAccent(v);">
+        <div class="accent-preview" id="accent-preview-box" style="background:${previewBg}" title="Click to open color picker"
+          onclick="document.getElementById('accent-color-picker').click()"></div>
+      </div>
       ${curAccent?`<button class="inc-pill" onclick="setCustomAccent(null)" style="font-size:10px;">Reset</button>`:''}
     </div>`;
 }
