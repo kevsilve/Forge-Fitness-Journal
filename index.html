@@ -222,7 +222,7 @@ body{
 .view{width:100%;max-width:580px;display:none;animation:fadeIn .2s ease;}
 .view.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-#view-generate{padding:14px 13px 0;}
+#view-generate{padding:14px 13px 16px;}
 #view-today,#view-history,#view-settings,#view-stats,#view-prs{padding:0;}
 
 /* ════════════════════════
@@ -269,13 +269,14 @@ body{
   background:var(--surface2);
 }
 .start-workout-btn{
-  width:100%;padding:14px;background:transparent;border:none;
-  border-top:1px solid var(--border2);color:var(--accent);
-  font-family:'Inter',sans-serif;font-size:11px;font-weight:700;
-  letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;
-  margin-top:16px;transition:background .15s,letter-spacing .2s;
+  flex:1;padding:16px;background:var(--accent);color:#fff;border:none;
+  font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;
+  text-transform:uppercase;cursor:pointer;border-radius:4px;
+  box-shadow:0 2px 12px var(--accent-glow);
+  transition:opacity .15s,transform .1s;
 }
-.start-workout-btn:hover{background:var(--accent-dim);letter-spacing:3.5px;}
+.start-workout-btn:hover{opacity:.88;}
+.start-workout-btn:active{opacity:.8;transform:scale(.99);}
 .empty-gen{text-align:center;padding:56px 20px;}
 .empty-big{font-family:'Black Ops One',sans-serif;font-size:28px;letter-spacing:5px;
   color:var(--surface3);display:block;margin-bottom:8px;}
@@ -1122,14 +1123,15 @@ body{
 .plateau-hint{font-size:9px;font-weight:700;letter-spacing:.5px;color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);padding:2px 7px;border-radius:4px;white-space:nowrap;display:inline-block;margin-top:4px;}
 .plateau-hint.strong{color:#ef4444;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);}
 /* ─── Build Mode Toggle ─── */
-.build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:12px 12px 0;overflow:hidden;}
+.build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:0 0 12px;overflow:hidden;}
 .bm-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
 .bm-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
-.gen-streak-chip{text-align:center;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--up);padding:8px 0 0;}
-.start-row{display:flex;gap:8px;align-items:stretch;padding:0 12px 12px;}
-.save-tpl-btn{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:10px;font-size:18px;padding:0 16px;cursor:pointer;flex-shrink:0;transition:all .15s;}
+#gen-streak-chip{display:flex;justify-content:center;padding:10px 0 0;}
+.gen-streak-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--up);background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:20px;padding:5px 14px;}
+.start-row{display:flex;gap:8px;align-items:stretch;padding:12px 0 0;}
+.save-tpl-btn{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:4px;font-family:'Black Ops One',sans-serif;font-size:10px;letter-spacing:1.5px;padding:0 14px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;}
 .save-tpl-btn:hover{border-color:var(--accent);color:var(--accent);}
-.tpl-bar{padding:0 12px 8px;display:flex;flex-direction:column;gap:6px;}
+.tpl-bar{padding:0 0 8px;display:flex;flex-direction:column;gap:6px;}
 .tpl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
 .tpl-chips{display:flex;flex-wrap:wrap;gap:6px;}
 .tpl-chip{display:flex;align-items:center;border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
@@ -1268,8 +1270,8 @@ body{
     </div>
   </div>
   <div class="start-row" id="start-row" style="display:none">
-    <button class="start-workout-btn" id="start-btn" onclick="startWorkout()" style="flex:1;margin:0;">→ START WORKOUT</button>
-    <button class="save-tpl-btn" onclick="saveAsTemplate()" title="Save as template">⭐</button>
+    <button class="start-workout-btn" id="start-btn" onclick="startWorkout()">▶ START WORKOUT</button>
+    <button class="save-tpl-btn" onclick="saveAsTemplate()" title="Save as template">★ SAVE</button>
   </div>
 </div>
 
