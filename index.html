@@ -1317,7 +1317,7 @@ document.body.className = 'theme-'+theme;
    GIST API
 ═══════════════════════════════════════════ */
 function buildPayload(){
-  return JSON.stringify({version:3,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme},null,2);
+  return JSON.stringify({version:4,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification},null,2);
 }
 function applyPayload(data){
   if(Array.isArray(data.sessions)){sessions=data.sessions;lsSet('fj_sessions',sessions);}
@@ -1326,6 +1326,18 @@ function applyPayload(data){
   if(data.cfg&&typeof data.cfg==='object'){cfg=data.cfg;lsSet('fj_cfg',cfg);}
   if(Array.isArray(data.machines)){machines=data.machines;lsSet('fj_machines',machines);}
   if(data.theme&&typeof data.theme==='string'){theme=data.theme;lsSet('fj_theme',theme);document.body.className='theme-'+theme;}
+  if(data.gamification&&typeof data.gamification==='object'){
+    // Merge conflict: keep higher XP (more progress wins), union badge arrays
+    const incoming=data.gamification;
+    if((incoming.xp||0)>(gamification.xp||0)){
+      gamification={...dc(DEF_GAMIFICATION),...incoming};
+    } else {
+      // Keep local XP but merge in any new badges from incoming
+      const allBadges=[...new Set([...(gamification.earnedBadges||[]),...(incoming.earnedBadges||[])])];
+      gamification={...gamification,earnedBadges:allBadges};
+    }
+    lsSet('fj_gamification',gamification);
+  }
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
@@ -3291,10 +3303,13 @@ function nuclearReset(){
 async function _doNuclearReset(){
   groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
   sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
+  gamification=dc(DEF_GAMIFICATION);
   theme='dark-red';
   sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
   sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
+  sv('fj_gamification',gamification);
   document.body.className='theme-dark-red';
+  renderHeaderLevel();
   if(gistCfg.pat){try{await gistPush();}catch(e){}}
   toast('Everything reset to defaults');renderSettings();
 }
