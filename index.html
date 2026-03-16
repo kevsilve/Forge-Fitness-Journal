@@ -385,6 +385,10 @@ body{
 }
 .j-wt-val:focus{outline:none;background:#fffef0;}
 .j-wt-unit{font-size:9px;color:var(--j-mut);font-weight:500;}
+.j-wt-type-badge{font-size:9px;font-weight:700;color:var(--accent);background:rgba(var(--accent-rgb,100,100,200),.12);border:1px solid var(--accent);border-radius:10px;padding:2px 7px;cursor:pointer;letter-spacing:.5px;flex-shrink:0;transition:opacity .15s;}
+.j-wt-type-badge:active{opacity:.6;}
+.j-wt-bw-ctrl{padding:0 12px;}
+.j-wt-bw-display{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:1px;}
 
 /* ── Sets grid: all sets in one horizontal row ── */
 .j-sets-grid{
@@ -1551,16 +1555,26 @@ function applyCustomAccent(hex){
   document.body.style.setProperty('--accent-glow',accentGlow);
   document.body.style.setProperty('--j-acc',hex);
 }
-function fmtWt(n,noUnit){
+function fmtWt(n,noUnit,weightType){
+  const type=weightType||'standard';
+  if(type==='bw') return 'BW';
+  if(type==='level'){
+    const lvl=parseInt(n);
+    return isNaN(lvl)?'Lvl —':(noUnit?String(lvl):'Lvl '+lvl);
+  }
   if(n==null||n==='') return '—';
   const v=parseFloat(n);
   if(isNaN(v)) return '—';
   const unit=cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs';
+  let display;
   if(unit==='kg'){
     const kg=(v*0.453592).toFixed(1);
-    return noUnit?kg:kg+' kg';
+    display=noUnit?kg:kg+' kg';
+  } else {
+    display=noUnit?String(v):v+' lbs';
   }
-  return noUnit?String(v):v+' lbs';
+  if(type==='bw+') return 'BW +'+display;
+  return display;
 }
 applyBodyClasses();
 if(cfg.accentColor) applyCustomAccent(cfg.accentColor);
@@ -1809,7 +1823,7 @@ async function modalGistConnect(){
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 function dotw(iso){return DAYS[new Date(iso+'T12:00:00').getDay()];}
 function fmtDate(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
-function todayISO(){return new Date().toISOString().split('T')[0];}
+function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
@@ -1867,6 +1881,7 @@ function fmtCalFull(s){
 }
 function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
+function lastForExByType(name,type){for(const s of sessions){const e=s.exercises.find(e=>e.name===name&&(e.weightType||'standard')===type);if(e)return e;}return null;}
 function machById(id){return machines.find(m=>m.id===id);}
 
 function toast(msg,dur){
@@ -2097,7 +2112,7 @@ function renderPending(){
     const plateau=getPlateauCount(ex.name,ex.group);
     const plateauHtml=plateau>=3?`<span class="plateau-hint${plateau>=5?' strong':''}">↑ Push it! (${plateau}× same)</span>`:'';
     const lastHtml=last?`<div class="ex-last-bar">
-      <span>Last:</span><span style="font-weight:700;color:var(--text);font-size:13px;">${fmtWt(last.weight)}</span>
+      <span>Last:</span><span style="font-weight:700;color:var(--text);font-size:13px;">${fmtWt(last.weight,false,last.weightType)}</span>
       ${plateauHtml}
     </div>`:(plateauHtml?`<div class="ex-last-bar">${plateauHtml}</div>`:'');
     const nameEsc=esc(ex.name).replace(/'/g,'&#39;');
@@ -2230,13 +2245,18 @@ function startWorkout(){
       const grp=groups.find(g=>g.name===ex.group);
       const exDef=grp?grp.exercises.find(e=>e.name===ex.name):null;
       let weight=0;
+      const weightType=last?last.weightType||'standard':'standard';
       if(last){
         const{sets:ls,reps:lr}=parseScheme(last.scheme);
-        weight=calcSuggestedWeight(last.weight,lr,ls,reps,sets);
+        if(weightType==='standard'||weightType==='bw+'){
+          weight=calcSuggestedWeight(last.weight,lr,ls,reps,sets);
+        } else {
+          weight=last.weight||0; // preserve level number or bw+ amount as-is
+        }
       }
       return{
         name:ex.name,group:ex.group,scheme:ex.scheme,
-        weight,sets,targetReps:reps,
+        weight,weightType,sets,targetReps:reps,
         repsLog:Array(sets).fill(reps),setsDone:Array(sets).fill(false),
         arrow:null,last:last||null,cue:exDef?exDef.cue||'':''
       };
@@ -2297,7 +2317,7 @@ function renderToday(){
     const allDone=ex.setsDone.every(Boolean);
     const cp=cfg.cardPrefs||DEF_CFG.cardPrefs;
     const lastInfo=(cp.showLastSession!==false)&&ex.last
-      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight)}</span>${ex.last.scheme&&ex.last.scheme!==ex.scheme?`<span style="font-size:9px;color:var(--j-mut);margin-left:3px;">(${esc(ex.last.scheme)})</span>`:''}</div>`
+      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight,false,ex.last.weightType)}</span>${ex.last.scheme&&ex.last.scheme!==ex.scheme?`<span style="font-size:9px;color:var(--j-mut);margin-left:3px;">(${esc(ex.last.scheme)})</span>`:''}</div>`
       :'';
 
     const prKey=ex.group+'::'+ex.name;
@@ -2316,14 +2336,17 @@ function renderToday(){
       </div>
       <div class="j-wt-row">
         <span class="j-wt-lbl">Weight</span>
-        <div class="j-wt-ctrl">
-          <button class="j-adj" onclick="adjWt(${ei},-${inc})">−</button>
+        ${(ex.weightType||'standard')==='bw'
+          ?`<div class="j-wt-ctrl j-wt-bw-ctrl"><span class="j-wt-bw-display">BW</span></div>`
+          :`<div class="j-wt-ctrl">
+          <button class="j-adj" onclick="adjWt(${ei},-${(ex.weightType||'standard')==='level'?1:inc})">−</button>
           <input class="j-wt-val" type="number" inputmode="decimal" id="wt-${ei}"
+            step="${(ex.weightType||'standard')==='level'?'1':'any'}"
             value="${ex.weight}" onchange="setWt(${ei},this.value)" onfocus="this.select()">
-          <button class="j-adj" onclick="adjWt(${ei},${inc})">+</button>
-        </div>
-        <span class="j-wt-unit" style="font-size:9px;color:var(--j-mut);">${(cfg.profile&&cfg.profile.weightUnit==='kg')?'kg':'lbs'}</span>
-        <button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>
+          <button class="j-adj" onclick="adjWt(${ei},${(ex.weightType||'standard')==='level'?1:inc})">+</button>
+        </div>`}
+        <button class="j-wt-type-badge" title="Change weight type" onclick="cycleWeightType(${ei})">${wtTypeLabel(ex)}</button>
+        ${(ex.weightType||'standard')==='standard'?`<button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>`:''}
       </div>
       <div class="j-pr-badge" id="pr-badge-${ei}" style="${isPR?'':'display:none'}">🔥 NEW PR!</div>
       ${buildSetsArea(ex,ei)}
@@ -2418,14 +2441,53 @@ function updateLiveTimer(){
 
 /* Journal interactions */
 function adjWt(ei,d){
-  active.exercises[ei].weight=Math.max(0,(active.exercises[ei].weight||0)+d);
-  const el=document.getElementById('wt-'+ei);if(el)el.value=active.exercises[ei].weight;
+  const ex=active.exercises[ei];
+  let newVal=Math.max(0,(ex.weight||0)+d);
+  if((ex.weightType||'standard')==='level') newVal=Math.round(newVal);
+  ex.weight=newVal;
+  const el=document.getElementById('wt-'+ei);if(el)el.value=ex.weight;
   updatePRBadge(ei);
   saveActiveThrottled();
 }
 function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;updatePRBadge(ei);saveActiveThrottled();}
+function cycleWeightType(ei){
+  const TYPES=['standard','level','bw','bw+'];
+  const ex=active.exercises[ei];
+  const idx=TYPES.indexOf(ex.weightType||'standard');
+  const newType=TYPES[(idx+1)%TYPES.length];
+  ex.weightType=newType;
+  if(newType==='bw'){
+    ex.weight=0;
+  } else {
+    const lastOfType=lastForExByType(ex.name,newType);
+    if(lastOfType){
+      if(newType==='standard'){
+        const{sets:ls,reps:lr}=parseScheme(lastOfType.scheme);
+        const{sets,reps}=parseScheme(ex.scheme);
+        ex.weight=calcSuggestedWeight(lastOfType.weight,lr,ls,reps,sets);
+      } else {
+        ex.weight=lastOfType.weight||0;
+      }
+    } else {
+      ex.weight=0;
+    }
+  }
+  renderToday();
+  saveActiveThrottled();
+}
+function wtTypeLabel(ex){
+  const unit=cfg.profile&&cfg.profile.weightUnit==='kg'?'KG':'LBS';
+  switch(ex.weightType||'standard'){
+    case 'level':return'LVL';
+    case 'bw':return'BW';
+    case 'bw+':return'BW+';
+    default:return unit;
+  }
+}
 function updatePRBadge(ei){
   const ex=active.exercises[ei];
+  const wt=ex.weightType||'standard';
+  if(wt==='bw'){const badge=document.getElementById('pr-badge-'+ei);if(badge)badge.style.display='none';return;}
   const k=ex.group+'::'+ex.name;
   const prW=(stats.prs&&stats.prs[k])?stats.prs[k].weight:0;
   const badge=document.getElementById('pr-badge-'+ei);
@@ -2646,7 +2708,7 @@ async function saveWorkout(){
     cardio:active.cardio.machine?dc(active.cardio):null,
     exercises:active.exercises.map(ex=>({
       name:ex.name,group:ex.group,scheme:ex.scheme,
-      weight:ex.weight,repsLog:[...ex.repsLog],arrow:ex.arrow||'eq'
+      weight:ex.weight,weightType:ex.weightType||'standard',repsLog:[...ex.repsLog],arrow:ex.arrow||'eq'
     }))
   };
   // Snapshot PRs before update so we can detect new ones
@@ -2662,15 +2724,18 @@ async function saveWorkout(){
   if(!stats.prs)stats.prs={};
   session.exercises.forEach(ex=>{
     const k=ex.group+'::'+ex.name;
+    const wt=ex.weightType||'standard';
     stats.exercises[k]=(stats.exercises[k]||0)+1;
     if(!stats.weightHistory[k])stats.weightHistory[k]=[];
-    stats.weightHistory[k].push({date:session.date,weight:ex.weight});
+    stats.weightHistory[k].push({date:session.date,weight:ex.weight,weightType:wt});
     const repsThisSession=(ex.repsLog||[]).reduce((a,b)=>a+(isNaN(b)?0:+b),0);
     stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
-    // Update PRs
-    const cur=stats.prs[k];
-    if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){
-      stats.prs[k]={weight:ex.weight,date:session.date,scheme:ex.scheme,reps:ex.repsLog};
+    // Update PRs (skip for pure bodyweight — no numeric comparison meaningful)
+    if(wt!=='bw'){
+      const cur=stats.prs[k];
+      if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){
+        stats.prs[k]={weight:ex.weight,weightType:wt,date:session.date,scheme:ex.scheme,reps:ex.repsLog};
+      }
     }
   });
   sv('fj_stats',stats);
@@ -2681,7 +2746,7 @@ async function saveWorkout(){
     const k=ex.group+'::'+ex.name;
     const was=prsBefore[k];
     const now=stats.prs[k];
-    if(now&&(!was||now.weight>was.weight)){newPRs.push({name:ex.name,weight:now.weight,prev:was?was.weight:0});}
+    if(now&&(!was||now.weight>was.weight)){newPRs.push({name:ex.name,weight:now.weight,weightType:now.weightType||'standard',prev:was?was.weight:0});}
   });
 
   // Process gamification (XP + badges) — must happen after stats are updated
@@ -2711,7 +2776,7 @@ function showWorkoutSummary(session,newPRs,gamResult){
   const totalSets=session.exercises.reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const calHtml=session.calories?`<div class="summ-stat"><div class="summ-stat-val">🔥${session.calories}</div><div class="summ-stat-lbl">cal${session.caloriesEst?' (est)':''}</div></div>`:'';
   const effortHtml=session.effort?`<div class="summ-effort" style="color:${effortColors[session.effort]}">${effortLabels[session.effort]}</div>`:'';
-  const prHtml=newPRs.length?`<div class="summ-prs"><div class="summ-prs-title">🏆 NEW PRs THIS SESSION</div>${newPRs.map(p=>`<div class="summ-pr-row"><span>${esc(p.name)}</span><span style="color:var(--accent);font-weight:700;">${fmtWt(p.weight)}</span></div>`).join('')}</div>`:'';
+  const prHtml=newPRs.length?`<div class="summ-prs"><div class="summ-prs-title">🏆 NEW PRs THIS SESSION</div>${newPRs.map(p=>`<div class="summ-pr-row"><span>${esc(p.name)}</span><span style="color:var(--accent);font-weight:700;">${fmtWt(p.weight,false,p.weightType)}</span></div>`).join('')}</div>`:'';
   const {xpGained=0,newBadges=[],leveledUp=false,newLevel=1}=gamResult||{};
   const tierC={bronze:'#cd7f32',silver:'#94a3b8',gold:'#f59e0b',platinum:'#a5b4fc'};
   const prog=getLevelProgress(gamification.xp||0,gamification.level||1);
@@ -2899,7 +2964,7 @@ function renderWeekView(){
       (s.exercises||[]).forEach((ex,ei)=>{
         const chipKey=`${s.id}::${ei}`;
         const isExp=expandedChip===chipKey;
-        const pills=ex.repsLog.map((r,si2)=>`<span class="wec-set-pill">Set ${si2+1}: ${fmtWt(ex.weight)} × ${r}</span>`).join('');
+        const pills=ex.repsLog.map((r,si2)=>`<span class="wec-set-pill">Set ${si2+1}: ${fmtWt(ex.weight,false,ex.weightType)} × ${r}</span>`).join('');
         detailHtml+=`
           <div class="week-ex-chip${isExp?' expanded':''}" onclick="toggleChip('${chipKey}')">
             <div class="wec-top">
@@ -2908,7 +2973,7 @@ function renderWeekView(){
                 <div class="wec-sub">${esc(ex.group)} · ${esc(ex.scheme)}</div>
               </div>
               <div class="wec-right">
-                <span class="wec-wt">${fmtWt(ex.weight)}</span>
+                <span class="wec-wt">${fmtWt(ex.weight,false,ex.weightType)}</span>
                 <span class="wec-expand-icon">▼</span>
               </div>
             </div>
@@ -3451,8 +3516,9 @@ function renderPRs(){
       const prCalHtml=prSession&&prSession.calories?`<span style="font-size:9px;color:var(--accent);font-weight:600;margin-left:6px;">🔥${prSession.caloriesEst?'~':''}${prSession.calories}${prSession.caloriesEst?' (est.)':''}</span>`:'';
       // 1RM estimate (Epley formula)
       const prMaxReps=Math.max(...((pr.reps||[]).filter(r=>!isNaN(r)&&r>0)),0);
-      const est1rm=prMaxReps>1?Math.round(pr.weight*(1+prMaxReps/30)):0;
-      const wtUnit=cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs';
+      const prWtType=pr.weightType||'standard';
+      const est1rm=(prWtType==='standard'||prWtType==='bw+')&&prMaxReps>1?Math.round(pr.weight*(1+prMaxReps/30)):0;
+      const wtUnit=prWtType==='level'?'Lvl':prWtType==='bw'?'BW':prWtType==='bw+'?((cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs')+'+'):(cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs');
       html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="pr-info">
@@ -3460,13 +3526,13 @@ function renderPRs(){
             <div class="pr-meta">${esc(pr.scheme||'')} · ${esc(pr.date||'')}${prCalHtml} ${trendHtml}</div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
-            <div class="pr-weight">${fmtWt(pr.weight,true)}</div>
+            <div class="pr-weight">${fmtWt(pr.weight,true,prWtType)}</div>
             <div class="pr-unit">${wtUnit} PR</div>
             ${est1rm?`<div class="pr-1rm">~${fmtWt(est1rm)} 1RM</div>`:''}
           </div>
         </div>
         ${hist.length>1?`<div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="font-size:9px;color:var(--text3);">${hist.length} sessions · started ${fmtWt(hist[0].weight)}</div>
+          <div style="font-size:9px;color:var(--text3);">${hist.length} sessions · started ${fmtWt(hist[0].weight,false,hist[0].weightType)}</div>
           ${sparkHtml}
         </div>`:''}
       </div>`;
