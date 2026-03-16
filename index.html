@@ -1813,12 +1813,25 @@ function todayISO(){return new Date().toISOString().split('T')[0];}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
-// Estimate suggested weight for a new scheme given last session data.
-// Uses Epley 1RM formula plus a per-set fatigue factor (~2.5% per additional set).
+// % of 1RM intensity by rep count, based on standard training zones:
+// Strength (1-6 reps): 80-90%, Hypertrophy (7-12): 65-75%, Endurance (15+): <60%
+function repIntensity(r){
+  if(r<=1)return 1.00; if(r<=2)return 0.95; if(r<=3)return 0.90;
+  if(r<=4)return 0.88; if(r<=5)return 0.85; if(r<=6)return 0.82;
+  if(r<=7)return 0.80; if(r<=8)return 0.77; if(r<=9)return 0.75;
+  if(r<=10)return 0.72; if(r<=11)return 0.70; if(r<=12)return 0.67;
+  if(r<=14)return 0.63; return 0.58; // 15+ endurance: under 60%
+}
+// Suggest starting weight for a new scheme given last session data.
+// Uses ratio of rep-zone intensities so same scheme always returns same weight,
+// and crossing zones (e.g. hypertrophy→strength) scales accordingly.
+// Sets penalty: ~2% per additional set to account for cumulative fatigue.
 function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
-  if(!lastWeight||lastWeight<=0||!lastReps)return lastWeight||0;
-  const orm=lastWeight*(1+lastReps/30)*(1+(lastSets-1)*0.025);
-  const raw=orm/((1+newReps/30)*(1+(newSets-1)*0.025));
+  if(!lastWeight||lastWeight<=0)return 0;
+  const repsRatio=repIntensity(newReps)/repIntensity(lastReps);
+  const lastSetsAdj=Math.max(0.75,1-(lastSets-1)*0.02);
+  const newSetsAdj=Math.max(0.75,1-(newSets-1)*0.02);
+  const raw=lastWeight*repsRatio*(lastSetsAdj/newSetsAdj);
   const inc=cfg.weightIncrement||5;
   return Math.round(raw/inc)*inc;
 }
