@@ -3277,13 +3277,14 @@ function rebuildStats(){
     (sess.exercises||[]).forEach(ex=>{
       const k=ex.group+'::'+ex.name;
       s.exercises[k]=(s.exercises[k]||0)+1;
+      const wt=ex.weightType||'standard';
       if(!s.weightHistory[k])s.weightHistory[k]=[];
-      s.weightHistory[k].push({date:sess.date,weight:ex.weight});
+      s.weightHistory[k].push({date:sess.date,weight:ex.weight,weightType:wt});
       const reps=(ex.repsLog||[]).reduce((a,b)=>a+b,0);
       s.totalReps[k]=(s.totalReps[k]||0)+reps;
       const cur=s.prs[k];
-      if(!cur||ex.weight>cur.weight){
-        s.prs[k]={weight:ex.weight,date:sess.date,scheme:ex.scheme,reps:ex.repsLog};
+      if(wt!=='bw'&&(!cur||ex.weight>cur.weight)){
+        s.prs[k]={weight:ex.weight,weightType:wt,date:sess.date,scheme:ex.scheme,reps:ex.repsLog};
       }
     });
   });
@@ -3361,10 +3362,19 @@ function renderEditModal(){
         <div class="me-field" style="flex:1;min-width:140px;"><span class="me-field-lbl">Exercise</span>
           <select class="me-inp" style="width:100%;" onchange="editSessionData.exercises[${i}].name=this.value">${exOpts}</select>
         </div>
-        <div class="me-field"><span class="me-field-lbl">Weight (lb)</span>
-          <input class="me-inp me-inp-sm" type="number" inputmode="decimal" value="${ex.weight||0}"
-            onchange="editSessionData.exercises[${i}].weight=parseFloat(this.value)||0">
+        <div class="me-field"><span class="me-field-lbl">Type</span>
+          <select class="me-inp" onchange="editSessionData.exercises[${i}].weightType=this.value;renderEditModal()">
+            <option value="standard"${(ex.weightType||'standard')==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
+            <option value="level"${ex.weightType==='level'?' selected':''}>Level</option>
+            <option value="bw"${ex.weightType==='bw'?' selected':''}>Bodyweight</option>
+            <option value="bw+"${ex.weightType==='bw+'?' selected':''}>BW+</option>
+          </select>
         </div>
+        ${(ex.weightType||'standard')!=='bw'?`<div class="me-field"><span class="me-field-lbl">${wtTypeLabel(ex)}</span>
+          <input class="me-inp me-inp-sm" type="number" inputmode="${(ex.weightType||'standard')==='level'?'numeric':'decimal'}"
+            step="${(ex.weightType||'standard')==='level'?'1':'any'}" value="${ex.weight||0}"
+            onchange="editSessionData.exercises[${i}].weight=${(ex.weightType||'standard')==='level'?'parseInt':'parseFloat'}(this.value)||0">
+        </div>`:''}
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="editSetScheme(${i},this.value)">
             ${getSchemes().map(sc=>`<option${ex.scheme===sc?' selected':''}>${sc}</option>`).join('')}
@@ -3414,7 +3424,7 @@ function editAddEx(){
   const gmap=getGroupExerciseMap();
   const g=gmap[0]||{name:'General',exercises:[]};
   const exName=g.exercises[0]||'Unnamed';
-  editSessionData.exercises.push({name:exName,group:g.name,scheme:'3×10',weight:0,repsLog:[10,10,10],arrow:'eq'});
+  editSessionData.exercises.push({name:exName,group:g.name,scheme:'3×10',weight:0,weightType:'standard',repsLog:[10,10,10],arrow:'eq'});
   renderEditModal();
   setTimeout(()=>{const m=document.querySelector('.modal');if(m)m.scrollTop=m.scrollHeight;},50);
 }
@@ -3437,11 +3447,13 @@ async function saveEditSession(){
   if(idx===-1){toast('Session not found');return;}
   const newDate=dateEl?dateEl.value.trim():editSessionData.date;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate)){toast('Invalid date format');return;}
+  if(newDate>todayISO()){toast('Date cannot be in the future');return;}
   editSessionData.date=newDate;
   editSessionData.notes=notesEl?notesEl.value:editSessionData.notes;
   editSessionData.effort=effortEl&&effortEl.value?parseInt(effortEl.value):null;
   editSessionData.duration=durEl?durEl.value:editSessionData.duration;
   sessions[idx]=editSessionData;
+  sessions.sort((a,b)=>b.date.localeCompare(a.date));
   sv('fj_sessions',sessions);
   rebuildStats();
   document.getElementById('modal-root').innerHTML='';
@@ -4515,9 +4527,19 @@ function renderManualModal(){
           <select class="me-inp" style="width:100%;" onchange="setManualExName(${i},this.value)">${exOpts}</select>
           ${ex.name==='__new__'?`<input class="me-inp" style="width:100%;margin-top:5px;" type="text" placeholder="New exercise name" onchange="manualExercises[${i}].customName=this.value">`:''}
         </div>
-        <div class="me-field"><span class="me-field-lbl">Weight (lb)</span>
-          <input class="me-inp me-inp-sm" type="number" inputmode="decimal" placeholder="0" value="${ex.weight||''}" onchange="manualExercises[${i}].weight=parseFloat(this.value)||0">
+        <div class="me-field"><span class="me-field-lbl">Type</span>
+          <select class="me-inp" onchange="manualExercises[${i}].weightType=this.value;renderManualModal()">
+            <option value="standard"${(ex.weightType||'standard')==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
+            <option value="level"${ex.weightType==='level'?' selected':''}>Level</option>
+            <option value="bw"${ex.weightType==='bw'?' selected':''}>Bodyweight</option>
+            <option value="bw+"${ex.weightType==='bw+'?' selected':''}>BW+</option>
+          </select>
         </div>
+        ${(ex.weightType||'standard')!=='bw'?`<div class="me-field"><span class="me-field-lbl">${wtTypeLabel(ex)}</span>
+          <input class="me-inp me-inp-sm" type="number" inputmode="${(ex.weightType||'standard')==='level'?'numeric':'decimal'}"
+            step="${(ex.weightType||'standard')==='level'?'1':'any'}" placeholder="0" value="${ex.weight||''}"
+            onchange="manualExercises[${i}].weight=${(ex.weightType||'standard')==='level'?'parseInt':'parseFloat'}(this.value)||0">
+        </div>`:''}
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="setManualScheme(${i},this.value)">
             ${getSchemes().map(s=>`<option${ex.scheme===s?' selected':''}>${s}</option>`).join('')}
@@ -4572,7 +4594,7 @@ function setManualGroup(i,val){manualExercises[i].group=val;manualExercises[i].n
 function setManualExName(i,val){manualExercises[i].name=val;manualExercises[i].customName='';renderManualModal();}
 function setManualScheme(i,val){const{sets,reps}=parseScheme(val);manualExercises[i].scheme=val;manualExercises[i].repsLog=Array(sets).fill(reps);renderManualModal();}
 function addManualEx(){
-  manualExercises.push({id:uid(),group:'',name:'',customGroup:'',customName:'',weight:0,scheme:'3×10',repsLog:[10,10,10],arrow:'eq'});
+  manualExercises.push({id:uid(),group:'',name:'',customGroup:'',customName:'',weight:0,weightType:'standard',scheme:'3×10',repsLog:[10,10,10],arrow:'eq'});
   renderManualModal();
   setTimeout(()=>{const m=document.querySelector('.modal');if(m)m.scrollTop=m.scrollHeight;},50);
 }
@@ -4585,6 +4607,7 @@ async function saveManualSession(){
   const dateEl=document.getElementById('me-date');
   const date=dateEl?dateEl.value:todayISO();
   if(!date){toast('Pick a date');return;}
+  if(date>todayISO()){toast('Date cannot be in the future');return;}
   if(!manualExercises.length){toast('Add at least one exercise');return;}
   const exercises=manualExercises.map(ex=>{
     const grp=ex.group==='__new__'?(ex.customGroup.trim()||'General'):ex.group||'General';
@@ -4599,7 +4622,7 @@ async function saveManualSession(){
       if(tg&&!tg.exercises.some(e=>e.name.toLowerCase()===ex.customName.trim().toLowerCase()))
         tg.exercises.push({id:uid(),name:ex.customName.trim(),enabled:true});
     }
-    return{name,group:grp,scheme:ex.scheme||'3×10',weight:parseFloat(ex.weight)||0,repsLog:ex.repsLog.map(r=>parseInt(r)||0),arrow:ex.arrow||'eq'};
+    return{name,group:grp,scheme:ex.scheme||'3×10',weight:parseFloat(ex.weight)||0,weightType:ex.weightType||'standard',repsLog:ex.repsLog.map(r=>parseInt(r)||0),arrow:ex.arrow||'eq'};
   });
   sv('fj_groups',groups);
   const notesEl=document.getElementById('me-notes');
@@ -4621,12 +4644,13 @@ async function saveManualSession(){
     stats.exercises[k]=(stats.exercises[k]||0)+1;
     if(!stats.weightHistory)stats.weightHistory={};
     if(!stats.weightHistory[k])stats.weightHistory[k]=[];
-    stats.weightHistory[k].push({date,weight:ex.weight});
+    const wt=ex.weightType||'standard';
+    stats.weightHistory[k].push({date,weight:ex.weight,weightType:wt});
     stats.weightHistory[k].sort((a,b)=>a.date.localeCompare(b.date));
     if(!stats.totalReps)stats.totalReps={};
     stats.totalReps[k]=(stats.totalReps[k]||0)+ex.repsLog.reduce((a,b)=>a+b,0);
     const cur=stats.prs[k];
-    if(!cur||ex.weight>cur.weight) stats.prs[k]={weight:ex.weight,date,scheme:ex.scheme,reps:ex.repsLog};
+    if(wt!=='bw'&&(!cur||ex.weight>cur.weight)) stats.prs[k]={weight:ex.weight,weightType:wt,date,scheme:ex.scheme,reps:ex.repsLog};
   });
   sv('fj_stats',stats);
   document.getElementById('modal-root').innerHTML='';
