@@ -2454,7 +2454,6 @@ function cycleWeightType(ei){
   const ex=active.exercises[ei];
   const idx=TYPES.indexOf(ex.weightType||'standard');
   ex.weightType=TYPES[(idx+1)%TYPES.length];
-  if(ex.weightType==='bw')ex.weight=0;
   renderToday();
   saveActiveThrottled();
 }
@@ -2463,7 +2462,7 @@ function wtTypeLabel(ex){
   switch(ex.weightType||'standard'){
     case 'level':return'Lvl';
     case 'bw':return'BW';
-    case 'bw+':return unit+'+';
+    case 'bw+':return'BW+';
     default:return unit;
   }
 }
