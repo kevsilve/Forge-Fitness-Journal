@@ -1001,6 +1001,7 @@ body{
 }
 .j-sticky-sets{font-size:11px;font-weight:700;color:var(--j-txt);letter-spacing:.2px;}
 .j-sticky-timer{font-size:12px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;font-variant-numeric:tabular-nums;}
+.j-sticky-cal{font-size:11px;font-weight:600;color:var(--j-mut);letter-spacing:.3px;font-variant-numeric:tabular-nums;}
 /* ── Progress bar ── */
 .j-progress{height:3px;background:var(--j-bor2);overflow:hidden;}
 .j-progress-fill{height:100%;background:var(--j-acc);transition:width .35s cubic-bezier(.4,0,.2,1);will-change:width;}
@@ -2317,7 +2318,8 @@ function renderToday(){
   </div>
   <div class="j-sticky-bar">
     <div class="j-sticky-inner">
-      <span class="j-sticky-sets"><span id="sets-counter">${doneSets}/${totalSets}</span> sets · started ${fmtTime(w.startedAt)}</span>
+      <span class="j-sticky-sets"><span id="sticky-sets-counter">${doneSets}/${totalSets}</span> sets · started ${fmtTime(w.startedAt)}</span>
+      <span class="j-sticky-cal" id="sticky-cal"></span>
       <span class="j-sticky-timer j-live-timer" id="live-elapsed">—</span>
     </div>
     <div class="j-progress"><div class="j-progress-fill${doneSets===totalSets&&totalSets>0?' complete':''}" id="j-prog-fill" style="width:${totalSets>0?Math.round((doneSets/totalSets)*100):0}%"></div></div>
@@ -2447,6 +2449,15 @@ function updateLiveTimer(){
   const m=Math.floor((secs%3600)/60);
   const s=secs%60;
   el.textContent=h>0?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  updateStickyCalories();
+}
+function updateStickyCalories(){
+  const el=document.getElementById('sticky-cal');
+  if(!el)return;
+  if(!active?.startedAt||!cfg.profile?.weight){el.textContent='';return;}
+  const elapsedMin=Math.max(1,Math.floor((Date.now()-new Date(active.startedAt))/60000));
+  const est=estimateCalories(active.exercises,elapsedMin,active.effort||2,cfg.profile);
+  el.textContent=est?`~${est} cal`:'';
 }
 
 /* Journal interactions */
@@ -2590,7 +2601,10 @@ function toggleDone(ei,si){
   // Update sets counter
   const ctr=document.getElementById('sets-counter');
   if(ctr)ctr.textContent=`${doneSets}/${totalSets}`;
+  const stickyCtr=document.getElementById('sticky-sets-counter');
+  if(stickyCtr)stickyCtr.textContent=`${doneSets}/${totalSets}`;
   checkExComplete(ei);
+  updateStickyCalories();
   saveActiveToLocal();
   if(done) startRestTimer();
 }
@@ -2626,6 +2640,8 @@ function checkExComplete(ei){
   const doneSets=active.exercises.reduce((a,e)=>a+e.setsDone.filter(Boolean).length,0);
   const ctr=document.getElementById('sets-counter');
   if(ctr)ctr.textContent=doneSets+'/'+totalSets;
+  const stickyCtr=document.getElementById('sticky-sets-counter');
+  if(stickyCtr)stickyCtr.textContent=doneSets+'/'+totalSets;
 }
 function setEffort(n){
   active.effort=n;
@@ -2692,7 +2708,7 @@ function estimateCalories(exercises,durationMin,effort,profile){
     const reps=(ex.repsLog||[]).reduce((a,b)=>a+(b>0?b:0),0);
     volumeLb+=(ex.weight||0)*reps;
   });
-  const volBonus=volumeLb*0.02;
+  const volBonus=volumeLb*0.001;
   const total=Math.round(baseCal+volBonus);
   return total>0?total:null;
 }
