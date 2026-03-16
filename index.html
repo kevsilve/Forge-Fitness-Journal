@@ -1822,31 +1822,21 @@ function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
   const inc=cfg.weightIncrement||5;
   return Math.round(raw/inc)*inc;
 }
-// Build the sets column-headers + grid HTML, wrapping into rows of SETS_ROW_SIZE when there are many sets.
-const SETS_ROW_SIZE=5;
+// Build the sets column-headers + grid HTML.
+// ≤5 sets: single row. >5 sets: two balanced rows (ceil/floor split), each filling full width.
 function buildSetsArea(ex,ei){
-  // When multi-row, fix every cell to exactly 1/SETS_ROW_SIZE width so partial rows don't stretch.
-  const fixedW=ex.sets>SETS_ROW_SIZE?`style="flex:0 0 ${100/SETS_ROW_SIZE}%;box-sizing:border-box;"`:' ';
   function cellHtml(s){
     const done=ex.setsDone[s];
-    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" ${fixedW} onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
+    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
   }
-  const hdrW=ex.sets>SETS_ROW_SIZE?`style="flex:0 0 ${100/SETS_ROW_SIZE}%;box-sizing:border-box;"`:' ';
-  function hdrHtml(label){return`<div class="j-sets-col-hdr-cell" ${hdrW}>${label}</div>`;}
-  if(ex.sets<=SETS_ROW_SIZE){
-    const hdrs=Array.from({length:ex.sets},(_,s)=>hdrHtml(`S${s+1}`)).join('');
-    const cells=Array.from({length:ex.sets},(_,s)=>cellHtml(s)).join('');
-    return`<div class="j-sets-col-hdr">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
+  function rowHtml(from,to,cont){
+    const hdrs=Array.from({length:to-from},(_,i)=>`<div class="j-sets-col-hdr-cell">S${from+i+1}</div>`).join('');
+    const cells=Array.from({length:to-from},(_,i)=>cellHtml(from+i)).join('');
+    return`<div class="j-sets-col-hdr${cont?' j-sets-row-continuation':''}">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
   }
-  const rowCount=Math.ceil(ex.sets/SETS_ROW_SIZE);
-  let html='';
-  for(let r=0;r<rowCount;r++){
-    const start=r*SETS_ROW_SIZE;const end=Math.min(start+SETS_ROW_SIZE,ex.sets);
-    const hdrs=Array.from({length:end-start},(_,i)=>hdrHtml(`S${start+i+1}`)).join('');
-    const cells=Array.from({length:end-start},(_,i)=>cellHtml(start+i)).join('');
-    html+=`<div class="j-sets-col-hdr${r>0?' j-sets-row-continuation':''}">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
-  }
-  return html;
+  if(ex.sets<=5) return rowHtml(0,ex.sets,false);
+  const row1=Math.ceil(ex.sets/2);
+  return rowHtml(0,row1,false)+rowHtml(row1,ex.sets,true);
 }
 
 function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
