@@ -1823,15 +1823,14 @@ function repIntensity(r){
   if(r<=14)return 0.63; return 0.58; // 15+ endurance: under 60%
 }
 // Suggest starting weight for a new scheme given last session data.
-// Uses ratio of rep-zone intensities so same scheme always returns same weight,
-// and crossing zones (e.g. hypertrophy→strength) scales accordingly.
-// Sets penalty: ~2% per additional set to account for cumulative fatigue.
+// Uses ratio of rep-zone intensities so same scheme always returns same weight.
+// Sets penalty uses a hyperbolic model: 1/(1+(n-1)*0.05) — no hard cap,
+// so high-volume schemes (e.g. 10x10) get meaningfully lower suggestions.
 function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
   if(!lastWeight||lastWeight<=0)return 0;
   const repsRatio=repIntensity(newReps)/repIntensity(lastReps);
-  const lastSetsAdj=Math.max(0.75,1-(lastSets-1)*0.02);
-  const newSetsAdj=Math.max(0.75,1-(newSets-1)*0.02);
-  const raw=lastWeight*repsRatio*(newSetsAdj/lastSetsAdj);
+  const setsAdj=n=>1/(1+(n-1)*0.05);
+  const raw=lastWeight*repsRatio*(setsAdj(newSets)/setsAdj(lastSets));
   const inc=cfg.weightIncrement||5;
   return Math.round(raw/inc)*inc;
 }
