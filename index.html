@@ -1825,12 +1825,16 @@ function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
 // Build the sets column-headers + grid HTML, wrapping into rows of SETS_ROW_SIZE when there are many sets.
 const SETS_ROW_SIZE=5;
 function buildSetsArea(ex,ei){
+  // When multi-row, fix every cell to exactly 1/SETS_ROW_SIZE width so partial rows don't stretch.
+  const fixedW=ex.sets>SETS_ROW_SIZE?`style="flex:0 0 ${100/SETS_ROW_SIZE}%;box-sizing:border-box;"`:' ';
   function cellHtml(s){
     const done=ex.setsDone[s];
-    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
+    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" ${fixedW} onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
   }
+  const hdrW=ex.sets>SETS_ROW_SIZE?`style="flex:0 0 ${100/SETS_ROW_SIZE}%;box-sizing:border-box;"`:' ';
+  function hdrHtml(label){return`<div class="j-sets-col-hdr-cell" ${hdrW}>${label}</div>`;}
   if(ex.sets<=SETS_ROW_SIZE){
-    const hdrs=Array.from({length:ex.sets},(_,s)=>`<div class="j-sets-col-hdr-cell">S${s+1}</div>`).join('');
+    const hdrs=Array.from({length:ex.sets},(_,s)=>hdrHtml(`S${s+1}`)).join('');
     const cells=Array.from({length:ex.sets},(_,s)=>cellHtml(s)).join('');
     return`<div class="j-sets-col-hdr">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
   }
@@ -1838,7 +1842,7 @@ function buildSetsArea(ex,ei){
   let html='';
   for(let r=0;r<rowCount;r++){
     const start=r*SETS_ROW_SIZE;const end=Math.min(start+SETS_ROW_SIZE,ex.sets);
-    const hdrs=Array.from({length:end-start},(_,i)=>`<div class="j-sets-col-hdr-cell">S${start+i+1}</div>`).join('');
+    const hdrs=Array.from({length:end-start},(_,i)=>hdrHtml(`S${start+i+1}`)).join('');
     const cells=Array.from({length:end-start},(_,i)=>cellHtml(start+i)).join('');
     html+=`<div class="j-sets-col-hdr${r>0?' j-sets-row-continuation':''}">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
   }
@@ -3628,7 +3632,7 @@ function adjCfg(k,d){
 }
 let _newSchemeSets=3,_newSchemeReps=10;
 function adjNewScheme(field,d){
-  if(field==='sets'){_newSchemeSets=Math.max(1,Math.min(8,_newSchemeSets+d));const el=document.getElementById('ns-sets');if(el)el.textContent=_newSchemeSets;}
+  if(field==='sets'){_newSchemeSets=Math.max(1,Math.min(10,_newSchemeSets+d));const el=document.getElementById('ns-sets');if(el)el.textContent=_newSchemeSets;}
   else{_newSchemeReps=Math.max(1,Math.min(100,_newSchemeReps+d));const el=document.getElementById('ns-reps');if(el)el.textContent=_newSchemeReps;}
 }
 function addScheme(){
