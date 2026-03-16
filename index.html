@@ -360,8 +360,7 @@ body{
 .j-ex-scheme{font-size:9px;font-weight:700;color:var(--j-acc);background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.18);border-radius:3px;padding:2px 7px;letter-spacing:.5px;}
 .j-ex-last{font-size:9px;color:var(--j-mut);display:flex;align-items:center;gap:3px;}
 .j-ex-last-w{font-weight:700;color:var(--j-txt2);font-size:10px;}
-.j-larrow{font-size:11px;font-weight:700;}
-.j-larrow.up{color:var(--j-up);}.j-larrow.dn{color:var(--j-dn);}.j-larrow.eq{color:var(--j-eq);}
+
 
 /* ── Weight row ── */
 .j-wt-row{
@@ -404,6 +403,7 @@ body{
   border-right:1px solid var(--j-bor);
 }
 .j-sets-col-hdr-cell:last-child{border-right:none;}
+.j-sets-row-continuation{border-top:2px solid var(--j-bor2);}
 
 /* Set cell — full tap = toggle done; tap the number = edit reps */
 .j-cell-set{
@@ -460,27 +460,12 @@ body{
 }
 .j-cell-set-empty:last-child{border-right:none;}
 
-/* ── Next-session row ── */
-.j-next-row{
-  display:flex;align-items:center;padding:8px 12px;gap:8px;
-}
-.j-next-lbl{font-size:9px;font-weight:700;color:var(--j-mut);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;min-width:38px;}
-.j-abtn{
-  flex:1;padding:8px 6px;border:1.5px solid var(--j-bor2);border-radius:7px;
-  background:var(--j-sur);font-size:16px;cursor:pointer;
-  transition:all .15s;text-align:center;line-height:1;
-}
-.j-abtn:active{transform:scale(.94);}
-.j-abtn.aup{background:#dcfce7;border-color:var(--j-up);}
-.j-abtn.aeq{background:#f0fdf4;border-color:var(--j-up);}
-.j-abtn.adn{background:#fee2e2;border-color:var(--j-dn);}
 
 /* compat stubs */
 .j-wt-unit{} /* used in JS flush; keep visible but shrink */
 .j-sets-area,.j-set-rows,.j-set-row,.j-set-n,.j-set-num,.j-set-check,
 .j-set-tgt,.j-set-reps-wrap,.j-tgt,.j-chk,.j-next-lbl,.j-hint,
 .j-ex-hdr,.j-ex-scheme-old,.j-ex-complete-badge,.j-divider{display:none;}
-.j-abtn-sm{display:none;}
 
 /* CARDIO */
 .cardio-card{
@@ -652,8 +637,6 @@ body{
 .wec-sub{font-size:10px;color:var(--j-mut);margin-top:1px;}
 .wec-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .wec-wt{font-weight:700;font-size:13px;color:var(--j-txt);}
-.wec-arr{font-size:13px;font-weight:700;}
-.wec-arr.up{color:var(--j-up);}.wec-arr.dn{color:var(--j-dn);}.wec-arr.eq{color:var(--j-eq);}
 .wec-expand-icon{font-size:8px;color:var(--j-mut);transition:transform .2s;}
 .week-ex-chip.expanded .wec-expand-icon{transform:rotate(180deg);}
 .wec-detail-legacy{display:none;}
@@ -733,8 +716,6 @@ body{
 .h-ex-r{text-align:right;flex-shrink:0;}
 .h-ex-wt{font-weight:700;font-size:13px;color:var(--j-txt);}
 .h-ex-sets{font-size:10px;color:var(--j-mut);margin-top:2px;}
-.h-arr{font-size:13px;font-weight:700;margin-left:3px;}
-.h-arr.up{color:var(--j-up);}.h-arr.dn{color:var(--j-dn);}.h-arr.eq{color:var(--j-eq);}
 .h-cardio-row{padding:9px 13px;background:var(--j-tnt);border-top:1px solid var(--j-bor);display:flex;align-items:center;gap:9px;}
 .h-cardio-icon{font-size:18px;}
 .h-cardio-name{font-weight:600;font-size:12px;color:var(--j-txt);}
@@ -1350,14 +1331,14 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}};
+const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}, schemes:['3×10','3×12','4×10']};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
   {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
   {id:'m3',icon:'🪜',name:'Stair Climber',metric:'Floors',unit:'fl'},
   {id:'m4',icon:'🚲',name:'Stationary Bike',metric:'Distance',unit:'mi'}
 ];
-const SCHEMES = ['3×10','3×12','4×10'];
+function getSchemes(){return(cfg.schemes&&cfg.schemes.length)?cfg.schemes:['3×10','3×12','4×10'];}
 const DAYS_OF_WEEK = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const THEME_BASES = [
   {id:'dark',  label:'DARK',  bg:'#080808', text:'#ececec', dots:['#e8271f','#aaa','#0f0f0f']},
@@ -1832,8 +1813,44 @@ function todayISO(){return new Date().toISOString().split('T')[0];}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
-function arCls(a){return a==='up'?'up':a==='dn'?'dn':'eq';}
-function arSym(a){return a==='up'?'↑':a==='dn'?'↓':'=';}
+// % of 1RM intensity by rep count, based on standard training zones:
+// Strength (1-6 reps): 80-90%, Hypertrophy (7-12): 65-75%, Endurance (15+): <60%
+function repIntensity(r){
+  if(r<=1)return 1.00; if(r<=2)return 0.95; if(r<=3)return 0.90;
+  if(r<=4)return 0.88; if(r<=5)return 0.85; if(r<=6)return 0.82;
+  if(r<=7)return 0.80; if(r<=8)return 0.77; if(r<=9)return 0.75;
+  if(r<=10)return 0.72; if(r<=11)return 0.70; if(r<=12)return 0.67;
+  if(r<=14)return 0.63; return 0.58; // 15+ endurance: under 60%
+}
+// Suggest starting weight for a new scheme given last session data.
+// Uses ratio of rep-zone intensities so same scheme always returns same weight.
+// Sets penalty uses a hyperbolic model: 1/(1+(n-1)*0.05) — no hard cap,
+// so high-volume schemes (e.g. 10x10) get meaningfully lower suggestions.
+function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
+  if(!lastWeight||lastWeight<=0)return 0;
+  const repsRatio=repIntensity(newReps)/repIntensity(lastReps);
+  const setsAdj=n=>1/(1+(n-1)*0.05);
+  const raw=lastWeight*repsRatio*(setsAdj(newSets)/setsAdj(lastSets));
+  const inc=cfg.weightIncrement||5;
+  return Math.round(raw/inc)*inc;
+}
+// Build the sets column-headers + grid HTML.
+// ≤5 sets: single row. >5 sets: two balanced rows (ceil/floor split), each filling full width.
+function buildSetsArea(ex,ei){
+  function cellHtml(s){
+    const done=ex.setsDone[s];
+    return`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})"><div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})"><span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span><span class="j-set-slash">/</span><span class="j-set-target">${ex.targetReps}</span></div><input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric" value="${ex.repsLog[s]}" onchange="commitReps(${ei},${s},this.value)" onblur="blurReps(${ei},${s})" onclick="event.stopPropagation()"><div class="j-set-chk">✓</div></div>`;
+  }
+  function rowHtml(from,to,cont){
+    const hdrs=Array.from({length:to-from},(_,i)=>`<div class="j-sets-col-hdr-cell">S${from+i+1}</div>`).join('');
+    const cells=Array.from({length:to-from},(_,i)=>cellHtml(from+i)).join('');
+    return`<div class="j-sets-col-hdr${cont?' j-sets-row-continuation':''}">${hdrs}</div><div class="j-sets-grid">${cells}</div>`;
+  }
+  if(ex.sets<=5) return rowHtml(0,ex.sets,false);
+  const row1=Math.ceil(ex.sets/2);
+  return rowHtml(0,row1,false)+rowHtml(row1,ex.sets,true);
+}
+
 function fmtCal(s){if(!s.calories)return'';return s.caloriesEst?`~${s.calories} cal <span style="font-size:10px;opacity:.7;">(est.)</span>`:`${s.calories} cal`;}
 function sessionTotalCal(s){return(parseFloat(s.calories)||0)+(parseFloat(s.cardio?.calories)||0);}
 function fmtCalFull(s){
@@ -1961,7 +1978,7 @@ function togglePickerEx(name,group){
   if(!pending)pending=[];
   const idx=pending.findIndex(e=>e.name===name);
   if(idx>-1){pending.splice(idx,1);}
-  else{pending.push({name,group,isBonus:false,scheme:SCHEMES[0]});}
+  else{pending.push({name,group,isBonus:false,scheme:getSchemes()[0]});}
   const root=document.getElementById('modal-root');
   if(root)root.querySelector('.modal-body').innerHTML=renderPickerGroups();
   renderPending();
@@ -1971,7 +1988,7 @@ function togglePickerEx(name,group){
 function closePickerModal(){document.getElementById('modal-root').innerHTML='';}
 function cycleScheme(name){
   const ex=pending&&pending.find(e=>e.name===name);if(!ex)return;
-  const idx=SCHEMES.indexOf(ex.scheme);ex.scheme=SCHEMES[(idx+1)%SCHEMES.length];
+  const schemes=getSchemes();const idx=schemes.indexOf(ex.scheme);ex.scheme=schemes[(idx+1)%schemes.length];
   renderPending();
 }
 function removeCustomEx(name){
@@ -2037,7 +2054,7 @@ function generate(){
     const avail=enabledEx(g).filter(e=>!used.has(e.name));
     const count=Math.min(g.required||1, avail.length);
     const picked=shuffle(avail).slice(0,count);
-    for(const ex of picked){used.add(ex.name);result.push({name:ex.name,group:g.name,isBonus:false,scheme:pick(SCHEMES)});}
+    for(const ex of picked){used.add(ex.name);result.push({name:ex.name,group:g.name,isBonus:false,scheme:pick(getSchemes())});}
   }
   const bonusN=cfg.bonusSlots||2;
   const allGroups=groups.filter(g=>g.active);
@@ -2048,7 +2065,7 @@ function generate(){
     if(!cands.length)break;
     const g=pick(cands);
     const avail=enabledEx(g).filter(e=>!used.has(e.name));
-    if(avail.length){const ex=pick(avail);used.add(ex.name);bonusGroupsUsed.push(g.id);result.push({name:ex.name,group:g.name,isBonus:true,scheme:pick(SCHEMES)});}
+    if(avail.length){const ex=pick(avail);used.add(ex.name);bonusGroupsUsed.push(g.id);result.push({name:ex.name,group:g.name,isBonus:true,scheme:pick(getSchemes())});}
     else bonusGroupsUsed.push(g.id);
   }
   if(!result.length){toast('No exercises available! Check Settings → Exercise Pool');return;}
@@ -2081,7 +2098,6 @@ function renderPending(){
     const plateauHtml=plateau>=3?`<span class="plateau-hint${plateau>=5?' strong':''}">↑ Push it! (${plateau}× same)</span>`:'';
     const lastHtml=last?`<div class="ex-last-bar">
       <span>Last:</span><span style="font-weight:700;color:var(--text);font-size:13px;">${fmtWt(last.weight)}</span>
-      <span style="font-size:15px;font-weight:700;color:${last.arrow==='up'?'#22c55e':last.arrow==='dn'?'#ef4444':'#64748b'}">${arSym(last.arrow)}</span>
       ${plateauHtml}
     </div>`:(plateauHtml?`<div class="ex-last-bar">${plateauHtml}</div>`:'');
     const nameEsc=esc(ex.name).replace(/'/g,'&#39;');
@@ -2213,9 +2229,14 @@ function startWorkout(){
       const last=lastForEx(ex.name);
       const grp=groups.find(g=>g.name===ex.group);
       const exDef=grp?grp.exercises.find(e=>e.name===ex.name):null;
+      let weight=0;
+      if(last){
+        const{sets:ls,reps:lr}=parseScheme(last.scheme);
+        weight=calcSuggestedWeight(last.weight,lr,ls,reps,sets);
+      }
       return{
         name:ex.name,group:ex.group,scheme:ex.scheme,
-        weight:last?last.weight:0,sets,targetReps:reps,
+        weight,sets,targetReps:reps,
         repsLog:Array(sets).fill(reps),setsDone:Array(sets).fill(false),
         arrow:null,last:last||null,cue:exDef?exDef.cue||'':''
       };
@@ -2273,35 +2294,12 @@ function renderToday(){
   <div style="padding:0 0 8px;">`;
 
   w.exercises.forEach((ex,ei)=>{
-    const allDone=ex.setsDone.every(Boolean)&&ex.arrow!==null;
+    const allDone=ex.setsDone.every(Boolean);
     const cp=cfg.cardPrefs||DEF_CFG.cardPrefs;
     const lastInfo=(cp.showLastSession!==false)&&ex.last
-      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight)}</span><span class="j-larrow ${arCls(ex.last.arrow)}">${arSym(ex.last.arrow)}</span></div>`
+      ?`<div class="j-ex-last"><span style="margin-right:2px;">Prev:</span><span class="j-ex-last-w">${fmtWt(ex.last.weight)}</span>${ex.last.scheme&&ex.last.scheme!==ex.scheme?`<span style="font-size:9px;color:var(--j-mut);margin-left:3px;">(${esc(ex.last.scheme)})</span>`:''}</div>`
       :'';
 
-    // column headers: one per set
-    const colHdrs=Array.from({length:ex.sets},(_,s)=>`<div class="j-sets-col-hdr-cell">S${s+1}</div>`).join('');
-
-    // set cells
-    let setCells='';
-    for(let s=0;s<ex.sets;s++){
-      const done=ex.setsDone[s];
-      setCells+=`<div class="j-cell-set${done?' done':''}" id="row-${ei}-${s}" onclick="toggleDone(${ei},${s})">
-        <div class="j-set-frac" onclick="event.stopPropagation();startEditReps(event,${ei},${s})">
-          <span class="j-set-actual" id="sa-${ei}-${s}">${ex.repsLog[s]}</span>
-          <span class="j-set-slash">/</span>
-          <span class="j-set-target">${ex.targetReps}</span>
-        </div>
-        <input class="j-set-input" id="si-${ei}-${s}" type="number" inputmode="numeric"
-          value="${ex.repsLog[s]}"
-          onchange="commitReps(${ei},${s},this.value)"
-          onblur="blurReps(${ei},${s})"
-          onclick="event.stopPropagation()">
-        <div class="j-set-chk">✓</div>
-      </div>`;
-    }
-
-    const asel=a=>ex.arrow===a?` a${a}`:'';
     const prKey=ex.group+'::'+ex.name;
     const prW=(stats.prs&&stats.prs[prKey])?stats.prs[prKey].weight:0;
     const isPR=ex.weight>0&&ex.weight>prW;
@@ -2328,14 +2326,7 @@ function renderToday(){
         <button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>
       </div>
       <div class="j-pr-badge" id="pr-badge-${ei}" style="${isPR?'':'display:none'}">🔥 NEW PR!</div>
-      <div class="j-sets-col-hdr">${colHdrs}</div>
-      <div class="j-sets-grid">${setCells}</div>
-      <div class="j-next-row">
-        <span class="j-next-lbl">Next:</span>
-        <button class="j-abtn${asel('up')}"   onclick="setArrow(${ei},'up')">↑</button>
-        <button class="j-abtn${asel('eq')}"   onclick="setArrow(${ei},'eq')">✓</button>
-        <button class="j-abtn${asel('dn')}"   onclick="setArrow(${ei},'dn')">↓</button>
-      </div>
+      ${buildSetsArea(ex,ei)}
     </div>`;
   });
   html+='</div>'; // close exercises wrapper
@@ -2551,21 +2542,12 @@ function blurReps(ei,si){
 function checkExComplete(ei){
   const ex=active.exercises[ei];
   const card=document.getElementById('jex-'+ei);if(!card)return;
-  const allDone=ex.setsDone.every(Boolean)&&ex.arrow!==null;
+  const allDone=ex.setsDone.every(Boolean);
   card.classList.toggle('ex-complete',allDone);
   const totalSets=active.exercises.reduce((a,e)=>a+e.sets,0);
   const doneSets=active.exercises.reduce((a,e)=>a+e.setsDone.filter(Boolean).length,0);
   const ctr=document.getElementById('sets-counter');
   if(ctr)ctr.textContent=doneSets+'/'+totalSets;
-}
-function setArrow(ei,arrow){
-  active.exercises[ei].arrow=arrow;
-  const row=document.querySelector(`#jex-${ei} .j-next-row`);if(!row)return;
-  row.querySelectorAll('.j-abtn').forEach((btn,i)=>{
-    const a=['up','eq','dn'][i];btn.className='j-abtn'+(arrow===a?' a'+a:'');
-  });
-  checkExComplete(ei);
-  saveActiveToLocal();
 }
 function setEffort(n){
   active.effort=n;
@@ -2927,7 +2909,6 @@ function renderWeekView(){
               </div>
               <div class="wec-right">
                 <span class="wec-wt">${fmtWt(ex.weight)}</span>
-                <span class="wec-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span>
                 <span class="wec-expand-icon">▼</span>
               </div>
             </div>
@@ -3027,7 +3008,7 @@ function renderMonthView(){
           <div class="h-ex-row">
             <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
             <div class="h-ex-r">
-              <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
+              <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb</div>
               <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
             </div>
           </div>`).join('');
@@ -3138,7 +3119,7 @@ function renderListView(){
       <div class="h-ex-row">
         <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
         <div class="h-ex-r">
-          <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb<span class="h-arr ${arCls(ex.arrow)}">${arSym(ex.arrow)}</span></div>
+          <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb</div>
           <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
         </div>
       </div>`).join('');
@@ -3321,18 +3302,11 @@ function renderEditModal(){
         </div>
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="editSetScheme(${i},this.value)">
-            ${['3×10','3×12','4×10','3×8','4×8','5×5'].map(sc=>`<option${ex.scheme===sc?' selected':''}>${sc}</option>`).join('')}
+            ${getSchemes().map(sc=>`<option${ex.scheme===sc?' selected':''}>${sc}</option>`).join('')}
           </select>
         </div>
         <div class="me-field"><span class="me-field-lbl">Reps per set</span>
           <div style="display:flex;flex-direction:column;gap:4px;">${setsHtml}</div>
-        </div>
-        <div class="me-field"><span class="me-field-lbl">Next time</span>
-          <select class="me-inp" onchange="editSessionData.exercises[${i}].arrow=this.value">
-            <option value="up"${ex.arrow==='up'?' selected':''}>↑ Up</option>
-            <option value="eq"${ex.arrow==='eq'?' selected':''}>= Same</option>
-            <option value="dn"${ex.arrow==='dn'?' selected':''}>↓ Down</option>
-          </select>
         </div>
       </div>
     </div>`;
@@ -3560,6 +3534,23 @@ function renderWorkoutSettings(){
     <div class="s-row"><div class="s-lbl">Total Per Workout<span class="s-sub">Core + Bonus</span></div><span style="font-size:13px;font-weight:700;color:var(--accent)">${total}</span></div>
   </div>
   <div class="sett-card">
+    <div class="sett-card-title">Workout Schemes</div>
+    <div class="s-sub" style="padding:0 0 12px;color:var(--text3);font-size:11px;">Sets × Reps options used when generating and planning workouts</div>
+    <div class="inc-pills" style="flex-wrap:wrap;gap:6px;margin-bottom:14px;">${getSchemes().map(sc=>`<button class="inc-pill" style="display:inline-flex;align-items:center;gap:5px;" onclick="removeScheme('${esc(sc)}')">${esc(sc)} <span style="font-size:10px;opacity:.6;">×</span></button>`).join('')}</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span style="font-size:11px;color:var(--text3);">Sets</span>
+        <div class="num-ctrl"><button class="num-btn" onclick="adjNewScheme('sets',-1)">−</button><span class="num-val" id="ns-sets">3</span><button class="num-btn" onclick="adjNewScheme('sets',1)">+</button></div>
+      </div>
+      <span style="color:var(--text3);font-size:13px;">×</span>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span style="font-size:11px;color:var(--text3);">Reps</span>
+        <div class="num-ctrl"><button class="num-btn" onclick="adjNewScheme('reps',-1)">−</button><span class="num-val" id="ns-reps">10</span><button class="num-btn" onclick="adjNewScheme('reps',1)">+</button></div>
+      </div>
+      <button class="inc-pill active" style="flex-shrink:0;" onclick="addScheme()">+ Add</button>
+    </div>
+  </div>
+  <div class="sett-card">
     <div class="sett-card-title">Weight &amp; Schedule</div>
     <div class="s-row"><div class="s-lbl">Weight Increment<span class="s-sub">Amount ± buttons change weight by</span></div><div class="inc-pills">${incOpts}</div></div>
     <div class="s-row"><div class="s-lbl">Streak Period<span class="s-sub">How your streak is measured</span></div><div class="inc-pills"><button class="inc-pill${mode==='daily'?' active':''}" onclick="setStreakMode('daily')">Daily</button><button class="inc-pill${mode==='weekly'?' active':''}" onclick="setStreakMode('weekly')">Weekly</button><button class="inc-pill${mode==='monthly'?' active':''}" onclick="setStreakMode('monthly')">Monthly</button></div></div>
@@ -3580,7 +3571,7 @@ function renderWorkoutSettings(){
     <div class="s-row"><div class="s-lbl">Show Exercise Cues<span class="s-sub">Coaching notes displayed under exercise name</span></div>
       <label class="tog"><input type="checkbox" ${(cfg.cardPrefs&&cfg.cardPrefs.showCues!==false)?'checked':''} onchange="setCardPref('showCues',this.checked)"><span class="tog-track"></span></label>
     </div>
-    <div class="s-row"><div class="s-lbl">Show Last Session Weight<span class="s-sub">↑/=/↓ previous weight indicator on each lift</span></div>
+    <div class="s-row"><div class="s-lbl">Show Last Session Weight<span class="s-sub">Previous weight displayed on each lift</span></div>
       <label class="tog"><input type="checkbox" ${(cfg.cardPrefs&&cfg.cardPrefs.showLastSession!==false)?'checked':''} onchange="setCardPref('showLastSession',this.checked)"><span class="tog-track"></span></label>
     </div>
     <div class="s-row"><div class="s-lbl">Show Muscle Group Label<span class="s-sub">Group tag displayed beneath exercise name</span></div>
@@ -3640,6 +3631,22 @@ function toggleGrp(id){openGrp[id]=!openGrp[id];renderSettings();}
 function adjCfg(k,d){
   if(k==='bonusSlots')cfg.bonusSlots=Math.max(0,Math.min(10,(cfg.bonusSlots||2)+d));
   sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
+}
+let _newSchemeSets=3,_newSchemeReps=10;
+function adjNewScheme(field,d){
+  if(field==='sets'){_newSchemeSets=Math.max(1,Math.min(10,_newSchemeSets+d));const el=document.getElementById('ns-sets');if(el)el.textContent=_newSchemeSets;}
+  else{_newSchemeReps=Math.max(1,Math.min(100,_newSchemeReps+d));const el=document.getElementById('ns-reps');if(el)el.textContent=_newSchemeReps;}
+}
+function addScheme(){
+  const sc=_newSchemeSets+'×'+_newSchemeReps;
+  if(!cfg.schemes||!cfg.schemes.length)cfg.schemes=[...DEF_CFG.schemes];
+  if(cfg.schemes.includes(sc)){toast('Scheme already exists');return;}
+  cfg.schemes.push(sc);sv('fj_cfg',cfg);renderSettings();
+}
+function removeScheme(sc){
+  if(!cfg.schemes)cfg.schemes=[...DEF_CFG.schemes];
+  if(cfg.schemes.length<=1){toast('Must keep at least one scheme');return;}
+  cfg.schemes=cfg.schemes.filter(s=>s!==sc);sv('fj_cfg',cfg);renderSettings();
 }
 function adjRequired(gid,d){
   const g=groups.find(g=>g.id===gid);if(!g)return;
@@ -4447,7 +4454,7 @@ function renderManualModal(){
         </div>
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="setManualScheme(${i},this.value)">
-            ${['3×10','3×12','4×10','3×8','4×8','5×5'].map(s=>`<option${ex.scheme===s?' selected':''}>${s}</option>`).join('')}
+            ${getSchemes().map(s=>`<option${ex.scheme===s?' selected':''}>${s}</option>`).join('')}
           </select>
         </div>
         <div class="me-field"><span class="me-field-lbl">Reps per set</span>
@@ -4457,13 +4464,6 @@ function renderManualModal(){
               <input class="me-inp me-inp-sm" type="number" inputmode="numeric" value="${r}" onchange="manualExercises[${i}].repsLog[${si}]=parseInt(this.value)||0">
             </div>`).join('')}
           </div>
-        </div>
-        <div class="me-field"><span class="me-field-lbl">Next time</span>
-          <select class="me-inp" onchange="manualExercises[${i}].arrow=this.value">
-            <option value="up"${ex.arrow==='up'?' selected':''}>↑ Up</option>
-            <option value="eq"${ex.arrow==='eq'?' selected':''}>= Same</option>
-            <option value="dn"${ex.arrow==='dn'?' selected':''}>↓ Down</option>
-          </select>
         </div>
       </div>
     </div>`;
