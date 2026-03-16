@@ -23,12 +23,14 @@ body.base-dark{
   --j-acc:#e8271f;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0ede8;
   --j-tnt2:#e8e4de;--j-card:#fff;
 }
-body.base-dark #view-today,body.base-dark #view-history{
+body.base-dark #view-today,body.base-dark #view-history,body.base-dark #modal-root{
   --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
   --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
   --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
   --j-acc:var(--accent);
 }
+body.base-dark{color-scheme:dark;}
+body.base-light{color-scheme:light;}
 body.base-light{
   --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
   --border:#ddd9d3;--border2:#ccc8c2;--border3:#bbb6b0;
@@ -2353,7 +2355,7 @@ function renderToday(){
             value="${ex.weight||0}" placeholder="${isBW?'+ extra':''}" onchange="setWt(${ei},this.value)" onfocus="this.select()">
           <button class="j-adj" onclick="adjWt(${ei},${isLvl?1:inc})">+</button>
         </div>`;})()}
-        <button class="j-wt-type-badge" title="Change weight type" onclick="cycleWeightType(${ei})">${wtTypeLabel(ex)}</button>
+        <button class="j-wt-type-badge" id="wt-type-badge-${ei}" title="Change weight type" onclick="cycleWeightType(${ei})">${wtTypeLabel(ex)}</button>
         ${normalizeWeightType(ex.weightType)==='standard'?`<button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>`:''}
       </div>
       <div class="j-pr-badge" id="pr-badge-${ei}" style="${isPR?'':'display:none'}">🔥 NEW PR!</div>
@@ -2454,10 +2456,11 @@ function adjWt(ei,d){
   if(normalizeWeightType(ex.weightType)==='level') newVal=Math.round(newVal);
   ex.weight=newVal;
   const el=document.getElementById('wt-'+ei);if(el)el.value=ex.weight;
+  updateTypeBadge(ei);
   updatePRBadge(ei);
   saveActiveThrottled();
 }
-function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;updatePRBadge(ei);saveActiveThrottled();}
+function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;updateTypeBadge(ei);updatePRBadge(ei);saveActiveThrottled();}
 function cycleWeightType(ei){
   const TYPES=['standard','level','bodyweight'];
   const ex=active.exercises[ei];
@@ -2492,6 +2495,12 @@ function wtTypeLabel(ex){
     case 'bodyweight':return(ex.weight||0)>0?'BW+':'BW';
     default:return unit;
   }
+}
+function updateTypeBadge(ei){
+  const ex=active.exercises[ei];
+  if(normalizeWeightType(ex.weightType)!=='bodyweight') return;
+  const badge=document.getElementById('wt-type-badge-'+ei);
+  if(badge) badge.textContent=wtTypeLabel(ex);
 }
 function updatePRBadge(ei){
   const ex=active.exercises[ei];
