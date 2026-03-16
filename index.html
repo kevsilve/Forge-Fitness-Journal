@@ -1881,6 +1881,7 @@ function fmtCalFull(s){
 }
 function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
+function lastForExByType(name,type){for(const s of sessions){const e=s.exercises.find(e=>e.name===name&&(e.weightType||'standard')===type);if(e)return e;}return null;}
 function machById(id){return machines.find(m=>m.id===id);}
 
 function toast(msg,dur){
@@ -2453,14 +2454,31 @@ function cycleWeightType(ei){
   const TYPES=['standard','level','bw','bw+'];
   const ex=active.exercises[ei];
   const idx=TYPES.indexOf(ex.weightType||'standard');
-  ex.weightType=TYPES[(idx+1)%TYPES.length];
+  const newType=TYPES[(idx+1)%TYPES.length];
+  ex.weightType=newType;
+  if(newType==='bw'){
+    ex.weight=0;
+  } else {
+    const lastOfType=lastForExByType(ex.name,newType);
+    if(lastOfType){
+      if(newType==='standard'){
+        const{sets:ls,reps:lr}=parseScheme(lastOfType.scheme);
+        const{sets,reps}=parseScheme(ex.scheme);
+        ex.weight=calcSuggestedWeight(lastOfType.weight,lr,ls,reps,sets);
+      } else {
+        ex.weight=lastOfType.weight||0;
+      }
+    } else {
+      ex.weight=0;
+    }
+  }
   renderToday();
   saveActiveThrottled();
 }
 function wtTypeLabel(ex){
-  const unit=cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs';
+  const unit=cfg.profile&&cfg.profile.weightUnit==='kg'?'KG':'LBS';
   switch(ex.weightType||'standard'){
-    case 'level':return'Lvl';
+    case 'level':return'LVL';
     case 'bw':return'BW';
     case 'bw+':return'BW+';
     default:return unit;
