@@ -23,12 +23,14 @@ body.base-dark{
   --j-acc:#e8271f;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0ede8;
   --j-tnt2:#e8e4de;--j-card:#fff;
 }
-body.base-dark #view-today,body.base-dark #view-history{
+body.base-dark #view-today,body.base-dark #view-history,body.base-dark #modal-root{
   --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
   --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
   --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
   --j-acc:var(--accent);
 }
+body.base-dark{color-scheme:dark;}
+body.base-light{color-scheme:light;}
 body.base-light{
   --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
   --border:#ddd9d3;--border2:#ccc8c2;--border3:#bbb6b0;
@@ -1555,9 +1557,12 @@ function applyCustomAccent(hex){
   document.body.style.setProperty('--accent-glow',accentGlow);
   document.body.style.setProperty('--j-acc',hex);
 }
+function normalizeWeightType(wt){
+  if(wt==='bw'||wt==='bw+') return 'bodyweight';
+  return wt||'standard';
+}
 function fmtWt(n,noUnit,weightType){
-  const type=weightType||'standard';
-  if(type==='bw') return 'BW';
+  const type=normalizeWeightType(weightType);
   if(type==='level'){
     const lvl=parseInt(n);
     return isNaN(lvl)?'Lvl —':(noUnit?String(lvl):'Lvl '+lvl);
@@ -1573,7 +1578,7 @@ function fmtWt(n,noUnit,weightType){
   } else {
     display=noUnit?String(v):v+' lbs';
   }
-  if(type==='bw+') return 'BW +'+display;
+  if(type==='bodyweight') return v>0?'BW +'+display:'BW';
   return display;
 }
 applyBodyClasses();
@@ -1881,7 +1886,14 @@ function fmtCalFull(s){
 }
 function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
-function lastForExByType(name,type){for(const s of sessions){const e=s.exercises.find(e=>e.name===name&&(e.weightType||'standard')===type);if(e)return e;}return null;}
+function lastForExByType(name,type){
+  const normType=normalizeWeightType(type);
+  const match=normType==='bodyweight'
+    ?t=>normalizeWeightType(t)==='bodyweight'
+    :t=>normalizeWeightType(t)===normType;
+  for(const s of sessions){const e=s.exercises.find(e=>e.name===name&&match(e.weightType||'standard'));if(e)return e;}
+  return null;
+}
 function machById(id){return machines.find(m=>m.id===id);}
 
 function toast(msg,dur){
@@ -2248,10 +2260,10 @@ function startWorkout(){
       const weightType=last?last.weightType||'standard':'standard';
       if(last){
         const{sets:ls,reps:lr}=parseScheme(last.scheme);
-        if(weightType==='standard'||weightType==='bw+'){
+        if(normalizeWeightType(weightType)==='standard'){
           weight=calcSuggestedWeight(last.weight,lr,ls,reps,sets);
         } else {
-          weight=last.weight||0; // preserve level number or bw+ amount as-is
+          weight=last.weight||0; // preserve level number or bodyweight extra weight as-is
         }
       }
       return{
@@ -2336,17 +2348,15 @@ function renderToday(){
       </div>
       <div class="j-wt-row">
         <span class="j-wt-lbl">Weight</span>
-        ${(ex.weightType||'standard')==='bw'
-          ?`<div class="j-wt-ctrl j-wt-bw-ctrl"><span class="j-wt-bw-display">BW</span></div>`
-          :`<div class="j-wt-ctrl">
-          <button class="j-adj" onclick="adjWt(${ei},-${(ex.weightType||'standard')==='level'?1:inc})">−</button>
-          <input class="j-wt-val" type="number" inputmode="decimal" id="wt-${ei}"
-            step="${(ex.weightType||'standard')==='level'?'1':'any'}"
-            value="${ex.weight}" onchange="setWt(${ei},this.value)" onfocus="this.select()">
-          <button class="j-adj" onclick="adjWt(${ei},${(ex.weightType||'standard')==='level'?1:inc})">+</button>
-        </div>`}
-        <button class="j-wt-type-badge" title="Change weight type" onclick="cycleWeightType(${ei})">${wtTypeLabel(ex)}</button>
-        ${(ex.weightType||'standard')==='standard'?`<button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>`:''}
+        ${(()=>{const wt=normalizeWeightType(ex.weightType);const isLvl=wt==='level';const isBW=wt==='bodyweight';return`<div class="j-wt-ctrl">
+          <button class="j-adj" onclick="adjWt(${ei},-${isLvl?1:inc})">−</button>
+          <input class="j-wt-val" type="number" inputmode="${isLvl?'numeric':'decimal'}" id="wt-${ei}"
+            step="${isLvl?'1':'any'}"
+            value="${ex.weight||0}" placeholder="${isBW?'+ extra':''}" onchange="setWt(${ei},this.value)" onfocus="this.select()">
+          <button class="j-adj" onclick="adjWt(${ei},${isLvl?1:inc})">+</button>
+        </div>`;})()}
+        <button class="j-wt-type-badge" id="wt-type-badge-${ei}" title="Change weight type" onclick="cycleWeightType(${ei})">${wtTypeLabel(ex)}</button>
+        ${normalizeWeightType(ex.weightType)==='standard'?`<button class="j-plate-btn" title="Plate calculator" onclick="openPlateCalc(${ei})">🔢</button>`:''}
       </div>
       <div class="j-pr-badge" id="pr-badge-${ei}" style="${isPR?'':'display:none'}">🔥 NEW PR!</div>
       ${buildSetsArea(ex,ei)}
@@ -2443,21 +2453,24 @@ function updateLiveTimer(){
 function adjWt(ei,d){
   const ex=active.exercises[ei];
   let newVal=Math.max(0,(ex.weight||0)+d);
-  if((ex.weightType||'standard')==='level') newVal=Math.round(newVal);
+  if(normalizeWeightType(ex.weightType)==='level') newVal=Math.round(newVal);
   ex.weight=newVal;
   const el=document.getElementById('wt-'+ei);if(el)el.value=ex.weight;
+  updateTypeBadge(ei);
   updatePRBadge(ei);
   saveActiveThrottled();
 }
-function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;updatePRBadge(ei);saveActiveThrottled();}
+function setWt(ei,v){const w=parseFloat(v);active.exercises[ei].weight=(!isNaN(w)&&w>=0)?Math.min(w,2000):0;updateTypeBadge(ei);updatePRBadge(ei);saveActiveThrottled();}
 function cycleWeightType(ei){
-  const TYPES=['standard','level','bw','bw+'];
+  const TYPES=['standard','level','bodyweight'];
   const ex=active.exercises[ei];
-  const idx=TYPES.indexOf(ex.weightType||'standard');
+  const currentType=normalizeWeightType(ex.weightType);
+  const idx=TYPES.indexOf(currentType);
   const newType=TYPES[(idx+1)%TYPES.length];
   ex.weightType=newType;
-  if(newType==='bw'){
-    ex.weight=0;
+  if(newType==='bodyweight'){
+    const lastOfType=lastForExByType(ex.name,'bodyweight');
+    ex.weight=lastOfType?(lastOfType.weight||0):0;
   } else {
     const lastOfType=lastForExByType(ex.name,newType);
     if(lastOfType){
@@ -2477,17 +2490,20 @@ function cycleWeightType(ei){
 }
 function wtTypeLabel(ex){
   const unit=cfg.profile&&cfg.profile.weightUnit==='kg'?'KG':'LBS';
-  switch(ex.weightType||'standard'){
+  switch(normalizeWeightType(ex.weightType)){
     case 'level':return'LVL';
-    case 'bw':return'BW';
-    case 'bw+':return'BW+';
+    case 'bodyweight':return(ex.weight||0)>0?'BW+':'BW';
     default:return unit;
   }
 }
+function updateTypeBadge(ei){
+  const ex=active.exercises[ei];
+  if(normalizeWeightType(ex.weightType)!=='bodyweight') return;
+  const badge=document.getElementById('wt-type-badge-'+ei);
+  if(badge) badge.textContent=wtTypeLabel(ex);
+}
 function updatePRBadge(ei){
   const ex=active.exercises[ei];
-  const wt=ex.weightType||'standard';
-  if(wt==='bw'){const badge=document.getElementById('pr-badge-'+ei);if(badge)badge.style.display='none';return;}
   const k=ex.group+'::'+ex.name;
   const prW=(stats.prs&&stats.prs[k])?stats.prs[k].weight:0;
   const badge=document.getElementById('pr-badge-'+ei);
@@ -2668,8 +2684,11 @@ function estimateCalories(exercises,durationMin,effort,profile){
   const effectiveDur=durationMin>0?durationMin:Math.max(1,totalSets*2);
   const baseCal=met*kg*(effectiveDur/60);
   // Volume bonus: uses ACTUAL reps logged — 0-rep sets contribute 0 (b>0 guard)
+  // Level type excluded (dimensionless integers); bodyweight uses extra weight only (0 if pure BW)
   let volumeLb=0;
   (exercises||[]).forEach(ex=>{
+    const wt=normalizeWeightType(ex.weightType);
+    if(wt==='level') return;
     const reps=(ex.repsLog||[]).reduce((a,b)=>a+(b>0?b:0),0);
     volumeLb+=(ex.weight||0)*reps;
   });
@@ -2730,11 +2749,12 @@ async function saveWorkout(){
     stats.weightHistory[k].push({date:session.date,weight:ex.weight,weightType:wt});
     const repsThisSession=(ex.repsLog||[]).reduce((a,b)=>a+(isNaN(b)?0:+b),0);
     stats.totalReps[k]=(stats.totalReps[k]||0)+repsThisSession;
-    // Update PRs (skip for pure bodyweight — no numeric comparison meaningful)
-    if(wt!=='bw'){
+    // Update PRs (skip for pure bodyweight with no extra weight — no numeric comparison meaningful)
+    const normWt=normalizeWeightType(wt);
+    if(!(normWt==='bodyweight'&&(ex.weight||0)===0)){
       const cur=stats.prs[k];
       if(!isNaN(ex.weight)&&(!cur||ex.weight>cur.weight)){
-        stats.prs[k]={weight:ex.weight,weightType:wt,date:session.date,scheme:ex.scheme,reps:ex.repsLog};
+        stats.prs[k]={weight:ex.weight,weightType:normWt,date:session.date,scheme:ex.scheme,reps:ex.repsLog};
       }
     }
   });
@@ -2916,7 +2936,11 @@ function renderWeekView(){
   const wSessions=weekDays.flatMap(d=>byDate[d]||[]);
   const wDaysWorked=weekDays.filter(d=>byDate[d]?.length).length;
   const wExCount=wSessions.reduce((a,s)=>a+s.exercises.length,0);
-  const wVol=wSessions.reduce((a,s)=>a+s.exercises.reduce((b,ex)=>b+(ex.weight*(ex.repsLog.reduce((c,r)=>c+r,0))),0),0);
+  const wVol=wSessions.reduce((a,s)=>a+s.exercises.reduce((b,ex)=>{
+    if(normalizeWeightType(ex.weightType)==='level') return b;
+    const reps=(ex.repsLog||[]).reduce((c,r)=>c+(r>0?r:0),0);
+    return b+(ex.weight||0)*reps;
+  },0),0);
   const volStr=wVol>=1000?`${(wVol/1000).toFixed(1)}k`:`${Math.round(wVol)}`;
   const wCalories=Math.round(wSessions.reduce((a,s)=>a+sessionTotalCal(s),0));
   const wCalStr=wCalories>=1000?`${(wCalories/1000).toFixed(1)}k`:`${wCalories}`;
@@ -3283,8 +3307,9 @@ function rebuildStats(){
       const reps=(ex.repsLog||[]).reduce((a,b)=>a+b,0);
       s.totalReps[k]=(s.totalReps[k]||0)+reps;
       const cur=s.prs[k];
-      if(wt!=='bw'&&(!cur||ex.weight>cur.weight)){
-        s.prs[k]={weight:ex.weight,weightType:wt,date:sess.date,scheme:ex.scheme,reps:ex.repsLog};
+      const normWt2=normalizeWeightType(wt);
+      if(!(normWt2==='bodyweight'&&(ex.weight||0)===0)&&(!cur||ex.weight>cur.weight)){
+        s.prs[k]={weight:ex.weight,weightType:normWt2,date:sess.date,scheme:ex.scheme,reps:ex.repsLog};
       }
     });
   });
@@ -3364,17 +3389,16 @@ function renderEditModal(){
         </div>
         <div class="me-field"><span class="me-field-lbl">Type</span>
           <select class="me-inp" onchange="editSessionData.exercises[${i}].weightType=this.value;renderEditModal()">
-            <option value="standard"${(ex.weightType||'standard')==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
-            <option value="level"${ex.weightType==='level'?' selected':''}>Level</option>
-            <option value="bw"${ex.weightType==='bw'?' selected':''}>Bodyweight</option>
-            <option value="bw+"${ex.weightType==='bw+'?' selected':''}>BW+</option>
+            <option value="standard"${normalizeWeightType(ex.weightType)==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
+            <option value="level"${normalizeWeightType(ex.weightType)==='level'?' selected':''}>Level</option>
+            <option value="bodyweight"${normalizeWeightType(ex.weightType)==='bodyweight'?' selected':''}>Bodyweight</option>
           </select>
         </div>
-        ${(ex.weightType||'standard')!=='bw'?`<div class="me-field"><span class="me-field-lbl">${wtTypeLabel(ex)}</span>
-          <input class="me-inp me-inp-sm" type="number" inputmode="${(ex.weightType||'standard')==='level'?'numeric':'decimal'}"
-            step="${(ex.weightType||'standard')==='level'?'1':'any'}" value="${ex.weight||0}"
-            onchange="editSessionData.exercises[${i}].weight=${(ex.weightType||'standard')==='level'?'parseInt':'parseFloat'}(this.value)||0">
-        </div>`:''}
+        <div class="me-field"><span class="me-field-lbl">${normalizeWeightType(ex.weightType)==='bodyweight'?'Extra Wt':wtTypeLabel(ex)}</span>
+          <input class="me-inp me-inp-sm" type="number" inputmode="${normalizeWeightType(ex.weightType)==='level'?'numeric':'decimal'}"
+            step="${normalizeWeightType(ex.weightType)==='level'?'1':'any'}" value="${ex.weight||0}" placeholder="${normalizeWeightType(ex.weightType)==='bodyweight'?'0':''}"
+            onchange="editSessionData.exercises[${i}].weight=${normalizeWeightType(ex.weightType)==='level'?'parseInt':'parseFloat'}(this.value)||0">
+        </div>
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="editSetScheme(${i},this.value)">
             ${getSchemes().map(sc=>`<option${ex.scheme===sc?' selected':''}>${sc}</option>`).join('')}
@@ -3529,8 +3553,9 @@ function renderPRs(){
       // 1RM estimate (Epley formula)
       const prMaxReps=Math.max(...((pr.reps||[]).filter(r=>!isNaN(r)&&r>0)),0);
       const prWtType=pr.weightType||'standard';
-      const est1rm=(prWtType==='standard'||prWtType==='bw+')&&prMaxReps>1?Math.round(pr.weight*(1+prMaxReps/30)):0;
-      const wtUnit=prWtType==='level'?'Lvl':prWtType==='bw'?'BW':prWtType==='bw+'?((cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs')+'+'):(cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs');
+      const normPrWtType=normalizeWeightType(prWtType);
+      const est1rm=normPrWtType==='standard'&&prMaxReps>1?Math.round(pr.weight*(1+prMaxReps/30)):0;
+      const wtUnit=normPrWtType==='level'?'Lvl':normPrWtType==='bodyweight'?((cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs')+'+'):(cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs');
       html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="pr-info">
@@ -4529,17 +4554,16 @@ function renderManualModal(){
         </div>
         <div class="me-field"><span class="me-field-lbl">Type</span>
           <select class="me-inp" onchange="manualExercises[${i}].weightType=this.value;renderManualModal()">
-            <option value="standard"${(ex.weightType||'standard')==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
-            <option value="level"${ex.weightType==='level'?' selected':''}>Level</option>
-            <option value="bw"${ex.weightType==='bw'?' selected':''}>Bodyweight</option>
-            <option value="bw+"${ex.weightType==='bw+'?' selected':''}>BW+</option>
+            <option value="standard"${normalizeWeightType(ex.weightType)==='standard'?' selected':''}>LBS${cfg.profile&&cfg.profile.weightUnit==='kg'?'/KG':''}</option>
+            <option value="level"${normalizeWeightType(ex.weightType)==='level'?' selected':''}>Level</option>
+            <option value="bodyweight"${normalizeWeightType(ex.weightType)==='bodyweight'?' selected':''}>Bodyweight</option>
           </select>
         </div>
-        ${(ex.weightType||'standard')!=='bw'?`<div class="me-field"><span class="me-field-lbl">${wtTypeLabel(ex)}</span>
-          <input class="me-inp me-inp-sm" type="number" inputmode="${(ex.weightType||'standard')==='level'?'numeric':'decimal'}"
-            step="${(ex.weightType||'standard')==='level'?'1':'any'}" placeholder="0" value="${ex.weight||''}"
-            onchange="manualExercises[${i}].weight=${(ex.weightType||'standard')==='level'?'parseInt':'parseFloat'}(this.value)||0">
-        </div>`:''}
+        <div class="me-field"><span class="me-field-lbl">${normalizeWeightType(ex.weightType)==='bodyweight'?'Extra Wt':wtTypeLabel(ex)}</span>
+          <input class="me-inp me-inp-sm" type="number" inputmode="${normalizeWeightType(ex.weightType)==='level'?'numeric':'decimal'}"
+            step="${normalizeWeightType(ex.weightType)==='level'?'1':'any'}" placeholder="0" value="${ex.weight||''}"
+            onchange="manualExercises[${i}].weight=${normalizeWeightType(ex.weightType)==='level'?'parseInt':'parseFloat'}(this.value)||0">
+        </div>
         <div class="me-field"><span class="me-field-lbl">Scheme</span>
           <select class="me-inp" onchange="setManualScheme(${i},this.value)">
             ${getSchemes().map(s=>`<option${ex.scheme===s?' selected':''}>${s}</option>`).join('')}
@@ -4650,7 +4674,8 @@ async function saveManualSession(){
     if(!stats.totalReps)stats.totalReps={};
     stats.totalReps[k]=(stats.totalReps[k]||0)+ex.repsLog.reduce((a,b)=>a+b,0);
     const cur=stats.prs[k];
-    if(wt!=='bw'&&(!cur||ex.weight>cur.weight)) stats.prs[k]={weight:ex.weight,weightType:wt,date,scheme:ex.scheme,reps:ex.repsLog};
+    const normWt3=normalizeWeightType(wt);
+    if(!(normWt3==='bodyweight'&&(ex.weight||0)===0)&&(!cur||ex.weight>cur.weight)) stats.prs[k]={weight:ex.weight,weightType:normWt3,date,scheme:ex.scheme,reps:ex.repsLog};
   });
   sv('fj_stats',stats);
   document.getElementById('modal-root').innerHTML='';
