@@ -1831,7 +1831,7 @@ function calcSuggestedWeight(lastWeight,lastReps,lastSets,newReps,newSets){
   const repsRatio=repIntensity(newReps)/repIntensity(lastReps);
   const lastSetsAdj=Math.max(0.75,1-(lastSets-1)*0.02);
   const newSetsAdj=Math.max(0.75,1-(newSets-1)*0.02);
-  const raw=lastWeight*repsRatio*(lastSetsAdj/newSetsAdj);
+  const raw=lastWeight*repsRatio*(newSetsAdj/lastSetsAdj);
   const inc=cfg.weightIncrement||5;
   return Math.round(raw/inc)*inc;
 }
