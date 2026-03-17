@@ -2724,7 +2724,9 @@ async function saveWorkout(){
   let caloriesEst=false;
   if(!active.calories){
     if(cfg.profile?.weight){
-      const dMin=parseDurationMin(active.duration);
+      const wallClockMin=parseDurationMin(active.duration);
+      const doneSets=active.exercises.reduce((a,ex)=>a+(ex.setsDone||[]).filter(Boolean).length,0);
+      const dMin=Math.max(wallClockMin,doneSets*2);
       const est=estimateCalories(active.exercises,dMin,active.effort,cfg.profile);
       if(est){active.calories=est;caloriesEst=true;}
     }
