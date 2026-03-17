@@ -2455,8 +2455,14 @@ function updateStickyCalories(){
   const el=document.getElementById('sticky-cal');
   if(!el)return;
   if(!active?.startedAt||!cfg.profile?.weight){el.textContent='';return;}
-  const elapsedMin=Math.max(1,Math.floor((Date.now()-new Date(active.startedAt))/60000));
-  const est=estimateCalories(active.exercises,elapsedMin,active.effort||2,cfg.profile);
+  // Use fractional minutes so the time component ticks every second
+  const elapsedMin=Math.max(1/60,(Date.now()-new Date(active.startedAt))/60000);
+  // Only count reps from sets the user has actually completed
+  const completedExercises=active.exercises.map(ex=>({
+    ...ex,
+    repsLog:(ex.repsLog||[]).filter((_,i)=>ex.setsDone&&ex.setsDone[i])
+  }));
+  const est=estimateCalories(completedExercises,elapsedMin,active.effort||2,cfg.profile);
   el.textContent=est?`~${est} cal`:'';
 }
 
