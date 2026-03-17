@@ -2449,20 +2449,16 @@ function updateLiveTimer(){
   const m=Math.floor((secs%3600)/60);
   const s=secs%60;
   el.textContent=h>0?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  updateStickyCalories();
 }
 function updateStickyCalories(){
   const el=document.getElementById('sticky-cal');
   if(!el)return;
-  if(!active?.startedAt||!cfg.profile?.weight){el.textContent='';return;}
-  // Use fractional minutes so the time component ticks every second
-  const elapsedMin=Math.max(1/60,(Date.now()-new Date(active.startedAt))/60000);
-  // Only count reps from sets the user has actually completed
-  const completedExercises=active.exercises.map(ex=>({
-    ...ex,
-    repsLog:(ex.repsLog||[]).filter((_,i)=>ex.setsDone&&ex.setsDone[i])
-  }));
-  const est=estimateCalories(completedExercises,elapsedMin,active.effort||2,cfg.profile);
+  if(!active||!cfg.profile?.weight){el.textContent='';return;}
+  // Duration estimated from completed sets only (2 min per set including rest)
+  const doneSets=active.exercises.reduce((a,ex)=>a+(ex.setsDone||[]).filter(Boolean).length,0);
+  if(doneSets===0){el.textContent='';return;}
+  const estMin=doneSets*2;
+  const est=estimateCalories(active.exercises,estMin,active.effort||2,cfg.profile);
   el.textContent=est?`~${est} cal`:'';
 }
 
@@ -2697,25 +2693,15 @@ function estimateCalories(exercises,durationMin,effort,profile){
     :parseFloat(profile.weight)*0.453592;
   if(!kg||kg<=0||kg>500||isNaN(kg))return null;
   // MET values for resistance training by effort level (1=Easy,2=Good,3=Hard,4=Max)
-  // Female MET values are slightly adjusted
   const mets={1:3.0,2:4.5,3:5.5,4:7.0};
   let met=mets[effort]||4.5;
   if(profile.sex==='female')met*=0.9;
-  // If no duration, estimate from sets (avg 2 min per set including rest)
+  // If no duration, estimate from total sets (avg 2 min per set including rest)
   const totalSets=(exercises||[]).reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const effectiveDur=durationMin>0?durationMin:Math.max(1,totalSets*2);
-  const baseCal=met*kg*(effectiveDur/60);
-  // Volume bonus: uses ACTUAL reps logged — 0-rep sets contribute 0 (b>0 guard)
-  // Level type excluded (dimensionless integers); bodyweight uses extra weight only (0 if pure BW)
-  let volumeLb=0;
-  (exercises||[]).forEach(ex=>{
-    const wt=normalizeWeightType(ex.weightType);
-    if(wt==='level') return;
-    const reps=(ex.repsLog||[]).reduce((a,b)=>a+(b>0?b:0),0);
-    volumeLb+=(ex.weight||0)*reps;
-  });
-  const volBonus=volumeLb*0.001;
-  const total=Math.round(baseCal+volBonus);
+  // Standard MET formula: Cal/min = (MET × 3.5 × kg) / 200 ; Total = Cal/min × minutes
+  const calPerMin=(met*3.5*kg)/200;
+  const total=Math.round(calPerMin*effectiveDur);
   return total>0?total:null;
 }
 
