@@ -1001,6 +1001,7 @@ body{
 }
 .j-sticky-sets{font-size:11px;font-weight:700;color:var(--j-txt);letter-spacing:.2px;}
 .j-sticky-timer{font-size:12px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;font-variant-numeric:tabular-nums;}
+.j-sticky-cal{font-size:11px;font-weight:600;color:var(--j-mut);letter-spacing:.3px;font-variant-numeric:tabular-nums;}
 /* ── Progress bar ── */
 .j-progress{height:3px;background:var(--j-bor2);overflow:hidden;}
 .j-progress-fill{height:100%;background:var(--j-acc);transition:width .35s cubic-bezier(.4,0,.2,1);will-change:width;}
@@ -2317,7 +2318,8 @@ function renderToday(){
   </div>
   <div class="j-sticky-bar">
     <div class="j-sticky-inner">
-      <span class="j-sticky-sets"><span id="sets-counter">${doneSets}/${totalSets}</span> sets · started ${fmtTime(w.startedAt)}</span>
+      <span class="j-sticky-sets"><span id="sticky-sets-counter">${doneSets}/${totalSets}</span> sets · started ${fmtTime(w.startedAt)}</span>
+      <span class="j-sticky-cal" id="sticky-cal"></span>
       <span class="j-sticky-timer j-live-timer" id="live-elapsed">—</span>
     </div>
     <div class="j-progress"><div class="j-progress-fill${doneSets===totalSets&&totalSets>0?' complete':''}" id="j-prog-fill" style="width:${totalSets>0?Math.round((doneSets/totalSets)*100):0}%"></div></div>
@@ -2447,6 +2449,17 @@ function updateLiveTimer(){
   const m=Math.floor((secs%3600)/60);
   const s=secs%60;
   el.textContent=h>0?`${h}h ${String(m).padStart(2,'0')}m`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function updateStickyCalories(){
+  const el=document.getElementById('sticky-cal');
+  if(!el)return;
+  if(!active||!cfg.profile?.weight){el.textContent='';return;}
+  // Duration estimated from completed sets only (2 min per set including rest)
+  const doneSets=active.exercises.reduce((a,ex)=>a+(ex.setsDone||[]).filter(Boolean).length,0);
+  if(doneSets===0){el.textContent='';return;}
+  const estMin=doneSets*2;
+  const est=estimateCalories(active.exercises,estMin,active.effort||2,cfg.profile);
+  el.textContent=est?`~${est} cal`:'';
 }
 
 /* Journal interactions */
@@ -2590,7 +2603,10 @@ function toggleDone(ei,si){
   // Update sets counter
   const ctr=document.getElementById('sets-counter');
   if(ctr)ctr.textContent=`${doneSets}/${totalSets}`;
+  const stickyCtr=document.getElementById('sticky-sets-counter');
+  if(stickyCtr)stickyCtr.textContent=`${doneSets}/${totalSets}`;
   checkExComplete(ei);
+  updateStickyCalories();
   saveActiveToLocal();
   if(done) startRestTimer();
 }
@@ -2626,6 +2642,8 @@ function checkExComplete(ei){
   const doneSets=active.exercises.reduce((a,e)=>a+e.setsDone.filter(Boolean).length,0);
   const ctr=document.getElementById('sets-counter');
   if(ctr)ctr.textContent=doneSets+'/'+totalSets;
+  const stickyCtr=document.getElementById('sticky-sets-counter');
+  if(stickyCtr)stickyCtr.textContent=doneSets+'/'+totalSets;
 }
 function setEffort(n){
   active.effort=n;
@@ -2674,26 +2692,17 @@ function estimateCalories(exercises,durationMin,effort,profile){
     ?parseFloat(profile.weight)
     :parseFloat(profile.weight)*0.453592;
   if(!kg||kg<=0||kg>500||isNaN(kg))return null;
-  // MET values for resistance training by effort level (1=Easy,2=Good,3=Hard,4=Max)
-  // Female MET values are slightly adjusted
-  const mets={1:3.0,2:4.5,3:5.5,4:7.0};
-  let met=mets[effort]||4.5;
-  if(profile.sex==='female')met*=0.9;
-  // If no duration, estimate from sets (avg 2 min per set including rest)
+  // MET values from 2024 Compendium of Physical Activities (resistance training):
+  // code 02054 = 3.5 (light/moderate), code 02052 = 5.0 (moderate), vigorous = 6.0
+  // Effort scale: 1=Easy→3.0, 2=Good→3.5, 3=Hard→5.0, 4=Max→6.0
+  const mets={1:3.0,2:3.5,3:5.0,4:6.0};
+  const met=mets[effort]||3.5;
+  // If no duration, estimate from total sets (avg 2 min per set including rest)
   const totalSets=(exercises||[]).reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const effectiveDur=durationMin>0?durationMin:Math.max(1,totalSets*2);
-  const baseCal=met*kg*(effectiveDur/60);
-  // Volume bonus: uses ACTUAL reps logged — 0-rep sets contribute 0 (b>0 guard)
-  // Level type excluded (dimensionless integers); bodyweight uses extra weight only (0 if pure BW)
-  let volumeLb=0;
-  (exercises||[]).forEach(ex=>{
-    const wt=normalizeWeightType(ex.weightType);
-    if(wt==='level') return;
-    const reps=(ex.repsLog||[]).reduce((a,b)=>a+(b>0?b:0),0);
-    volumeLb+=(ex.weight||0)*reps;
-  });
-  const volBonus=volumeLb*0.02;
-  const total=Math.round(baseCal+volBonus);
+  // Standard MET formula: Cal/min = (MET × 3.5 × kg) / 200 ; Total = Cal/min × minutes
+  const calPerMin=(met*3.5*kg)/200;
+  const total=Math.round(calPerMin*effectiveDur);
   return total>0?total:null;
 }
 
@@ -2715,7 +2724,9 @@ async function saveWorkout(){
   let caloriesEst=false;
   if(!active.calories){
     if(cfg.profile?.weight){
-      const dMin=parseDurationMin(active.duration);
+      const wallClockMin=parseDurationMin(active.duration);
+      const doneSets=active.exercises.reduce((a,ex)=>a+(ex.setsDone||[]).filter(Boolean).length,0);
+      const dMin=Math.max(wallClockMin,doneSets*2);
       const est=estimateCalories(active.exercises,dMin,active.effort,cfg.profile);
       if(est){active.calories=est;caloriesEst=true;}
     }
