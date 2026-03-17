@@ -1204,7 +1204,7 @@ body{
 <!-- SETUP SCREEN -->
 <div id="setup-screen">
   <div class="setup-logo">FORGE</div>
-  <div class="setup-sub">Personal Workout Journal</div>
+  <div class="setup-sub">Personal Fitness Journal</div>
   <div class="setup-card">
     <div class="setup-card-hdr">
       <div class="setup-card-title">CONNECT GIST BACKUP</div>
@@ -1232,7 +1232,7 @@ body{
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-title">FORGE</div>
-    <div class="hdr-sub">Workout Journal</div>
+    <div class="hdr-sub">Fitness Journal</div>
   </div>
   <div class="hdr-right">
     <div class="hdr-level" id="hdr-level" onclick="openProfileModal()" title="Player Card">
@@ -1643,7 +1643,7 @@ async function gistPull(){
 }
 async function gistPush(){
   if(!gistCfg.pat)return;
-  const body={description:'FORGE Workout Journal Backup',public:false,files:{[GIST_FILENAME]:{content:buildPayload()}}};
+  const body={description:'FORGE Fitness Journal Backup',public:false,files:{[GIST_FILENAME]:{content:buildPayload()}}};
   let url='https://api.github.com/gists';let method='POST';
   if(gistCfg.gistId){url=`https://api.github.com/gists/${gistCfg.gistId}`;method='PATCH';}
   const res=await fetch(url,{method,headers:{'Authorization':`token ${gistCfg.pat}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
