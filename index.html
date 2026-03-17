@@ -713,6 +713,8 @@ body{
 .h-sess-del:hover{border-color:var(--j-dn);color:var(--j-dn);}
 .h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .h-sess-edit:hover{border-color:var(--j-acc);color:var(--j-acc);}
+.sess-export-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-acc);background:var(--accent-dim);color:var(--j-acc);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.sess-export-btn:hover{background:var(--j-acc);color:#fff;}
 .hist-body{display:none;border-top:1px solid var(--j-bor);}
 .hist-body.open{display:block;}
 .h-ex-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-bottom:1px solid var(--j-bor);gap:10px;}
@@ -3020,7 +3022,7 @@ function renderWeekView(){
       detailHtml+=`</div>`;
 
       if(s.notes)detailHtml+=`<div class="h-notes" style="margin:0 0 10px;border-radius:6px;">"${esc(s.notes)}"</div>`;
-      detailHtml+=`<div style="margin:0 0 10px;"><button class="h-sess-edit" title="Export session as PNG" onclick="exportSessionCard('${s.id}')" style="font-size:11px;padding:3px 8px;">⬇ Export</button></div>`;
+      detailHtml+=`<div style="display:flex;justify-content:flex-end;margin:4px 0 10px;"><button class="sess-export-btn" title="Export session as PNG" onclick="exportSessionCard('${s.id}')">⬇</button></div>`;
     });
   }
   detailHtml+=`</div>`;
@@ -3136,7 +3138,7 @@ function renderMonthView(){
             <div><div class="cal-detail-date">${dotw(calSelectedDate)}, ${fmtDate(calSelectedDate)}</div>
             <div class="cal-detail-meta">${(s.exercises||[]).length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
             <div style="display:flex;gap:6px;align-items:center;">${badge}
-              <button class="h-sess-edit" title="Export session as PNG" onclick="exportSessionCard('${s.id}')">⬇</button>
+              <button class="sess-export-btn" title="Export session as PNG" onclick="exportSessionCard('${s.id}')">⬇</button>
               <button class="cal-detail-close" onclick="calSelectDay('${calSelectedDate}')">×</button>
             </div>
           </div>
@@ -3257,7 +3259,7 @@ function renderListView(){
         <div class="hsd-right">
           ${badge}
           <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')" style="color:var(--j-acc);border-color:var(--j-acc)">↺</button>
-          <button class="h-sess-edit" title="Export session as PNG" onclick="event.stopPropagation();exportSessionCard('${s.id}')">⬇</button>
+          <button class="sess-export-btn" title="Export session as PNG" onclick="event.stopPropagation();exportSessionCard('${s.id}')">⬇</button>
           <button class="h-sess-edit" title="Edit session" onclick="event.stopPropagation();openEditSession('${s.id}')">✎</button>
           <button class="h-sess-del" title="Delete session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button>
           <span class="h-chev" id="hc-${si}">▼</span>
@@ -5142,10 +5144,11 @@ function exportSessionCard(id){
     ctx.font='bold 11px Arial';ctx.fillStyle=eColors[s.effort]||accentColor;
     ctx.textAlign='right';ctx.fillText(eLabels[s.effort]||'',W-20,34);ctx.textAlign='left';
   }
-  // Meta row (duration + calories)
+  // Meta row (duration + calories) — plain text only for canvas
   const metaParts=[];
   if(s.duration)metaParts.push('⏱ '+s.duration);
-  if(sessionTotalCal(s))metaParts.push(fmtCalFull(s));
+  const totCal=sessionTotalCal(s);
+  if(totCal)metaParts.push('🔥 '+(s.caloriesEst?'~':'')+totCal+' cal');
   ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText(metaParts.join('  ·  '),20,52);
   // Divider
   ctx.fillStyle='#222';ctx.fillRect(20,62,W-40,1);
