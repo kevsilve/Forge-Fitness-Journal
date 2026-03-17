@@ -135,8 +135,8 @@ body{
 .badge-detail-status{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 20px;border-radius:20px;display:inline-block;}
 .badge-detail-status.earned{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);}
 .badge-detail-status.locked{background:var(--surface2);color:var(--text3);border:1px solid var(--border2);}
-.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:border-color .15s;}
-.badge-detail-close:hover{border-color:var(--border3);}
+.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+.badge-detail-close:hover{border-color:var(--accent);color:var(--accent);}
 /* Calling Card */
 .calling-card-section{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
 .card-preview{border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#181010 100%);border:1px solid #2a2a2a;padding:18px;margin-bottom:12px;position:relative;}
@@ -691,6 +691,8 @@ body{
 .hist-count{font-size:12px;font-weight:600;color:var(--j-txt2);}
 .hist-clear-btn{font-size:11px;font-weight:600;padding:5px 11px;border:1.5px solid var(--j-bor2);border-radius:6px;background:transparent;color:var(--j-mut);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
 .hist-clear-btn.armed{border-color:var(--j-dn);color:var(--j-dn);}
+.hist-clear-btn.accent{border-color:var(--j-acc);color:var(--j-acc);}
+.hist-clear-btn.accent:hover{background:var(--accent-dim);}
 .hist-filter-bar{padding:8px 13px;background:var(--j-sur);border-bottom:1px solid var(--j-bor2);}
 .hf-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .hf-pills{display:flex;gap:4px;flex-wrap:wrap;}
@@ -709,10 +711,10 @@ body{
 .h-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--j-tnt);color:var(--j-mut);font-weight:600;}
 .h-chev{color:var(--j-mut);font-size:10px;transition:transform .25s;}
 .h-chev.open{transform:rotate(180deg);}
-.h-sess-del{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.h-sess-del:hover{border-color:var(--j-dn);color:var(--j-dn);}
-.h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.h-sess-edit:hover{border-color:var(--j-acc);color:var(--j-acc);}
+.h-sess-del{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-dn);background:transparent;color:var(--j-dn);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.h-sess-del:hover{background:rgba(220,38,38,0.1);}
+.h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-acc);background:transparent;color:var(--j-acc);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.h-sess-edit:hover{background:var(--accent-dim);}
 .sess-export-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-acc);background:var(--accent-dim);color:var(--j-acc);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .sess-export-btn:hover{background:var(--j-acc);color:#fff;}
 .hist-body{display:none;border-top:1px solid var(--j-bor);}
@@ -801,8 +803,8 @@ body{
 .grp-block-hdr.open .grp-block-chev{transform:rotate(180deg);}
 .grp-block-name{font-size:12px;font-weight:600;color:var(--text);flex:1;}
 .grp-block-meta{font-size:10px;color:var(--text3);}
-.grp-del{font-size:10px;padding:3px 7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;}
-.grp-del:hover{border-color:#ef4444;color:#ef4444;}
+.grp-del{font-size:10px;padding:3px 7px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;border-radius:3px;transition:all .15s;}
+.grp-del:hover{background:rgba(239,68,68,0.1);}
 .grp-block-body{display:none;padding:9px 11px;animation:fadeIn .15s ease;}
 .grp-block-body.open{display:block;}
 .grp-cfg{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
@@ -815,8 +817,8 @@ body{
 .ex-cue-inp{width:100%;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:2px 0;outline:none;font-style:italic;}
 .ex-cue-inp:focus{border-bottom-color:var(--accent);color:var(--text2);}
 .ex-cue-inp::placeholder{color:var(--border3);}
-.ex-del{width:22px;height:22px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
-.ex-del:hover{border-color:#ef4444;color:#ef4444;}
+.ex-del{width:22px;height:22px;background:transparent;border:1px solid #ef4444;color:#ef4444;cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
+.ex-del:hover{background:rgba(239,68,68,0.1);}
 /* in-workout cue */
 .j-ex-cue{font-style:italic;color:var(--j-mut);font-weight:400;}
 .slot-pills{display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;}
@@ -855,8 +857,8 @@ body{
 .machine-item:last-child{border-bottom:none;}
 .machine-icon{font-size:18px;}
 .machine-name{flex:1;font-size:12px;color:var(--text);}
-.machine-del{font-size:10px;padding:3px 7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;}
-.machine-del:hover{border-color:#ef4444;color:#ef4444;}
+.machine-del{font-size:10px;padding:3px 7px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;border-radius:3px;transition:all .15s;}
+.machine-del:hover{background:rgba(239,68,68,0.1);}
 .add-machine-row{display:flex;gap:7px;margin-top:8px;align-items:center;}
 .emoji-inp{width:48px;text-align:center;font-size:18px;}
 .nuclear-wrap{text-align:center;margin-top:16px;}
@@ -960,8 +962,8 @@ body{
 .me-ex-card{background:var(--j-card);border:1px solid var(--j-bor);border-radius:8px;overflow:hidden;}
 .me-ex-top{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--j-bor);background:var(--j-tnt);}
 .me-ex-num{font-family:'Black Ops One',sans-serif;font-size:12px;color:var(--j-acc);flex:1;letter-spacing:1px;}
-.me-ex-del{width:22px;height:22px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;font-size:14px;color:var(--j-mut);cursor:pointer;transition:all .15s;}
-.me-ex-del:hover{border-color:#dc2626;color:#dc2626;}
+.me-ex-del{width:22px;height:22px;border-radius:4px;border:1px solid #dc2626;background:transparent;font-size:14px;color:#dc2626;cursor:pointer;transition:all .15s;}
+.me-ex-del:hover{background:rgba(220,38,38,0.1);}
 .me-ex-fields{display:flex;gap:8px;padding:9px 11px;align-items:flex-start;flex-wrap:wrap;}
 .me-field{display:flex;flex-direction:column;gap:3px;}
 .me-field-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--j-mut);}
@@ -1130,8 +1132,8 @@ body{
 .tpl-load{background:transparent;border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
 .tpl-load:hover{color:var(--accent);}
 .tpl-count{font-size:9px;color:var(--text3);}
-.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:var(--text3);padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
-.tpl-del:hover{color:#ef4444;}
+.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:#ef4444;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
+.tpl-del:hover{background:rgba(239,68,68,0.08);}
 /* ─── Custom Workout Cards ─── */
 .ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .ex-card-remove:hover{border-color:#ef4444;color:#ef4444;}
@@ -3213,7 +3215,7 @@ function renderListView(){
   const toolbar=`<div class="hist-toolbar">
     <span class="hist-count">${countLabel}${calLabel}</span>
     <div style="display:flex;gap:7px;">
-      <button class="hist-clear-btn" onclick="openManualEntry()" style="color:var(--j-acc);border-color:var(--j-acc);">+ Log Past</button>
+      <button class="hist-clear-btn accent" onclick="openManualEntry()">+ Log Past</button>
       <button class="hist-clear-btn" onclick="clearHistory()">Clear History</button>
     </div>
   </div>`;
@@ -3258,7 +3260,7 @@ function renderListView(){
         <div class="hsd-meta">${s.exercises.length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
         <div class="hsd-right">
           ${badge}
-          <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')" style="color:var(--j-acc);border-color:var(--j-acc)">↺</button>
+          <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')">↺</button>
           <button class="sess-export-btn" title="Export session as PNG" onclick="event.stopPropagation();exportSessionCard('${s.id}')">⬇</button>
           <button class="h-sess-edit" title="Edit session" onclick="event.stopPropagation();openEditSession('${s.id}')">✎</button>
           <button class="h-sess-del" title="Delete session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button>
