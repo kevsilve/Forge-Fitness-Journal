@@ -2692,10 +2692,11 @@ function estimateCalories(exercises,durationMin,effort,profile){
     ?parseFloat(profile.weight)
     :parseFloat(profile.weight)*0.453592;
   if(!kg||kg<=0||kg>500||isNaN(kg))return null;
-  // MET values for resistance training by effort level (1=Easy,2=Good,3=Hard,4=Max)
-  const mets={1:3.0,2:4.5,3:5.5,4:7.0};
-  let met=mets[effort]||4.5;
-  if(profile.sex==='female')met*=0.9;
+  // MET values from 2024 Compendium of Physical Activities (resistance training):
+  // code 02054 = 3.5 (light/moderate), code 02052 = 5.0 (moderate), vigorous = 6.0
+  // Effort scale: 1=Easy→3.0, 2=Good→3.5, 3=Hard→5.0, 4=Max→6.0
+  const mets={1:3.0,2:3.5,3:5.0,4:6.0};
+  const met=mets[effort]||3.5;
   // If no duration, estimate from total sets (avg 2 min per set including rest)
   const totalSets=(exercises||[]).reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const effectiveDur=durationMin>0?durationMin:Math.max(1,totalSets*2);
