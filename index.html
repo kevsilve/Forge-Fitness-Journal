@@ -135,8 +135,8 @@ body{
 .badge-detail-status{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 20px;border-radius:20px;display:inline-block;}
 .badge-detail-status.earned{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);}
 .badge-detail-status.locked{background:var(--surface2);color:var(--text3);border:1px solid var(--border2);}
-.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:border-color .15s;}
-.badge-detail-close:hover{border-color:var(--border3);}
+.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+.badge-detail-close:hover{border-color:var(--accent);color:var(--accent);}
 /* Calling Card */
 .calling-card-section{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
 .card-preview{border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#181010 100%);border:1px solid #2a2a2a;padding:18px;margin-bottom:12px;position:relative;}
@@ -691,6 +691,8 @@ body{
 .hist-count{font-size:12px;font-weight:600;color:var(--j-txt2);}
 .hist-clear-btn{font-size:11px;font-weight:600;padding:5px 11px;border:1.5px solid var(--j-bor2);border-radius:6px;background:transparent;color:var(--j-mut);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
 .hist-clear-btn.armed{border-color:var(--j-dn);color:var(--j-dn);}
+.hist-clear-btn.accent{border-color:var(--j-acc);color:var(--j-acc);}
+.hist-clear-btn.accent:hover{background:var(--accent-dim);}
 .hist-filter-bar{padding:8px 13px;background:var(--j-sur);border-bottom:1px solid var(--j-bor2);}
 .hf-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .hf-pills{display:flex;gap:4px;flex-wrap:wrap;}
@@ -709,10 +711,12 @@ body{
 .h-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--j-tnt);color:var(--j-mut);font-weight:600;}
 .h-chev{color:var(--j-mut);font-size:10px;transition:transform .25s;}
 .h-chev.open{transform:rotate(180deg);}
-.h-sess-del{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.h-sess-del:hover{border-color:var(--j-dn);color:var(--j-dn);}
-.h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;color:var(--j-mut);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.h-sess-edit:hover{border-color:var(--j-acc);color:var(--j-acc);}
+.h-sess-del{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-dn);background:transparent;color:var(--j-dn);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.h-sess-del:hover{background:rgba(220,38,38,0.1);}
+.h-sess-edit{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-acc);background:transparent;color:var(--j-acc);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.h-sess-edit:hover{background:var(--accent-dim);}
+.sess-export-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--j-acc);background:var(--accent-dim);color:var(--j-acc);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.sess-export-btn:hover{background:var(--j-acc);color:#fff;}
 .hist-body{display:none;border-top:1px solid var(--j-bor);}
 .hist-body.open{display:block;}
 .h-ex-row{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-bottom:1px solid var(--j-bor);gap:10px;}
@@ -799,8 +803,8 @@ body{
 .grp-block-hdr.open .grp-block-chev{transform:rotate(180deg);}
 .grp-block-name{font-size:12px;font-weight:600;color:var(--text);flex:1;}
 .grp-block-meta{font-size:10px;color:var(--text3);}
-.grp-del{font-size:10px;padding:3px 7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;}
-.grp-del:hover{border-color:#ef4444;color:#ef4444;}
+.grp-del{font-size:10px;padding:3px 7px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;border-radius:3px;transition:all .15s;}
+.grp-del:hover{background:rgba(239,68,68,0.1);}
 .grp-block-body{display:none;padding:9px 11px;animation:fadeIn .15s ease;}
 .grp-block-body.open{display:block;}
 .grp-cfg{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
@@ -813,8 +817,8 @@ body{
 .ex-cue-inp{width:100%;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:2px 0;outline:none;font-style:italic;}
 .ex-cue-inp:focus{border-bottom-color:var(--accent);color:var(--text2);}
 .ex-cue-inp::placeholder{color:var(--border3);}
-.ex-del{width:22px;height:22px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
-.ex-del:hover{border-color:#ef4444;color:#ef4444;}
+.ex-del{width:22px;height:22px;background:transparent;border:1px solid #ef4444;color:#ef4444;cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
+.ex-del:hover{background:rgba(239,68,68,0.1);}
 /* in-workout cue */
 .j-ex-cue{font-style:italic;color:var(--j-mut);font-weight:400;}
 .slot-pills{display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;}
@@ -853,8 +857,8 @@ body{
 .machine-item:last-child{border-bottom:none;}
 .machine-icon{font-size:18px;}
 .machine-name{flex:1;font-size:12px;color:var(--text);}
-.machine-del{font-size:10px;padding:3px 7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;}
-.machine-del:hover{border-color:#ef4444;color:#ef4444;}
+.machine-del{font-size:10px;padding:3px 7px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;border-radius:3px;transition:all .15s;}
+.machine-del:hover{background:rgba(239,68,68,0.1);}
 .add-machine-row{display:flex;gap:7px;margin-top:8px;align-items:center;}
 .emoji-inp{width:48px;text-align:center;font-size:18px;}
 .nuclear-wrap{text-align:center;margin-top:16px;}
@@ -958,8 +962,8 @@ body{
 .me-ex-card{background:var(--j-card);border:1px solid var(--j-bor);border-radius:8px;overflow:hidden;}
 .me-ex-top{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--j-bor);background:var(--j-tnt);}
 .me-ex-num{font-family:'Black Ops One',sans-serif;font-size:12px;color:var(--j-acc);flex:1;letter-spacing:1px;}
-.me-ex-del{width:22px;height:22px;border-radius:4px;border:1px solid var(--j-bor2);background:transparent;font-size:14px;color:var(--j-mut);cursor:pointer;transition:all .15s;}
-.me-ex-del:hover{border-color:#dc2626;color:#dc2626;}
+.me-ex-del{width:22px;height:22px;border-radius:4px;border:1px solid #dc2626;background:transparent;font-size:14px;color:#dc2626;cursor:pointer;transition:all .15s;}
+.me-ex-del:hover{background:rgba(220,38,38,0.1);}
 .me-ex-fields{display:flex;gap:8px;padding:9px 11px;align-items:flex-start;flex-wrap:wrap;}
 .me-field{display:flex;flex-direction:column;gap:3px;}
 .me-field-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--j-mut);}
@@ -1128,8 +1132,8 @@ body{
 .tpl-load{background:transparent;border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
 .tpl-load:hover{color:var(--accent);}
 .tpl-count{font-size:9px;color:var(--text3);}
-.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:var(--text3);padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
-.tpl-del:hover{color:#ef4444;}
+.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:#ef4444;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
+.tpl-del:hover{background:rgba(239,68,68,0.08);}
 /* ─── Custom Workout Cards ─── */
 .ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .ex-card-remove:hover{border-color:#ef4444;color:#ef4444;}
@@ -1200,7 +1204,7 @@ body{
 <!-- SETUP SCREEN -->
 <div id="setup-screen">
   <div class="setup-logo">FORGE</div>
-  <div class="setup-sub">Personal Workout Journal</div>
+  <div class="setup-sub">Personal Fitness Journal</div>
   <div class="setup-card">
     <div class="setup-card-hdr">
       <div class="setup-card-title">CONNECT GIST BACKUP</div>
@@ -1228,7 +1232,7 @@ body{
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-title">FORGE</div>
-    <div class="hdr-sub">Workout Journal</div>
+    <div class="hdr-sub">Fitness Journal</div>
   </div>
   <div class="hdr-right">
     <div class="hdr-level" id="hdr-level" onclick="openProfileModal()" title="Player Card">
@@ -1639,7 +1643,7 @@ async function gistPull(){
 }
 async function gistPush(){
   if(!gistCfg.pat)return;
-  const body={description:'FORGE Workout Journal Backup',public:false,files:{[GIST_FILENAME]:{content:buildPayload()}}};
+  const body={description:'FORGE Fitness Journal Backup',public:false,files:{[GIST_FILENAME]:{content:buildPayload()}}};
   let url='https://api.github.com/gists';let method='POST';
   if(gistCfg.gistId){url=`https://api.github.com/gists/${gistCfg.gistId}`;method='PATCH';}
   const res=await fetch(url,{method,headers:{'Authorization':`token ${gistCfg.pat}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
@@ -3020,6 +3024,7 @@ function renderWeekView(){
       detailHtml+=`</div>`;
 
       if(s.notes)detailHtml+=`<div class="h-notes" style="margin:0 0 10px;border-radius:6px;">"${esc(s.notes)}"</div>`;
+      detailHtml+=`<div style="display:flex;justify-content:flex-end;margin:4px 0 10px;"><button class="sess-export-btn" title="Export session as PNG" onclick="exportSessionCard('${s.id}')">⬇</button></div>`;
     });
   }
   detailHtml+=`</div>`;
@@ -3036,7 +3041,7 @@ function renderWeekView(){
       <div class="week-sum-item"><span class="week-sum-val">${wDaysWorked}</span><span class="week-sum-lbl">Days</span></div>
       <div class="week-sum-item"><span class="week-sum-val">${wSessions.length}</span><span class="week-sum-lbl">Sessions</span></div>
       <div class="week-sum-item"><span class="week-sum-val">${wExCount}</span><span class="week-sum-lbl">Exercises</span></div>
-      <div class="week-sum-item"><span class="week-sum-val">${volStr}</span><span class="week-sum-lbl">Vol lb</span></div>
+      <div class="week-sum-item"><span class="week-sum-val">${volStr}</span><span class="week-sum-lbl">Vol ${cfg.profile.weightUnit==='kg'?'kg':'lb'}</span></div>
       ${wCalories>0?`<div class="week-sum-item cal-item"><span class="week-sum-val" style="color:var(--accent);">🔥${wCalStr}</span><span class="week-sum-lbl">Cal</span></div>`:''}
     </div>
     ${detailHtml}`;
@@ -3108,7 +3113,7 @@ function renderMonthView(){
           <div class="h-ex-row">
             <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
             <div class="h-ex-r">
-              <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb</div>
+              <div class="h-ex-wt">${fmtWt(ex.weight,false,ex.weightType)}</div>
               <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
             </div>
           </div>`).join('');
@@ -3135,6 +3140,7 @@ function renderMonthView(){
             <div><div class="cal-detail-date">${dotw(calSelectedDate)}, ${fmtDate(calSelectedDate)}</div>
             <div class="cal-detail-meta">${(s.exercises||[]).length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
             <div style="display:flex;gap:6px;align-items:center;">${badge}
+              <button class="sess-export-btn" title="Export session as PNG" onclick="exportSessionCard('${s.id}')">⬇</button>
               <button class="cal-detail-close" onclick="calSelectDay('${calSelectedDate}')">×</button>
             </div>
           </div>
@@ -3209,7 +3215,7 @@ function renderListView(){
   const toolbar=`<div class="hist-toolbar">
     <span class="hist-count">${countLabel}${calLabel}</span>
     <div style="display:flex;gap:7px;">
-      <button class="hist-clear-btn" onclick="openManualEntry()" style="color:var(--j-acc);border-color:var(--j-acc);">+ Log Past</button>
+      <button class="hist-clear-btn accent" onclick="openManualEntry()">+ Log Past</button>
       <button class="hist-clear-btn" onclick="clearHistory()">Clear History</button>
     </div>
   </div>`;
@@ -3219,7 +3225,7 @@ function renderListView(){
       <div class="h-ex-row">
         <div><div class="h-ex-name">${esc(ex.name)}</div><div class="h-ex-grp">${esc(ex.group)}</div></div>
         <div class="h-ex-r">
-          <div class="h-ex-wt">${parseFloat(ex.weight)||0}lb</div>
+          <div class="h-ex-wt">${fmtWt(ex.weight,false,ex.weightType)}</div>
           <div class="h-ex-sets">${esc(ex.scheme)} · ${(ex.repsLog||[]).join(', ')}</div>
         </div>
       </div>`).join('');
@@ -3254,7 +3260,8 @@ function renderListView(){
         <div class="hsd-meta">${s.exercises.length} exercises${s.cardio&&s.cardio.machine?' · cardio':''}</div></div>
         <div class="hsd-right">
           ${badge}
-          <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')" style="color:var(--j-acc);border-color:var(--j-acc)">↺</button>
+          <button class="h-sess-edit" title="Repeat this workout" onclick="event.stopPropagation();repeatSession('${s.id}')">↺</button>
+          <button class="sess-export-btn" title="Export session as PNG" onclick="event.stopPropagation();exportSessionCard('${s.id}')">⬇</button>
           <button class="h-sess-edit" title="Edit session" onclick="event.stopPropagation();openEditSession('${s.id}')">✎</button>
           <button class="h-sess-del" title="Delete session" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button>
           <span class="h-chev" id="hc-${si}">▼</span>
@@ -4256,7 +4263,7 @@ function buildVolumeChart(){
     </div>`;
   }).join('');
   return`<div class="weekly-chart">
-    <div class="weekly-chart-title">Weekly Volume — lbs lifted (Last 12 Weeks)</div>
+    <div class="weekly-chart-title">Weekly Volume — ${cfg.profile.weightUnit==='kg'?'kg':'lbs'} lifted (Last 12 Weeks)</div>
     <div class="week-bars">${barHtml}</div>
   </div>`;
 }
@@ -4980,8 +4987,8 @@ function openProfileModal(){
   }).join('');
   // Calling card data
   const prVals=Object.entries(stats.prs||{});
-  let topPR={name:'—',weight:0};
-  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight};}
+  let topPR={name:'—',weight:0,weightType:'standard'};
+  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight,weightType:best[1].weightType};}
   const streaks=computeStreaks();
   const cardArchIcon=archData?archData.icon:'❓';
   const cardArchName=archData?archData.name:'Unknown';
@@ -5014,7 +5021,7 @@ function openProfileModal(){
           <div class="card-footer">
             <div class="card-footer-stat"><div class="card-footer-val">${stats.total||0}</div><div class="card-footer-lbl">Sessions</div></div>
             <div class="card-footer-stat"><div class="card-footer-val">${streaks.longest}</div><div class="card-footer-lbl">Best Streak</div></div>
-            <div class="card-footer-stat"><div class="card-footer-val">${topPR.weight>0?topPR.weight+'lb':'—'}</div><div class="card-footer-lbl">Top PR</div></div>
+            <div class="card-footer-stat"><div class="card-footer-val">${topPR.weight>0?fmtWt(topPR.weight,false,topPR.weightType):'—'}</div><div class="card-footer-lbl">Top PR</div></div>
           </div>
         </div>
         <button class="card-export-btn" onclick="exportCallingCard()">⬇ EXPORT CARD AS PNG</button>
@@ -5034,8 +5041,8 @@ function exportCallingCard(){
   const earnedIds=gamification.earnedBadges||[];
   const displayBadges=earnedIds.slice(-3).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean);
   const prVals=Object.entries(stats.prs||{});
-  let topPR={name:'—',weight:0};
-  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight};}
+  let topPR={name:'—',weight:0,weightType:'standard'};
+  if(prVals.length>0){const best=prVals.sort((a,b)=>b[1].weight-a[1].weight)[0];topPR={name:best[0].split('::')[1],weight:best[1].weight,weightType:best[1].weightType};}
   const streaks=computeStreaks();
   const prog=getLevelProgress(xp,lv);
   const W=360,H=520;
@@ -5089,7 +5096,7 @@ function exportCallingCard(){
   }
   // Footer
   sy+=8;ctx.fillStyle='#1e1e1e';ctx.fillRect(20,sy,W-40,1);sy+=14;
-  const footStats=[['SESSIONS',String(stats.total||0)],['BEST STREAK',String(streaks.longest)],['TOP PR',topPR.weight>0?topPR.weight+'lb':'—']];
+  const footStats=[['SESSIONS',String(stats.total||0)],['BEST STREAK',String(streaks.longest)],['TOP PR',topPR.weight>0?fmtWt(topPR.weight,false,topPR.weightType):'—']];
   const colW=(W-40)/3;
   footStats.forEach(([label,val],i)=>{
     const cx=20+i*colW+colW/2;
@@ -5103,6 +5110,88 @@ function exportCallingCard(){
   // Download
   const a=document.createElement('a');a.download='forge-card.png';a.href=canvas.toDataURL('image/png');a.click();
   toast('Card exported ✓');
+}
+function exportSessionCard(id){
+  const s=sessions.find(x=>String(x.id)===String(id));
+  if(!s){toast('Session not found');return;}
+  const accentColor=getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#e8271f';
+  const exList=s.exercises||[];
+  const hasCardio=!!(s.cardio&&s.cardio.machine);
+  const hasNotes=!!s.notes;
+  // Dynamic height based on content
+  const rowH=22;
+  const cardioH=hasCardio?34:0;
+  const notesH=hasNotes?28:0;
+  const H=Math.max(260,140+exList.length*rowH+cardioH+notesH+40);
+  const W=360;
+  const canvas=document.createElement('canvas');
+  canvas.width=W*2;canvas.height=H*2;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(2,2);
+  // Background
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#101018');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Top accent bar
+  const barGrad=ctx.createLinearGradient(0,0,W,0);barGrad.addColorStop(0,accentColor);barGrad.addColorStop(1,accentColor+'88');
+  ctx.fillStyle=barGrad;ctx.fillRect(0,0,W,4);
+  // Glow
+  const radGrad=ctx.createRadialGradient(W,0,0,W,0,200);radGrad.addColorStop(0,accentColor+'20');radGrad.addColorStop(1,'transparent');
+  ctx.fillStyle=radGrad;ctx.fillRect(0,0,W,H);
+  // Date header
+  const dateStr=`${dotw(s.date)}, ${fmtDate(s.date)}`;
+  ctx.font='bold 16px Arial';ctx.fillStyle='#fff';ctx.fillText(dateStr,20,34);
+  // Effort badge (top right)
+  if(s.effort){
+    const eLabels=EFFORT_LABELS;const eColors=EFFORT_COLORS;
+    ctx.font='bold 11px Arial';ctx.fillStyle=eColors[s.effort]||accentColor;
+    ctx.textAlign='right';ctx.fillText(eLabels[s.effort]||'',W-20,34);ctx.textAlign='left';
+  }
+  // Meta row (duration + calories) — plain text only for canvas
+  const metaParts=[];
+  if(s.duration)metaParts.push('⏱ '+s.duration);
+  const totCal=sessionTotalCal(s);
+  if(totCal)metaParts.push('🔥 '+(s.caloriesEst?'~':'')+totCal+' cal');
+  ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText(metaParts.join('  ·  '),20,52);
+  // Divider
+  ctx.fillStyle='#222';ctx.fillRect(20,62,W-40,1);
+  let sy=80;
+  // Exercise list
+  exList.forEach(ex=>{
+    ctx.font='bold 11px Arial';ctx.fillStyle='#eee';ctx.fillText(ex.name,20,sy);
+    const wtStr=fmtWt(ex.weight,false,ex.weightType);
+    const setStr=ex.scheme+(ex.repsLog&&ex.repsLog.length?' · '+ex.repsLog.join(', '):'');
+    ctx.font='9px Arial';ctx.fillStyle='#777';ctx.fillText(setStr,20,sy+12);
+    ctx.font='bold 11px Arial';ctx.fillStyle=accentColor;ctx.textAlign='right';ctx.fillText(wtStr,W-20,sy);ctx.textAlign='left';
+    sy+=rowH;
+  });
+  // Cardio row
+  if(hasCardio){
+    ctx.fillStyle='#1a1a1a';ctx.fillRect(20,sy,W-40,28);
+    const m=machById(s.cardio.machine);
+    const parts=[];
+    if(s.cardio.program)parts.push(s.cardio.program);
+    if(s.cardio.duration)parts.push(s.cardio.duration);
+    if(s.cardio.metric)parts.push(s.cardio.metric+(m?' '+m.unit:''));
+    if(s.cardio.calories)parts.push(parseFloat(s.cardio.calories)+' cal');
+    ctx.font='bold 10px Arial';ctx.fillStyle='#ccc';ctx.fillText((m?m.icon:'🏃')+' '+(m?m.name:'Cardio'),28,sy+12);
+    ctx.font='9px Arial';ctx.fillStyle='#666';ctx.fillText(parts.join(' · '),28,sy+23);
+    sy+=34;
+  }
+  // Notes
+  if(hasNotes){
+    ctx.font='italic 10px Arial';ctx.fillStyle='#666';
+    const maxW=W-40;const note='"'+s.notes+'"';
+    ctx.fillText(note.length>60?note.slice(0,57)+'…"':note,20,sy+14);
+    sy+=notesH;
+  }
+  // Footer divider + watermark
+  ctx.fillStyle='#1e1e1e';ctx.fillRect(20,H-28,W-40,1);
+  ctx.font='bold 7px Arial';ctx.fillStyle='#2a2a2a';ctx.letterSpacing='3px';
+  ctx.fillText('FORGE FITNESS JOURNAL',20,H-12);
+  // Download
+  const datePart=s.date||'session';
+  const a=document.createElement('a');a.download=`forge-session-${datePart}.png`;a.href=canvas.toDataURL('image/png');a.click();
+  toast('Session exported ✓');
 }
 function _rrect(ctx,x,y,w,h,r){
   if(w<2*r)r=w/2;if(h<2*r)r=h/2;
