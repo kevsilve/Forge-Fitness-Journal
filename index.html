@@ -847,6 +847,19 @@ body{
 .preset-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 /* ── Auto badge for filter-based groups ── */
 .grp-auto-badge{font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:1px 5px;border-radius:3px;background:var(--accent-dim);color:var(--accent);margin-left:2px;}
+/* ── Filter Editor ── */
+.filter-editor{padding:8px 4px;border-bottom:1px solid var(--border);}
+.filter-dim-row{margin-bottom:8px;}
+.filter-dim-label{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.filter-tag-wrap{display:flex;flex-wrap:wrap;gap:4px;}
+.filter-tag{padding:3px 8px;border-radius:10px;font-size:10px;font-weight:500;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.filter-tag:hover{border-color:var(--accent);color:var(--accent);}
+.filter-tag.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.filter-tag.has-matches{color:var(--text2);}
+.filter-edit-btn{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;margin-left:auto;}
+.filter-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
+.filter-summary{display:flex;flex-wrap:wrap;gap:3px;padding:4px;font-size:10px;}
+.filter-summary-tag{padding:1px 6px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-size:9px;font-weight:500;}
 /* in-workout cue */
 .j-ex-cue{font-style:italic;color:var(--j-mut);font-weight:400;}
 .slot-pills{display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;}
@@ -1427,8 +1440,8 @@ const GROUP_PRESETS = {
     groups:[
       {name:'Push',mode:'core',filter:{movement:['push']}},
       {name:'Pull',mode:'core',filter:{movement:['pull']}},
-      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves']}},
-      {name:'Core',mode:'bonus',filter:{bodyPart:['core']}}
+      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']}},
+      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques']}}
     ]
   },
   bodyParts: {
@@ -1438,9 +1451,20 @@ const GROUP_PRESETS = {
   upperLower: {
     label:'Upper / Lower',
     groups:[
-      {name:'Upper Body',mode:'core',filter:{bodyPart:['chest','back','shoulders','biceps','triceps','forearms']}},
-      {name:'Lower Body',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves']}},
-      {name:'Core',mode:'bonus',filter:{bodyPart:['core']}}
+      {name:'Upper Body',mode:'core',filter:{bodyPart:['chest','upper-chest','lower-chest','lats','mid-back','upper-back','front-delts','mid-delts','rear-delts','traps','biceps','triceps','forearms']}},
+      {name:'Lower Body',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors','hip-flexors']}},
+      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques']}}
+    ]
+  },
+  muscleGroup: {
+    label:'Muscle Groups',
+    groups:[
+      {name:'Chest',mode:'core',filter:{bodyPart:['chest','upper-chest','lower-chest']}},
+      {name:'Back',mode:'core',filter:{bodyPart:['lats','mid-back','upper-back']}},
+      {name:'Shoulders',mode:'core',filter:{bodyPart:['front-delts','mid-delts','rear-delts','traps']}},
+      {name:'Arms',mode:'core',filter:{bodyPart:['biceps','triceps','forearms']}},
+      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']}},
+      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques','hip-flexors']}}
     ]
   },
   equipment: {
@@ -1453,7 +1477,7 @@ const GROUP_PRESETS = {
    EXERCISE CATALOG & TAG TAXONOMY
 ═══════════════════════════════════════════ */
 const TAG_DEFS = {
-  bodyPart: ['chest','back','shoulders','biceps','triceps','forearms','quads','hamstrings','glutes','calves','core','full-body'],
+  bodyPart: ['chest','upper-chest','lower-chest','lats','mid-back','upper-back','front-delts','mid-delts','rear-delts','traps','biceps','triceps','forearms','quads','hamstrings','glutes','calves','adductors','abductors','core','obliques','hip-flexors','full-body'],
   movement: ['push','pull','hinge','squat','lunge','carry','isolation','compound'],
   equipment: ['barbell','dumbbell','cable','machine','bodyweight','kettlebell','band','smith-machine','ez-bar'],
   difficulty: ['beginner','intermediate','advanced']
@@ -1465,42 +1489,42 @@ const TAG_LABELS = {
 const _CATALOG_RAW = [
   // ── CHEST ──
   ['Barbell Bench Press','chest','push,compound','barbell','intermediate','chest','front-delts,triceps','Retract shoulder blades. Lower bar to mid-chest. Drive through full ROM.','Bench Press,Flat Bench'],
-  ['Incline Barbell Bench Press','chest','push,compound','barbell','intermediate','upper-chest','front-delts,triceps','Set bench to 30-45 degrees. Lower to upper chest.','Incline Bench'],
-  ['Decline Barbell Bench Press','chest','push,compound','barbell','intermediate','lower-chest','triceps,front-delts','Set bench to 15-30 degree decline. Lower to lower chest.','Decline Bench'],
+  ['Incline Barbell Bench Press','upper-chest,chest','push,compound','barbell','intermediate','upper-chest','front-delts,triceps','Set bench to 30-45 degrees. Lower to upper chest.','Incline Bench'],
+  ['Decline Barbell Bench Press','lower-chest,chest','push,compound','barbell','intermediate','lower-chest','triceps,front-delts','Set bench to 15-30 degree decline. Lower to lower chest.','Decline Bench'],
   ['Dumbbell Bench Press','chest','push,compound','dumbbell','beginner','chest','front-delts,triceps','Press dumbbells up and slightly together. Full stretch at bottom.','DB Bench Press,Flat DB Press'],
-  ['Incline Dumbbell Press','chest','push,compound','dumbbell','beginner','upper-chest','front-delts,triceps','30-45 degree incline. Press up and slightly in.','Incline DB Press'],
+  ['Incline Dumbbell Press','upper-chest,chest','push,compound','dumbbell','beginner','upper-chest','front-delts,triceps','30-45 degree incline. Press up and slightly in.','Incline DB Press'],
   ['Chest Press','chest','push,compound','machine','beginner','chest','front-delts,triceps','Adjust seat so handles are at mid-chest. Push to full extension.','Machine Chest Press'],
-  ['Incline Chest Press','chest','push,compound','machine','beginner','upper-chest','front-delts,triceps','Adjust seat for incline angle. Drive handles up and forward.','Incline Machine Press'],
+  ['Incline Chest Press','upper-chest,chest','push,compound','machine','beginner','upper-chest','front-delts,triceps','Adjust seat for incline angle. Drive handles up and forward.','Incline Machine Press'],
   ['Chest Fly','chest','isolation','dumbbell','beginner','chest','front-delts','Slight bend in elbows. Open arms wide, squeeze together at top.','Butterflies,Dumbbell Fly,Pec Fly'],
   ['Cable Fly','chest','isolation','cable','intermediate','chest','front-delts','Step forward for stretch. Bring hands together at chest height.','Cable Crossover'],
-  ['Push-Up','chest','push,compound','bodyweight','beginner','chest','front-delts,triceps,core','Hands shoulder-width. Body straight. Lower until chest near floor.','Pushup'],
+  ['Push-Up','chest,front-delts','push,compound','bodyweight','beginner','chest','front-delts,triceps,core','Hands shoulder-width. Body straight. Lower until chest near floor.','Pushup'],
   ['Dip','chest,triceps','push,compound','bodyweight','intermediate','chest,triceps','front-delts','Lean forward for chest emphasis. Upright for triceps emphasis.','Chest Dip,Tricep Dip'],
   // ── BACK ──
-  ['Barbell Row','back','pull,compound','barbell','intermediate','lats,mid-back','biceps,rear-delts','Hinge at hips ~45 degrees. Pull bar to lower chest. Squeeze shoulder blades.','Bent Over Row,Bent Over Barbell Row'],
-  ['Dumbbell Row','back','pull,compound','dumbbell','beginner','lats,mid-back','biceps,rear-delts','One arm at a time on bench. Pull to hip. Keep back flat.','Single Arm Row,One Arm Row,DB Row'],
-  ['Seated Cable Row','back','pull,compound','cable','beginner','mid-back,lats','biceps,rear-delts','Sit upright. Pull handle to lower chest. Squeeze shoulder blades.','Seated Row,Cable Row'],
-  ['Row Machine','back','pull,compound','machine','beginner','mid-back,lats','biceps,rear-delts','Sit with chest against pad. Pull handles back squeezing shoulder blades.','Machine Row'],
-  ['Lat Pulldown','back','pull,compound','cable','beginner','lats','biceps,rear-delts','Wide grip. Pull bar to upper chest. Lead with elbows.','Lat Pull Downs,Lat Pull Down,Cable Pulldown'],
-  ['Pull-Up','back','pull,compound','bodyweight','advanced','lats','biceps,rear-delts,core','Overhand grip. Pull chin above bar. Control the descent.','Pullup,Pull Up'],
-  ['Chin-Up','back,biceps','pull,compound','bodyweight','intermediate','lats,biceps','rear-delts,core','Underhand grip. Pull chin above bar. Great for biceps too.','Chinup,Chin Up'],
-  ['T-Bar Row','back','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Straddle the bar. Pull to chest. Keep core braced.','T Bar Row'],
-  ['Barbell Pullover','back,chest','pull,compound','barbell','intermediate','lats,chest','triceps,core','Lie on bench. Lower bar behind head in arc. Feel lat stretch.','DB Pullover'],
-  ['Cable Pullover','back','pull,isolation','cable','intermediate','lats','core','Face away from cable. Straight arms pull down in arc.','Straight Arm Pulldown'],
-  ['Deadlift','back,hamstrings,glutes','pull,hinge,compound','barbell','advanced','hamstrings,glutes,back','core,traps,forearms','Bar over mid-foot. Hinge at hips. Keep back neutral throughout.','Conventional Deadlift'],
-  ['Rack Pull','back','pull,hinge,compound','barbell','intermediate','back,traps','glutes,hamstrings,forearms','Set pins at knee height. Hinge and pull. Great for upper back.',''],
+  ['Barbell Row','mid-back,lats','pull,compound','barbell','intermediate','lats,mid-back','biceps,rear-delts','Hinge at hips ~45 degrees. Pull bar to lower chest. Squeeze shoulder blades.','Bent Over Row,Bent Over Barbell Row'],
+  ['Dumbbell Row','lats,mid-back','pull,compound','dumbbell','beginner','lats,mid-back','biceps,rear-delts','One arm at a time on bench. Pull to hip. Keep back flat.','Single Arm Row,One Arm Row,DB Row'],
+  ['Seated Cable Row','mid-back,lats','pull,compound','cable','beginner','mid-back,lats','biceps,rear-delts','Sit upright. Pull handle to lower chest. Squeeze shoulder blades.','Seated Row,Cable Row'],
+  ['Row Machine','mid-back,lats','pull,compound','machine','beginner','mid-back,lats','biceps,rear-delts','Sit with chest against pad. Pull handles back squeezing shoulder blades.','Machine Row'],
+  ['Lat Pulldown','lats','pull,compound','cable','beginner','lats','biceps,rear-delts','Wide grip. Pull bar to upper chest. Lead with elbows.','Lat Pull Downs,Lat Pull Down,Cable Pulldown'],
+  ['Pull-Up','lats','pull,compound','bodyweight','advanced','lats','biceps,rear-delts,core','Overhand grip. Pull chin above bar. Control the descent.','Pullup,Pull Up'],
+  ['Chin-Up','lats,biceps','pull,compound','bodyweight','intermediate','lats,biceps','rear-delts,core','Underhand grip. Pull chin above bar. Great for biceps too.','Chinup,Chin Up'],
+  ['T-Bar Row','mid-back,lats','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Straddle the bar. Pull to chest. Keep core braced.','T Bar Row'],
+  ['Barbell Pullover','lats,chest','pull,compound','barbell','intermediate','lats,chest','triceps,core','Lie on bench. Lower bar behind head in arc. Feel lat stretch.','DB Pullover'],
+  ['Cable Pullover','lats','pull,isolation','cable','intermediate','lats','core','Face away from cable. Straight arms pull down in arc.','Straight Arm Pulldown'],
+  ['Deadlift','hamstrings,glutes,upper-back','pull,hinge,compound','barbell','advanced','hamstrings,glutes,upper-back','core,traps,forearms','Bar over mid-foot. Hinge at hips. Keep back neutral throughout.','Conventional Deadlift'],
+  ['Rack Pull','upper-back,traps','pull,hinge,compound','barbell','intermediate','upper-back,traps','glutes,hamstrings,forearms','Set pins at knee height. Hinge and pull. Great for upper back.',''],
   // ── SHOULDERS ──
-  ['Shoulder Press','shoulders','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Press overhead. Dont lock elbows. Control the descent.','Overhead Press,OHP,Dumbbell Shoulder Press'],
-  ['Barbell Overhead Press','shoulders','push,compound','barbell','intermediate','front-delts,mid-delts','triceps,core','Strict press from shoulders to overhead. Brace core throughout.','Military Press,Standing Press,Barbell OHP'],
-  ['Arnold Press','shoulders','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Start palms facing you. Rotate as you press up. Full ROM.','Arnold Dumbbell Press'],
-  ['Lateral Raise','shoulders','isolation','dumbbell','beginner','mid-delts','traps','Slight bend in elbows. Raise to shoulder height. Control descent.','Side Raise,Side Lateral Raise'],
-  ['Front Raise','shoulders','isolation','dumbbell','beginner','front-delts','','Alternate or both arms. Raise to eye level. Dont swing.',''],
-  ['Lateral & Front Raise Combo','shoulders','isolation','dumbbell','beginner','mid-delts,front-delts','traps','Alternate lateral and front raises each rep.',''],
-  ['Face Pull','shoulders','pull,isolation','cable','beginner','rear-delts,mid-back','traps','High cable. Pull rope to face. Externally rotate at end.','Cable Face Pull'],
-  ['Rear Delt Fly','shoulders','pull,isolation','dumbbell','beginner','rear-delts','mid-back,traps','Hinge forward. Raise arms out to sides. Squeeze shoulder blades.','Reverse Fly,Bent Over Raise'],
-  ['Upright Row','shoulders','pull,compound','barbell','intermediate','traps,mid-delts','biceps,forearms','Narrow grip. Pull bar up to chin. Lead with elbows.','Barbell Upright Row'],
-  ['Shrugs','shoulders','isolation','dumbbell','beginner','traps','','Straight arms. Shrug shoulders to ears. Hold at top.','Dumbbell Shrugs,Trap Shrugs'],
-  ['Barbell Shrugs','shoulders','isolation','barbell','beginner','traps','','Overhand grip. Shrug straight up. Dont roll shoulders.',''],
-  ['Cable Lateral Raise','shoulders','isolation','cable','intermediate','mid-delts','traps','Low cable behind back. Raise arm to shoulder height. Constant tension.',''],
+  ['Shoulder Press','front-delts,mid-delts','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Press overhead. Dont lock elbows. Control the descent.','Overhead Press,OHP,Dumbbell Shoulder Press'],
+  ['Barbell Overhead Press','front-delts,mid-delts','push,compound','barbell','intermediate','front-delts,mid-delts','triceps,core','Strict press from shoulders to overhead. Brace core throughout.','Military Press,Standing Press,Barbell OHP'],
+  ['Arnold Press','front-delts,mid-delts','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Start palms facing you. Rotate as you press up. Full ROM.','Arnold Dumbbell Press'],
+  ['Lateral Raise','mid-delts','isolation','dumbbell','beginner','mid-delts','traps','Slight bend in elbows. Raise to shoulder height. Control descent.','Side Raise,Side Lateral Raise'],
+  ['Front Raise','front-delts','isolation','dumbbell','beginner','front-delts','','Alternate or both arms. Raise to eye level. Dont swing.',''],
+  ['Lateral & Front Raise Combo','mid-delts,front-delts','isolation','dumbbell','beginner','mid-delts,front-delts','traps','Alternate lateral and front raises each rep.',''],
+  ['Face Pull','rear-delts,mid-back','pull,isolation','cable','beginner','rear-delts,mid-back','traps','High cable. Pull rope to face. Externally rotate at end.','Cable Face Pull'],
+  ['Rear Delt Fly','rear-delts','pull,isolation','dumbbell','beginner','rear-delts','mid-back,traps','Hinge forward. Raise arms out to sides. Squeeze shoulder blades.','Reverse Fly,Bent Over Raise'],
+  ['Upright Row','traps,mid-delts','pull,compound','barbell','intermediate','traps,mid-delts','biceps,forearms','Narrow grip. Pull bar up to chin. Lead with elbows.','Barbell Upright Row'],
+  ['Shrugs','traps','isolation','dumbbell','beginner','traps','','Straight arms. Shrug shoulders to ears. Hold at top.','Dumbbell Shrugs,Trap Shrugs'],
+  ['Barbell Shrugs','traps','isolation','barbell','beginner','traps','','Overhand grip. Shrug straight up. Dont roll shoulders.',''],
+  ['Cable Lateral Raise','mid-delts','isolation','cable','intermediate','mid-delts','traps','Low cable behind back. Raise arm to shoulder height. Constant tension.',''],
   // ── BICEPS ──
   ['Barbell Curl','biceps','pull,isolation','barbell','beginner','biceps','forearms','Keep elbows at sides. Curl to shoulders. Dont swing.','Standing Barbell Curl,BB Curl'],
   ['Dumbbell Curl','biceps','pull,isolation','dumbbell','beginner','biceps','forearms','Alternate or both arms. Full extension at bottom. Supinate at top.','DB Curl,Standing Curl'],
@@ -1520,7 +1544,7 @@ const _CATALOG_RAW = [
   // ── FOREARMS ──
   ['Wrist Curl','forearms','isolation','dumbbell','beginner','forearm-flexors','','Rest forearms on thighs. Curl wrists up. Full ROM.','Dumbbell Wrist Curl'],
   ['Reverse Wrist Curl','forearms','isolation','dumbbell','beginner','forearm-extensors','','Palms down. Curl wrists up. Lighter weight than regular curls.','Wrist Extension'],
-  ['Farmer Carry','forearms,core','carry,compound','dumbbell','beginner','forearms,traps','core,shoulders','Heavy dumbbells at sides. Walk with tall posture. Crush the grip.','Farmers Walk,Farmer Walk'],
+  ['Farmer Carry','forearms,traps,core','carry,compound','dumbbell','beginner','forearms,traps','core','Heavy dumbbells at sides. Walk with tall posture. Crush the grip.','Farmers Walk,Farmer Walk'],
   // ── QUADS ──
   ['Barbell Back Squat','quads,glutes','squat,compound','barbell','intermediate','quads,glutes','hamstrings,core','Bar on upper traps. Sit back and down. Knees track over toes.','Back Squat,Squat,Barbell Squat'],
   ['Front Squat','quads','squat,compound','barbell','advanced','quads','glutes,core','Bar on front delts. Elbows high. Upright torso.','Barbell Front Squat'],
@@ -1533,70 +1557,70 @@ const _CATALOG_RAW = [
   ['Step-Up','quads,glutes','lunge,compound','dumbbell','beginner','quads,glutes','hamstrings','Step onto bench or box. Drive through front foot. Alternate legs.','Box Step Up'],
   ['Sissy Squat','quads','squat,isolation','bodyweight','advanced','quads','core','Lean back, knees forward. Lower body. Intense quad isolation.',''],
   // ── HAMSTRINGS ──
-  ['Romanian Deadlift','hamstrings,glutes','hinge,compound','barbell','intermediate','hamstrings,glutes','back,core','Slight knee bend. Hinge at hips. Bar close to legs. Feel hamstring stretch.','RDL,Stiff Leg Deadlift'],
-  ['Dumbbell Romanian Deadlift','hamstrings,glutes','hinge,compound','dumbbell','beginner','hamstrings,glutes','back,core','Same as barbell RDL but with dumbbells. Good for beginners.','DB RDL,Dumbbell RDL'],
+  ['Romanian Deadlift','hamstrings,glutes','hinge,compound','barbell','intermediate','hamstrings,glutes','core','Slight knee bend. Hinge at hips. Bar close to legs. Feel hamstring stretch.','RDL,Stiff Leg Deadlift'],
+  ['Dumbbell Romanian Deadlift','hamstrings,glutes','hinge,compound','dumbbell','beginner','hamstrings,glutes','core','Same as barbell RDL but with dumbbells. Good for beginners.','DB RDL,Dumbbell RDL'],
   ['Leg Curl','hamstrings','isolation','machine','beginner','hamstrings','calves','Adjust pad on calves. Curl toward glutes. Squeeze at top.','Lying Leg Curl,Hamstring Curl,Machine Leg Curl'],
   ['Seated Leg Curl','hamstrings','isolation','machine','beginner','hamstrings','calves','Sit with pad on lower calves. Curl down and back. Control both phases.','Seated Hamstring Curl'],
-  ['Good Morning','hamstrings,glutes','hinge,compound','barbell','advanced','hamstrings,glutes','back,core','Bar on upper back. Hinge forward. Feel stretch in hamstrings.',''],
+  ['Good Morning','hamstrings,glutes','hinge,compound','barbell','advanced','hamstrings,glutes','core','Bar on upper back. Hinge forward. Feel stretch in hamstrings.',''],
   ['Nordic Hamstring Curl','hamstrings','isolation','bodyweight','advanced','hamstrings','','Kneel with feet anchored. Lower body forward. Resist gravity eccentrically.','Nordic Curl'],
   // ── GLUTES ──
   ['Hip Thrust','glutes','hinge,compound','barbell','intermediate','glutes','hamstrings,core','Upper back on bench. Bar on hips. Drive hips up. Squeeze at top.','Barbell Hip Thrust'],
   ['Glute Bridge','glutes','hinge,compound','bodyweight','beginner','glutes','hamstrings,core','Lie on back. Feet flat. Drive hips up. Squeeze glutes at top.',''],
   ['Cable Kickback','glutes','isolation','cable','beginner','glutes','hamstrings','Ankle strap on low cable. Kick leg back. Squeeze glute at top.','Glute Kickback'],
-  ['Sumo Deadlift','glutes,quads,hamstrings','hinge,compound','barbell','intermediate','glutes,hamstrings','quads,back,core','Wide stance, toes out. Grip inside knees. Drive through floor.',''],
+  ['Sumo Deadlift','glutes,quads,hamstrings','hinge,compound','barbell','intermediate','glutes,hamstrings','quads,core','Wide stance, toes out. Grip inside knees. Drive through floor.',''],
   // ── CALVES ──
   ['Standing Calf Raise','calves','isolation','machine','beginner','calves','','Full stretch at bottom. Rise onto toes. Hold at top.','Calf Raise,Machine Calf Raise'],
   ['Seated Calf Raise','calves','isolation','machine','beginner','calves','','Knees under pad. Full stretch and contraction. Targets soleus.','Seated Calf'],
   ['Single Leg Calf Raise','calves','isolation','bodyweight','beginner','calves','','Hold wall for balance. Full ROM on one leg. Alternate sides.',''],
   // ── CORE ──
-  ['Plank','core','compound','bodyweight','beginner','core','shoulders','Forearms on floor. Body straight. Hold position. Squeeze everything.','Front Plank'],
-  ['Ab Wheel Rollout','core','compound','bodyweight','advanced','core','shoulders,lats','Kneel with wheel. Roll forward with control. Dont let hips sag.','Ab Roller'],
-  ['Hanging Leg Raise','core','compound','bodyweight','intermediate','core,hip-flexors','forearms','Hang from bar. Raise legs to 90 degrees. Control the swing.','Leg Raise,Hanging Knee Raise'],
+  ['Plank','core','compound','bodyweight','beginner','core','','Forearms on floor. Body straight. Hold position. Squeeze everything.','Front Plank'],
+  ['Ab Wheel Rollout','core','compound','bodyweight','advanced','core','lats','Kneel with wheel. Roll forward with control. Dont let hips sag.','Ab Roller'],
+  ['Hanging Leg Raise','core,hip-flexors','compound','bodyweight','intermediate','core,hip-flexors','forearms','Hang from bar. Raise legs to 90 degrees. Control the swing.','Leg Raise,Hanging Knee Raise'],
   ['Cable Crunch','core','isolation','cable','intermediate','core','','Kneel at cable. Crunch down bringing elbows to knees. Exhale hard.','Kneeling Cable Crunch'],
-  ['Russian Twist','core','compound','bodyweight','beginner','core,obliques','','Lean back slightly. Rotate side to side. Hold weight for difficulty.',''],
+  ['Russian Twist','core,obliques','compound','bodyweight','beginner','core,obliques','','Lean back slightly. Rotate side to side. Hold weight for difficulty.',''],
   ['Dead Bug','core','compound','bodyweight','beginner','core','','Lie on back. Opposite arm/leg extend. Keep low back pressed down.',''],
-  ['Mountain Climber','core,full-body','compound','bodyweight','beginner','core','shoulders,hip-flexors','Pushup position. Drive knees to chest alternately. Keep hips level.',''],
-  ['Pallof Press','core','isolation','cable','intermediate','core,obliques','','Side to cable. Press handle forward. Resist rotation.','Anti-Rotation Press'],
-  ['Side Plank','core','compound','bodyweight','beginner','obliques,core','shoulders','Forearm on floor. Stack feet. Hold straight line. Both sides.',''],
-  ['Bicycle Crunch','core','compound','bodyweight','beginner','core,obliques','','Opposite elbow to knee. Alternate sides. Dont pull on neck.',''],
+  ['Mountain Climber','core,hip-flexors,full-body','compound','bodyweight','beginner','core','hip-flexors','Pushup position. Drive knees to chest alternately. Keep hips level.',''],
+  ['Pallof Press','core,obliques','isolation','cable','intermediate','core,obliques','','Side to cable. Press handle forward. Resist rotation.','Anti-Rotation Press'],
+  ['Side Plank','obliques,core','compound','bodyweight','beginner','obliques,core','','Forearm on floor. Stack feet. Hold straight line. Both sides.',''],
+  ['Bicycle Crunch','core,obliques','compound','bodyweight','beginner','core,obliques','','Opposite elbow to knee. Alternate sides. Dont pull on neck.',''],
   // ── FULL BODY / COMPOUND ──
-  ['Clean and Press','full-body','compound','barbell','advanced','shoulders,glutes,quads','traps,core,back','Explosive pull from floor. Catch at shoulders. Press overhead.','Clean & Press'],
-  ['Kettlebell Swing','full-body,glutes,hamstrings','hinge,compound','kettlebell','intermediate','glutes,hamstrings','core,shoulders','Hinge at hips. Snap hips forward. Arms are pendulum not lifter.','KB Swing'],
-  ['Thruster','full-body','squat,push,compound','barbell','advanced','quads,shoulders','glutes,triceps,core','Front squat into overhead press in one fluid motion. Full depth.','Barbell Thruster'],
+  ['Clean and Press','full-body','compound','barbell','advanced','front-delts,glutes,quads','traps,core','Explosive pull from floor. Catch at shoulders. Press overhead.','Clean & Press'],
+  ['Kettlebell Swing','glutes,hamstrings,full-body','hinge,compound','kettlebell','intermediate','glutes,hamstrings','core','Hinge at hips. Snap hips forward. Arms are pendulum not lifter.','KB Swing'],
+  ['Thruster','quads,front-delts,full-body','squat,push,compound','barbell','advanced','quads,front-delts','glutes,triceps,core','Front squat into overhead press in one fluid motion. Full depth.','Barbell Thruster'],
   ['Burpee','full-body','compound','bodyweight','intermediate','full-body','','Squat down, kick back, pushup, jump up. Maintain form over speed.',''],
-  ['Battle Rope','full-body','compound','bodyweight','intermediate','shoulders,core','forearms','Alternating waves. Keep core braced. Fast and controlled.','Battle Ropes'],
-  ['Turkish Get-Up','full-body','compound','kettlebell','advanced','core,shoulders','full-body','Lie to stand with weight overhead. Follow each step precisely.','TGU'],
+  ['Battle Rope','front-delts,core,full-body','compound','bodyweight','intermediate','front-delts,core','forearms','Alternating waves. Keep core braced. Fast and controlled.','Battle Ropes'],
+  ['Turkish Get-Up','core,front-delts,full-body','compound','kettlebell','advanced','core,front-delts','full-body','Lie to stand with weight overhead. Follow each step precisely.','TGU'],
   // ── ADDITIONAL VARIATIONS ──
   ['Smith Machine Squat','quads,glutes','squat,compound','smith-machine','beginner','quads,glutes','hamstrings,core','Feet slightly forward of bar. Squat to parallel. Good for learning form.','Smith Squat'],
   ['Smith Machine Bench Press','chest','push,compound','smith-machine','beginner','chest','front-delts,triceps','Bar path is fixed. Good for isolation. Lower to mid-chest.','Smith Bench'],
-  ['Cable Fly Low to High','chest','isolation','cable','intermediate','upper-chest','front-delts','Low pulleys. Bring hands together at face height. Great upper chest.','Low Cable Fly'],
-  ['Pendlay Row','back','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Bar starts on floor each rep. Explosive pull to lower chest. Reset.',''],
-  ['Meadows Row','back','pull,compound','barbell','intermediate','lats','biceps,rear-delts','Landmine setup. Perpendicular stance. Pull to hip.','Landmine Row'],
-  ['Reverse Grip Barbell Row','back','pull,compound','barbell','intermediate','lats,biceps','mid-back','Underhand grip. More biceps involvement. Pull to waist.','Yates Row'],
-  ['Dumbbell Lateral Raise 21s','shoulders','isolation','dumbbell','intermediate','mid-delts','traps','7 partial bottom, 7 partial top, 7 full range. Brutal shoulder finisher.',''],
+  ['Cable Fly Low to High','upper-chest,chest','isolation','cable','intermediate','upper-chest','front-delts','Low pulleys. Bring hands together at face height. Great upper chest.','Low Cable Fly'],
+  ['Pendlay Row','mid-back,lats','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Bar starts on floor each rep. Explosive pull to lower chest. Reset.',''],
+  ['Meadows Row','lats','pull,compound','barbell','intermediate','lats','biceps,rear-delts','Landmine setup. Perpendicular stance. Pull to hip.','Landmine Row'],
+  ['Reverse Grip Barbell Row','lats,biceps','pull,compound','barbell','intermediate','lats,biceps','mid-back','Underhand grip. More biceps involvement. Pull to waist.','Yates Row'],
+  ['Dumbbell Lateral Raise 21s','mid-delts','isolation','dumbbell','intermediate','mid-delts','traps','7 partial bottom, 7 partial top, 7 full range. Brutal shoulder finisher.',''],
   ['Spider Curl','biceps','pull,isolation','dumbbell','intermediate','biceps','forearms','Lie face down on incline bench. Arms hang straight. Curl with no swing.',''],
   ['Bayesian Cable Curl','biceps','pull,isolation','cable','intermediate','biceps','forearms','Face away from low cable. Arm behind body. Curl forward for max stretch.',''],
   ['Diamond Push-Up','triceps,chest','push,compound','bodyweight','intermediate','triceps','chest,front-delts','Hands together forming diamond. Elbows close to body. Full lockout.',''],
   ['JM Press','triceps','push,compound','barbell','advanced','triceps','chest','Hybrid of close grip bench and skull crusher. Lower to chin level.',''],
   ['Leg Press Calf Raise','calves','isolation','machine','beginner','calves','','Toes on edge of leg press platform. Push through toes. Full stretch.',''],
   ['Cable Pull-Through','glutes,hamstrings','hinge,compound','cable','beginner','glutes,hamstrings','core','Face away from low cable. Hinge and pull through legs. Squeeze at top.',''],
-  ['Landmine Press','shoulders,chest','push,compound','barbell','intermediate','front-delts,upper-chest','triceps,core','One end of bar in corner. Press up and out. Great for shoulder health.',''],
-  ['Z Press','shoulders','push,compound','barbell','advanced','front-delts,mid-delts','triceps,core','Seated on floor, legs extended. Press overhead. Pure shoulder strength.',''],
-  ['Reverse Pec Deck','shoulders','pull,isolation','machine','beginner','rear-delts','mid-back,traps','Sit facing pad. Pull handles back. Squeeze shoulder blades together.','Reverse Fly Machine'],
-  ['Dumbbell Pullover','back,chest','pull,compound','dumbbell','intermediate','lats,chest','triceps,core','Lie across bench. Lower dumbbell behind head. Pull back over chest.',''],
-  ['Inverted Row','back','pull,compound','bodyweight','beginner','mid-back,lats','biceps,rear-delts','Hang under bar. Pull chest to bar. Easier pull-up progression.','Body Row,Australian Pull-Up'],
-  ['Band Pull-Apart','shoulders','pull,isolation','band','beginner','rear-delts','mid-back,traps','Hold band at arms length. Pull apart to chest. Great warm-up.',''],
-  ['Trap Bar Deadlift','back,quads,glutes','hinge,compound','barbell','intermediate','quads,glutes,back','hamstrings,traps,core','Step inside trap bar. Grip side handles. Drive through floor.','Hex Bar Deadlift'],
+  ['Landmine Press','front-delts,upper-chest','push,compound','barbell','intermediate','front-delts,upper-chest','triceps,core','One end of bar in corner. Press up and out. Great for shoulder health.',''],
+  ['Z Press','front-delts,mid-delts','push,compound','barbell','advanced','front-delts,mid-delts','triceps,core','Seated on floor, legs extended. Press overhead. Pure shoulder strength.',''],
+  ['Reverse Pec Deck','rear-delts','pull,isolation','machine','beginner','rear-delts','mid-back,traps','Sit facing pad. Pull handles back. Squeeze shoulder blades together.','Reverse Fly Machine'],
+  ['Dumbbell Pullover','lats,chest','pull,compound','dumbbell','intermediate','lats,chest','triceps,core','Lie across bench. Lower dumbbell behind head. Pull back over chest.',''],
+  ['Inverted Row','mid-back,lats','pull,compound','bodyweight','beginner','mid-back,lats','biceps,rear-delts','Hang under bar. Pull chest to bar. Easier pull-up progression.','Body Row,Australian Pull-Up'],
+  ['Band Pull-Apart','rear-delts','pull,isolation','band','beginner','rear-delts','mid-back,traps','Hold band at arms length. Pull apart to chest. Great warm-up.',''],
+  ['Trap Bar Deadlift','quads,glutes,upper-back','hinge,compound','barbell','intermediate','quads,glutes,upper-back','hamstrings,traps,core','Step inside trap bar. Grip side handles. Drive through floor.','Hex Bar Deadlift'],
   ['Single Leg Romanian Deadlift','hamstrings,glutes','hinge,compound','dumbbell','intermediate','hamstrings,glutes','core','Balance on one leg. Hinge forward. Free leg extends back.','Single Leg RDL,SL RDL'],
   ['Box Squat','quads,glutes','squat,compound','barbell','intermediate','quads,glutes','hamstrings,core','Squat to box. Pause briefly. Drive up explosively. Teaches depth.',''],
   ['Zercher Squat','quads,glutes,core','squat,compound','barbell','advanced','quads,core','glutes,biceps','Bar in crook of elbows. Squat deep. Forces upright posture.',''],
-  ['Hip Adductor Machine','quads','isolation','machine','beginner','adductors','','Squeeze legs together against pads. Control both phases.','Inner Thigh Machine,Adductor'],
-  ['Hip Abductor Machine','glutes','isolation','machine','beginner','abductors,glutes','','Push legs apart against pads. Control both phases.','Outer Thigh Machine,Abductor'],
+  ['Hip Adductor Machine','adductors','isolation','machine','beginner','adductors','','Squeeze legs together against pads. Control both phases.','Inner Thigh Machine,Adductor'],
+  ['Hip Abductor Machine','abductors,glutes','isolation','machine','beginner','abductors,glutes','','Push legs apart against pads. Control both phases.','Outer Thigh Machine,Abductor'],
   ['Glute Ham Raise','hamstrings,glutes','hinge,compound','machine','advanced','hamstrings,glutes','core','GHD machine. Lower body forward. Curl back up using hamstrings.','GHR'],
-  ['Reverse Hyperextension','glutes,hamstrings','hinge,isolation','machine','intermediate','glutes,hamstrings','back','Face down on pad. Raise legs behind you. Squeeze at top.','Reverse Hyper'],
+  ['Reverse Hyperextension','glutes,hamstrings','hinge,isolation','machine','intermediate','glutes,hamstrings','','Face down on pad. Raise legs behind you. Squeeze at top.','Reverse Hyper'],
   ['Preacher Curl Machine','biceps','pull,isolation','machine','beginner','biceps','forearms','Arms against pad. Curl handle up. Machine provides consistent resistance.',''],
-  ['Chest Supported Row','back','pull,compound','dumbbell','beginner','mid-back,lats','biceps,rear-delts','Lie face down on incline bench. Row dumbbells. No lower back stress.','Seal Row,Incline DB Row'],
-  ['Plate Loaded Lat Pulldown','back','pull,compound','machine','beginner','lats','biceps,rear-delts','Plate loaded machine pulldown. Smooth arc path. Great for lats.',''],
+  ['Chest Supported Row','mid-back,lats','pull,compound','dumbbell','beginner','mid-back,lats','biceps,rear-delts','Lie face down on incline bench. Row dumbbells. No lower back stress.','Seal Row,Incline DB Row'],
+  ['Plate Loaded Lat Pulldown','lats','pull,compound','machine','beginner','lats','biceps,rear-delts','Plate loaded machine pulldown. Smooth arc path. Great for lats.',''],
 ];
 const EXERCISE_CATALOG = _CATALOG_RAW.map((r,i) => ({
   id:'cat_'+i, name:r[0],
@@ -1760,8 +1784,11 @@ function addToPool(catalogId){
   const bp=(cat.tags.bodyPart||[])[0]||'general';
   let grp=groups.find(g=>g.name.toLowerCase()===bp||(g.filter&&g.filter.bodyPart&&g.filter.bodyPart.includes(bp)));
   if(!grp){
-    const bpMap={'chest':'Chest','back':'Back','shoulders':'Shoulders','biceps':'Lower Arm / Biceps','triceps':'Triceps',
-      'forearms':'Lower Arm / Biceps','quads':'Lower','hamstrings':'Lower','glutes':'Lower','calves':'Lower','core':'Core','full-body':'Full Body'};
+    const bpMap={'chest':'Chest','upper-chest':'Chest','lower-chest':'Chest','lats':'Back','mid-back':'Back','upper-back':'Back',
+      'front-delts':'Shoulders','mid-delts':'Shoulders','rear-delts':'Shoulders','traps':'Shoulders',
+      'biceps':'Arms','triceps':'Arms','forearms':'Arms',
+      'quads':'Legs','hamstrings':'Legs','glutes':'Legs','calves':'Legs','adductors':'Legs','abductors':'Legs','hip-flexors':'Legs',
+      'core':'Core','obliques':'Core','full-body':'Full Body'};
     const grpName=bpMap[bp]||bp.charAt(0).toUpperCase()+bp.slice(1);
     grp=groups.find(g=>g.name===grpName);
     if(!grp){grp={id:uid(),name:grpName,mode:'bonus',active:true,required:1,exercises:[]};groups.push(grp);}
@@ -1789,6 +1816,7 @@ function isInPool(catalogId){return pool.some(p=>p.catalogId===catalogId);}
 // ── Pool Overview & Group Presets ──
 let _activePreset = ld('fj_active_preset','custom');
 let _poolOverviewExpanded = null; // null, 'all', or {dim,val}
+let _editingFilterGrp = null; // group id whose filter is being edited
 
 function poolTagSummary(){
   const summary={};
@@ -1859,6 +1887,39 @@ function applyGroupPreset(presetId){
   sv('fj_active_preset',_activePreset);
   autoSaveSettings();
   renderSettings();
+}
+function toggleEditFilter(gid){
+  _editingFilterGrp=_editingFilterGrp===gid?null:gid;
+  renderSettings();
+}
+function toggleFilterTag(gid,dim,val){
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  if(!g.filter)g.filter={};
+  if(!g.filter[dim])g.filter[dim]=[];
+  const idx=g.filter[dim].indexOf(val);
+  if(idx===-1)g.filter[dim].push(val);
+  else g.filter[dim].splice(idx,1);
+  if(!g.filter[dim].length)delete g.filter[dim];
+  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function addFilterGroup(){
+  const inp=document.getElementById('ngrp-inp');
+  const name=inp?inp.value.trim():'';
+  if(!name){toast('Enter a group name');return;}
+  if(groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){toast('Group exists');return;}
+  const gid=uid();
+  groups.push({id:gid,name,mode:'core',active:true,required:1,exercises:[],filter:{}});
+  _editingFilterGrp=gid;
+  openGrp[gid]=true;
+  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+}
+function convertToFilterGroup(gid){
+  const g=groups.find(g=>g.id===gid);if(!g)return;
+  g.filter={};
+  g.exercises=[];
+  _editingFilterGrp=gid;
+  openGrp[gid]=true;
+  sv('fj_groups',groups);autoSaveSettings();renderSettings();
 }
 function setPoolExpanded(dim,val){
   if(_poolOverviewExpanded&&_poolOverviewExpanded.dim===dim&&_poolOverviewExpanded.val===val){
@@ -4621,6 +4682,40 @@ function renderPool(){
     const totalEx=isFilterGroup?pool.filter(p=>matchesFilter(p,g.filter)).length:(g.exercises||[]).length;
     const metaText=isFilterGroup?`${exs.length} matched`:`${exs.length}/${totalEx}`;
 
+    // Build filter editor / summary for filter groups
+    let filterEditorHtml='';
+    if(isFilterGroup){
+      const isEditing=_editingFilterGrp===g.id;
+      if(isEditing){
+        // Full tag picker for all dimensions
+        const dims=[['bodyPart','Body Part'],['movement','Movement'],['equipment','Equipment']];
+        const dimRows=dims.map(([dim,label])=>{
+          const tagBtns=TAG_DEFS[dim].map(v=>{
+            const isActive=g.filter[dim]&&g.filter[dim].includes(v);
+            // Check if this tag has any pool exercises
+            const hasMatches=pool.some(p=>{const t=getPoolTags(p);const vs=Array.isArray(t[dim])?t[dim]:[t[dim]];return vs.includes(v);});
+            return`<button class="filter-tag${isActive?' active':''}${hasMatches?' has-matches':''}" onclick="toggleFilterTag('${g.id}','${dim}','${v}')">${v.replace(/-/g,' ')}</button>`;
+          }).join('');
+          return`<div class="filter-dim-row"><div class="filter-dim-label">${label}</div><div class="filter-tag-wrap">${tagBtns}</div></div>`;
+        }).join('');
+        filterEditorHtml=`<div class="filter-editor">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Select Tags to Match</span>
+            <button class="filter-edit-btn" onclick="toggleEditFilter('${g.id}')">Done</button>
+          </div>
+          ${dimRows}
+          <div style="font-size:9px;color:var(--text3);margin-top:4px;">Exercises matching ANY selected tag in EACH dimension will appear in this group.</div>
+        </div>`;
+      } else {
+        // Show compact filter summary + edit button
+        const activeFilters=Object.entries(g.filter||{}).flatMap(([dim,vals])=>(vals||[]).map(v=>`<span class="filter-summary-tag">${v.replace(/-/g,' ')}</span>`)).join('');
+        const editBtn=_activePreset==='custom'?`<button class="filter-edit-btn" onclick="event.stopPropagation();toggleEditFilter('${g.id}')">Edit Filter</button>`:'';
+        if(activeFilters||_activePreset==='custom'){
+          filterEditorHtml=`<div class="filter-summary">${activeFilters||'<span style="color:var(--text3);font-size:10px;">No tags selected — click Edit Filter</span>'}${editBtn}</div>`;
+        }
+      }
+    }
+
     let exHtml='';
     if(isFilterGroup){
       // Filter-based group: show matched pool exercises
@@ -4632,9 +4727,10 @@ function renderPool(){
             <span class="ex-item-name" style="${!p.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(p.name)}</span>
           </div>
         </div>`;}).join('');
-      if(!matched.length) exHtml=`<div style="font-size:11px;color:var(--text3);padding:8px 4px;">No exercises match — add more via the library</div>`;
+      if(!matched.length) exHtml=`<div style="font-size:11px;color:var(--text3);padding:8px 4px;">No exercises match — add more via the library or edit the filter</div>`;
     } else {
       // Legacy manual group
+      const convertBtn=_activePreset==='custom'?`<button class="filter-edit-btn" style="margin:6px 4px;" onclick="convertToFilterGroup('${g.id}')">Convert to Filter Group</button>`:'';
       exHtml=(g.exercises||[]).map(ex=>`
         <div class="ex-item">
           <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleEx('${g.id}','${ex.id}',this.checked)"><span class="tog-track"></span></label>
@@ -4645,10 +4741,11 @@ function renderPool(){
           </div>
           <button class="ex-del" onclick="deleteEx('${g.id}','${ex.id}')">×</button>
         </div>`).join('');
+      exHtml+=convertBtn;
     }
 
     const filterBadge=isFilterGroup?`<span class="grp-auto-badge">auto</span>`:'';
-    const filterHint=isFilterGroup?`<div style="font-size:10px;color:var(--text3);padding:6px 4px 2px;">Matched by tags · add more via the library</div>`:'';
+    const filterHint=isFilterGroup&&_editingFilterGrp!==g.id?`<div style="font-size:10px;color:var(--text3);padding:6px 4px 2px;">Matched by tags · add more via the library</div>`:'';
     const addRow=isFilterGroup?'':
       `<div class="add-row">
         <input class="add-inp" type="text" placeholder="Add exercise..." id="nex-${g.id}">
@@ -4683,6 +4780,7 @@ function renderPool(){
             </div>
           </div>
         </div>
+        ${filterEditorHtml}
         ${exHtml}
         ${filterHint}
         ${addRow}
@@ -4692,7 +4790,10 @@ function renderPool(){
 
   const addGroupRow=_activePreset==='custom'?`<div class="add-row" style="margin-top:12px;">
     <input class="add-inp" type="text" placeholder="New group name..." id="ngrp-inp">
-    <button class="add-btn" onclick="addGroup()">+ GROUP</button>
+    <div style="display:flex;gap:6px;">
+      <button class="add-btn" onclick="addGroup()">+ GROUP</button>
+      <button class="add-btn" style="background:var(--accent);color:#fff;" onclick="addFilterGroup()">+ FILTER GROUP</button>
+    </div>
   </div>`:'';
 
   return`${libBtn}${overviewCard}${presetBar}${grpHtml}${addGroupRow}`;
