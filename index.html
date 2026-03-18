@@ -819,6 +819,34 @@ body{
 .ex-cue-inp::placeholder{color:var(--border3);}
 .ex-del{width:22px;height:22px;background:transparent;border:1px solid #ef4444;color:#ef4444;cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
 .ex-del:hover{background:rgba(239,68,68,0.1);}
+/* ── Pool Overview Card ── */
+.pool-overview-card{margin-bottom:14px;}
+.pool-overview-title{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;}
+.pool-tag-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px;}
+.pool-tag-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);min-width:36px;margin-right:2px;}
+.pool-tag-pill{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:500;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+.pool-tag-pill:hover{border-color:var(--accent);color:var(--accent);}
+.pool-tag-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.pool-tag-count{font-size:9px;font-weight:700;opacity:.7;}
+.pool-expanded{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.pool-expanded-title{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;}
+.pool-ex-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
+.pool-ex-item:last-child{border-bottom:none;}
+.pool-ex-main{flex:1;min-width:0;}
+.pool-ex-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.pool-ex-name{font-size:12px;font-weight:500;color:var(--text);}
+.pool-ex-tags{display:flex;gap:3px;flex-wrap:wrap;}
+.pool-ex-tag{font-size:9px;padding:1px 6px;border-radius:8px;background:var(--surface3);color:var(--text3);white-space:nowrap;}
+/* ── Group Presets Bar ── */
+.preset-bar-wrap{margin-bottom:14px;}
+.preset-bar-label{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;}
+.preset-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.preset-bar::-webkit-scrollbar{display:none;}
+.preset-pill{padding:6px 14px;border-radius:16px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.preset-pill:hover{border-color:var(--accent);color:var(--accent);}
+.preset-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* ── Auto badge for filter-based groups ── */
+.grp-auto-badge{font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:1px 5px;border-radius:3px;background:var(--accent-dim);color:var(--accent);margin-left:2px;}
 /* in-workout cue */
 .j-ex-cue{font-style:italic;color:var(--j-mut);font-weight:400;}
 .slot-pills{display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;}
@@ -1391,6 +1419,37 @@ const DEF_GROUPS = [
 ];
 
 /* ═══════════════════════════════════════════
+   GROUP PRESETS (lenses over the pool)
+═══════════════════════════════════════════ */
+const GROUP_PRESETS = {
+  ppl: {
+    label:'Push / Pull / Legs',
+    groups:[
+      {name:'Push',mode:'core',filter:{movement:['push']}},
+      {name:'Pull',mode:'core',filter:{movement:['pull']}},
+      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves']}},
+      {name:'Core',mode:'bonus',filter:{bodyPart:['core']}}
+    ]
+  },
+  bodyParts: {
+    label:'Body Parts',
+    dynamic:'bodyPart'
+  },
+  upperLower: {
+    label:'Upper / Lower',
+    groups:[
+      {name:'Upper Body',mode:'core',filter:{bodyPart:['chest','back','shoulders','biceps','triceps','forearms']}},
+      {name:'Lower Body',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves']}},
+      {name:'Core',mode:'bonus',filter:{bodyPart:['core']}}
+    ]
+  },
+  equipment: {
+    label:'By Equipment',
+    dynamic:'equipment'
+  }
+};
+
+/* ═══════════════════════════════════════════
    EXERCISE CATALOG & TAG TAXONOMY
 ═══════════════════════════════════════════ */
 const TAG_DEFS = {
@@ -1695,11 +1754,12 @@ function addToPool(catalogId){
   if(pool.some(p=>p.catalogId===catalogId||p.name.toLowerCase()===cat.name.toLowerCase())){toast('Already in your pool');return;}
   pool.push({catalogId:cat.id,name:cat.name,cue:'',enabled:true,custom:false,tags:cat.tags});
   sv('fj_pool',pool);
-  // Also add to the first matching group or create one
+  // If using filter-based groups (preset active), exercises auto-match via tags — skip manual group assignment
+  if(_activePreset!=='custom'&&groups.some(g=>g.filter)) return;
+  // Legacy: also add to the first matching group or create one
   const bp=(cat.tags.bodyPart||[])[0]||'general';
   let grp=groups.find(g=>g.name.toLowerCase()===bp||(g.filter&&g.filter.bodyPart&&g.filter.bodyPart.includes(bp)));
   if(!grp){
-    // Try to find a group that covers this body part by name similarity
     const bpMap={'chest':'Chest','back':'Back','shoulders':'Shoulders','biceps':'Lower Arm / Biceps','triceps':'Triceps',
       'forearms':'Lower Arm / Biceps','quads':'Lower','hamstrings':'Lower','glutes':'Lower','calves':'Lower','core':'Core','full-body':'Full Body'};
     const grpName=bpMap[bp]||bp.charAt(0).toUpperCase()+bp.slice(1);
@@ -1725,6 +1785,92 @@ function removeFromPool(catalogIdOrName){
   sv('fj_groups',groups);
 }
 function isInPool(catalogId){return pool.some(p=>p.catalogId===catalogId);}
+
+// ── Pool Overview & Group Presets ──
+let _activePreset = ld('fj_active_preset','custom');
+let _poolOverviewExpanded = null; // null, 'all', or {dim,val}
+
+function poolTagSummary(){
+  const summary={};
+  ['bodyPart','movement','equipment'].forEach(dim=>{summary[dim]={};});
+  pool.forEach(p=>{
+    const tags=getPoolTags(p);
+    ['bodyPart','movement','equipment'].forEach(dim=>{
+      const vals=Array.isArray(tags[dim])?tags[dim]:[tags[dim]].filter(Boolean);
+      vals.forEach(v=>{summary[dim][v]=(summary[dim][v]||0)+1;});
+    });
+  });
+  return summary;
+}
+function poolExercisesForTag(dim,val){
+  if(!dim) return pool; // 'all'
+  return pool.filter(p=>{
+    const tags=getPoolTags(p);
+    const vals=Array.isArray(tags[dim])?tags[dim]:[tags[dim]];
+    return vals.includes(val);
+  });
+}
+function togglePoolExEnabled(name,val){
+  const p=pool.find(p=>p.name===name);
+  if(p){p.enabled=val;sv('fj_pool',pool);}
+  // Also toggle in group exercises for legacy groups
+  groups.forEach(g=>{
+    if(g.exercises){const ex=g.exercises.find(e=>e.name===name);if(ex)ex.enabled=val;}
+  });
+  sv('fj_groups',groups);
+  renderSettings();
+}
+function savePoolExCue(name,val){
+  const p=pool.find(p=>p.name===name);
+  if(p){p.cue=val.trim();sv('fj_pool',pool);}
+}
+function removeFromPoolByName(name){
+  removeFromPool(name);
+  renderSettings();
+}
+function applyGroupPreset(presetId){
+  const preset=GROUP_PRESETS[presetId];
+  if(!preset)return;
+  let newGroups;
+  if(preset.dynamic){
+    // Auto-create one group per tag value present in pool
+    const dim=preset.dynamic;
+    const vals=new Set();
+    pool.forEach(p=>{
+      const tags=getPoolTags(p);
+      const v=Array.isArray(tags[dim])?tags[dim]:[tags[dim]];
+      v.filter(Boolean).forEach(t=>vals.add(t));
+    });
+    newGroups=[...vals].sort().map(v=>({
+      id:uid(),name:v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+      mode:'core',active:true,required:1,exercises:[],
+      filter:{[dim]:[v]}
+    }));
+  } else {
+    newGroups=preset.groups.map(g=>({
+      id:uid(),name:g.name,mode:g.mode,active:true,required:1,exercises:[],
+      filter:dc(g.filter)
+    }));
+  }
+  if(!newGroups.length){toast('No exercises in pool match this preset');return;}
+  groups=newGroups;
+  sv('fj_groups',groups);
+  _activePreset=presetId;
+  sv('fj_active_preset',_activePreset);
+  autoSaveSettings();
+  renderSettings();
+}
+function setPoolExpanded(dim,val){
+  if(_poolOverviewExpanded&&_poolOverviewExpanded.dim===dim&&_poolOverviewExpanded.val===val){
+    _poolOverviewExpanded=null;
+  } else if(dim===null&&_poolOverviewExpanded==='all'){
+    _poolOverviewExpanded=null;
+  } else {
+    _poolOverviewExpanded=dim===null?'all':{dim,val};
+  }
+  renderSettings();
+}
+
 let _libExpanded={};
 let _libSearch='';
 let _libFilters={bodyPart:null,movement:null,equipment:null};
@@ -1924,7 +2070,7 @@ if(cfg.accentColor) applyCustomAccent(cfg.accentColor);
    GIST API
 ═══════════════════════════════════════════ */
 function buildPayload(){
-  return JSON.stringify({version:5,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification,pool},null,2);
+  return JSON.stringify({version:5,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification,pool,activePreset:_activePreset},null,2);
 }
 function applyPayload(data){
   if(Array.isArray(data.sessions)){sessions=data.sessions;lsSet('fj_sessions',sessions);}
@@ -1953,6 +2099,7 @@ function applyPayload(data){
   }
   // Import pool data
   if(Array.isArray(data.pool)){pool=data.pool;lsSet('fj_pool',pool);}
+  if(data.activePreset){_activePreset=data.activePreset;sv('fj_active_preset',_activePreset);}
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
@@ -4391,23 +4538,129 @@ function closeLibrary(event){
 }
 
 function renderPool(){
+  // ── Section 1: Browse Library button ──
+  const libBtn=`<div style="margin-bottom:14px;">
+    <button class="gen-btn" style="width:100%;padding:12px;font-size:13px;font-weight:700;letter-spacing:1px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;" onclick="openExerciseLibrary()">BROWSE EXERCISE LIBRARY</button>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px;">${pool.length} exercise${pool.length!==1?'s':''} in your pool · ${EXERCISE_CATALOG.length} available</div>
+  </div>`;
+
+  // ── Section 2: Pool Overview Card ──
+  const summary=poolTagSummary();
+  const dimLabels={bodyPart:'Body',movement:'Type',equipment:'Gear'};
+
+  const isAllExpanded=_poolOverviewExpanded==='all';
+  const allPill=`<div class="pool-tag-row">
+    <button class="pool-tag-pill${isAllExpanded?' active':''}" onclick="setPoolExpanded(null,'all')">All <span class="pool-tag-count">${pool.length}</span></button>
+  </div>`;
+
+  const tagRows=Object.entries(dimLabels).map(([dim,label])=>{
+    const tags=summary[dim];
+    const sorted=Object.entries(tags).sort((a,b)=>b[1]-a[1]);
+    if(!sorted.length)return'';
+    const pills=sorted.map(([val,count])=>{
+      const isExp=_poolOverviewExpanded&&typeof _poolOverviewExpanded==='object'&&_poolOverviewExpanded.dim===dim&&_poolOverviewExpanded.val===val;
+      return`<button class="pool-tag-pill${isExp?' active':''}" onclick="setPoolExpanded('${dim}','${val}')">${val.replace(/-/g,' ')} <span class="pool-tag-count">${count}</span></button>`;
+    }).join('');
+    return`<div class="pool-tag-row"><span class="pool-tag-label">${label}</span>${pills}</div>`;
+  }).join('');
+
+  // Expanded exercise list for selected tag
+  let expandedHtml='';
+  if(_poolOverviewExpanded){
+    const exList=_poolOverviewExpanded==='all'?pool:poolExercisesForTag(_poolOverviewExpanded.dim,_poolOverviewExpanded.val);
+    const exItems=exList.map(p=>{
+      const tags=getPoolTags(p);
+      const tagPills=[...(tags.bodyPart||[]).slice(0,1),...(tags.movement||[]).slice(0,1),...(tags.equipment||[]).slice(0,1)]
+        .map(t=>`<span class="pool-ex-tag">${t.replace(/-/g,' ')}</span>`).join('');
+      const safeName=esc(p.name).replace(/'/g,"\\'");
+      return`<div class="pool-ex-item">
+        <label class="tog"><input type="checkbox" ${p.enabled?'checked':''} onchange="togglePoolExEnabled('${safeName}',this.checked)"><span class="tog-track"></span></label>
+        <div class="pool-ex-main">
+          <div class="pool-ex-name-row">
+            <span class="pool-ex-name" style="${!p.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(p.name)}</span>
+            <div class="pool-ex-tags">${tagPills}</div>
+          </div>
+          <input class="ex-cue-inp" type="text" placeholder="Add cue..." maxlength="80"
+            value="${esc(p.cue||'')}" oninput="savePoolExCue('${safeName}',this.value)">
+        </div>
+        <button class="ex-del" onclick="removeFromPoolByName('${safeName}')">×</button>
+      </div>`;
+    }).join('');
+    const label=_poolOverviewExpanded==='all'?'All Exercises'
+      :`${(_poolOverviewExpanded.val||'').replace(/-/g,' ')} exercises`;
+    expandedHtml=`<div class="pool-expanded">
+      <div class="pool-expanded-title">${label} (${exList.length})</div>
+      ${exItems.length?exItems:'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No exercises</div>'}
+    </div>`;
+  }
+
+  const overviewCard=`<div class="sett-card pool-overview-card">
+    <div class="pool-overview-title">YOUR POOL</div>
+    ${allPill}
+    ${tagRows}
+    ${expandedHtml}
+  </div>`;
+
+  // ── Section 3: Group Presets Bar ──
+  const presetPills=Object.entries(GROUP_PRESETS).map(([id,p])=>
+    `<button class="preset-pill${_activePreset===id?' active':''}" onclick="applyGroupPreset('${id}')">${p.label}</button>`
+  ).join('');
+  const presetBar=`<div class="preset-bar-wrap">
+    <div class="preset-bar-label">WORKOUT STRUCTURE</div>
+    <div class="preset-bar">
+      ${presetPills}
+      <button class="preset-pill${_activePreset==='custom'?' active':''}" onclick="_activePreset='custom';sv('fj_active_preset','custom');renderSettings();">Custom</button>
+    </div>
+  </div>`;
+
+  // ── Section 4: Groups list ──
   const grpHtml=groups.map(g=>{
     const bodyOpen=openGrp[g.id];
-    const exHtml=g.exercises.map(ex=>`
-      <div class="ex-item">
-        <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleEx('${g.id}','${ex.id}',this.checked)"><span class="tog-track"></span></label>
-        <div class="ex-item-main">
-          <span class="ex-item-name" style="${!ex.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(ex.name)}</span>
-          <input class="ex-cue-inp" type="text" placeholder="Add cue... (e.g. keep elbows tucked)" maxlength="80"
-            value="${esc(ex.cue||'')}" oninput="saveExCue('${g.id}','${ex.id}',this.value)">
-        </div>
-        <button class="ex-del" onclick="deleteEx('${g.id}','${ex.id}')">×</button>
-      </div>`).join('');
+    const isFilterGroup=!!g.filter;
+    const exs=enabledEx(g);
+    const totalEx=isFilterGroup?pool.filter(p=>matchesFilter(p,g.filter)).length:(g.exercises||[]).length;
+    const metaText=isFilterGroup?`${exs.length} matched`:`${exs.length}/${totalEx}`;
+
+    let exHtml='';
+    if(isFilterGroup){
+      // Filter-based group: show matched pool exercises
+      const matched=pool.filter(p=>matchesFilter(p,g.filter));
+      exHtml=matched.map(p=>{const sn=esc(p.name).replace(/'/g,"\\'");return`
+        <div class="ex-item">
+          <label class="tog"><input type="checkbox" ${p.enabled?'checked':''} onchange="togglePoolExEnabled('${sn}',this.checked)"><span class="tog-track"></span></label>
+          <div class="ex-item-main">
+            <span class="ex-item-name" style="${!p.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(p.name)}</span>
+          </div>
+        </div>`;}).join('');
+      if(!matched.length) exHtml=`<div style="font-size:11px;color:var(--text3);padding:8px 4px;">No exercises match — add more via the library</div>`;
+    } else {
+      // Legacy manual group
+      exHtml=(g.exercises||[]).map(ex=>`
+        <div class="ex-item">
+          <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleEx('${g.id}','${ex.id}',this.checked)"><span class="tog-track"></span></label>
+          <div class="ex-item-main">
+            <span class="ex-item-name" style="${!ex.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(ex.name)}</span>
+            <input class="ex-cue-inp" type="text" placeholder="Add cue..." maxlength="80"
+              value="${esc(ex.cue||'')}" oninput="saveExCue('${g.id}','${ex.id}',this.value)">
+          </div>
+          <button class="ex-del" onclick="deleteEx('${g.id}','${ex.id}')">×</button>
+        </div>`).join('');
+    }
+
+    const filterBadge=isFilterGroup?`<span class="grp-auto-badge">auto</span>`:'';
+    const filterHint=isFilterGroup?`<div style="font-size:10px;color:var(--text3);padding:6px 4px 2px;">Matched by tags · add more via the library</div>`:'';
+    const addRow=isFilterGroup?'':
+      `<div class="add-row">
+        <input class="add-inp" type="text" placeholder="Add exercise..." id="nex-${g.id}">
+        <button class="add-btn" onclick="addEx('${g.id}')">ADD</button>
+      </div>`;
+
     return`<div class="grp-block">
       <div class="grp-block-hdr${bodyOpen?' open':''}" onclick="toggleGrp('${g.id}')">
         <span class="grp-block-chev">▲</span>
         <span class="grp-block-name">${g.name}</span>
-        <span class="grp-block-meta">${enabledEx(g).length}/${g.exercises.length}</span>
+        ${filterBadge}
+        <span class="grp-block-meta">${metaText}</span>
         <button class="grp-del" onclick="event.stopPropagation();deleteGroup('${g.id}')">Delete</button>
       </div>
       <div class="grp-block-body${bodyOpen?' open':''}">
@@ -4431,22 +4684,18 @@ function renderPool(){
           </div>
         </div>
         ${exHtml}
-        <div class="add-row">
-          <input class="add-inp" type="text" placeholder="Add exercise..." id="nex-${g.id}">
-          <button class="add-btn" onclick="addEx('${g.id}')">ADD</button>
-        </div>
+        ${filterHint}
+        ${addRow}
       </div>
     </div>`;
   }).join('');
-  return`<div style="margin-bottom:14px;">
-      <button class="gen-btn" style="width:100%;padding:12px;font-size:13px;font-weight:700;letter-spacing:1px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;" onclick="openExerciseLibrary()">BROWSE EXERCISE LIBRARY</button>
-      <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px;">${pool.length} exercise${pool.length!==1?'s':''} in your pool · ${EXERCISE_CATALOG.length} available</div>
-    </div>
-    ${grpHtml}
-    <div class="add-row" style="margin-top:12px;">
-      <input class="add-inp" type="text" placeholder="New group name..." id="ngrp-inp">
-      <button class="add-btn" onclick="addGroup()">+ GROUP</button>
-    </div>`;
+
+  const addGroupRow=_activePreset==='custom'?`<div class="add-row" style="margin-top:12px;">
+    <input class="add-inp" type="text" placeholder="New group name..." id="ngrp-inp">
+    <button class="add-btn" onclick="addGroup()">+ GROUP</button>
+  </div>`:'';
+
+  return`${libBtn}${overviewCard}${presetBar}${grpHtml}${addGroupRow}`;
 }
 function renderMachines(){
   const items=machines.map(m=>`
