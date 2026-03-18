@@ -1186,6 +1186,53 @@ body{
 .summ-badge-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
 .summ-badge-icon{font-size:20px;width:28px;text-align:center;}
 .summ-badge-tier{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-left:auto;}
+
+/* ═══════════════════════════════════════════
+   EXERCISE LIBRARY / DISCOVERY UI
+═══════════════════════════════════════════ */
+.lib-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.lib-sheet{width:100%;max-width:580px;background:var(--bg);border-radius:20px 20px 0 0;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .22s ease;}
+.lib-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.lib-hdr-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:var(--accent);}
+.lib-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border3);background:transparent;font-size:20px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.lib-close:hover{border-color:var(--accent);color:var(--accent);}
+.lib-search-wrap{padding:10px 16px 6px;flex-shrink:0;}
+.lib-search{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px 10px 36px;border-radius:8px;transition:border-color .2s;outline:none;}
+.lib-search:focus{border-color:var(--accent);}
+.lib-search-wrap{position:relative;}
+.lib-search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
+.lib-filters{padding:6px 16px 8px;flex-shrink:0;overflow-x:auto;}
+.lib-filter-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.lib-filter-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);min-width:40px;line-height:26px;}
+.lib-pill{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.lib-pill:hover{border-color:var(--accent);color:var(--accent);}
+.lib-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.lib-results{flex:1;overflow-y:auto;padding:0 16px 16px;}
+.lib-count{font-size:11px;color:var(--text3);padding:8px 0 6px;font-weight:600;}
+.lib-card{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
+.lib-card:hover{border-color:var(--border2);}
+.lib-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;gap:8px;}
+.lib-card-name{font-weight:600;font-size:13px;color:var(--text);flex:1;}
+.lib-card-tags{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
+.lib-card-tag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text2);text-transform:capitalize;}
+.lib-card-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;border:1.5px solid var(--accent);cursor:pointer;transition:all .15s;flex-shrink:0;}
+.lib-card-btn.add{background:transparent;color:var(--accent);}
+.lib-card-btn.add:hover{background:var(--accent);color:#fff;}
+.lib-card-btn.added{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);cursor:default;}
+.lib-card-body{padding:0 12px 12px;border-top:1px solid var(--border);animation:fadeIn .15s ease;}
+.lib-card-section{margin-top:8px;}
+.lib-card-section-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.lib-card-muscles{display:flex;gap:4px;flex-wrap:wrap;}
+.lib-muscle-pill{font-size:10px;padding:2px 8px;border-radius:8px;text-transform:capitalize;}
+.lib-muscle-pill.primary{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);font-weight:600;}
+.lib-muscle-pill.secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
+.lib-tips{font-size:12px;color:var(--text2);line-height:1.5;}
+.lib-tip-item{padding:2px 0;padding-left:12px;position:relative;}
+.lib-tip-item::before{content:'•';position:absolute;left:0;color:var(--accent);}
+.lib-all-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+.lib-empty{text-align:center;padding:40px 16px;color:var(--text3);}
+.lib-empty-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.lib-empty-sub{font-size:12px;}
 </style>
 </head>
 <body class="theme-dark-red">
@@ -1342,6 +1389,174 @@ const DEF_GROUPS = [
     {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
     {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
 ];
+
+/* ═══════════════════════════════════════════
+   EXERCISE CATALOG & TAG TAXONOMY
+═══════════════════════════════════════════ */
+const TAG_DEFS = {
+  bodyPart: ['chest','back','shoulders','biceps','triceps','forearms','quads','hamstrings','glutes','calves','core','full-body'],
+  movement: ['push','pull','hinge','squat','lunge','carry','isolation','compound'],
+  equipment: ['barbell','dumbbell','cable','machine','bodyweight','kettlebell','band','smith-machine','ez-bar'],
+  difficulty: ['beginner','intermediate','advanced']
+};
+const TAG_LABELS = {
+  bodyPart:'Body Part', movement:'Movement', equipment:'Equipment', difficulty:'Difficulty'
+};
+// Compact catalog: [name, bodyParts, movements, equipment, difficulty, primaryMuscles, secondaryMuscles, tips, aliases]
+const _CATALOG_RAW = [
+  // ── CHEST ──
+  ['Barbell Bench Press','chest','push,compound','barbell','intermediate','chest','front-delts,triceps','Retract shoulder blades. Lower bar to mid-chest. Drive through full ROM.','Bench Press,Flat Bench'],
+  ['Incline Barbell Bench Press','chest','push,compound','barbell','intermediate','upper-chest','front-delts,triceps','Set bench to 30-45 degrees. Lower to upper chest.','Incline Bench'],
+  ['Decline Barbell Bench Press','chest','push,compound','barbell','intermediate','lower-chest','triceps,front-delts','Set bench to 15-30 degree decline. Lower to lower chest.','Decline Bench'],
+  ['Dumbbell Bench Press','chest','push,compound','dumbbell','beginner','chest','front-delts,triceps','Press dumbbells up and slightly together. Full stretch at bottom.','DB Bench Press,Flat DB Press'],
+  ['Incline Dumbbell Press','chest','push,compound','dumbbell','beginner','upper-chest','front-delts,triceps','30-45 degree incline. Press up and slightly in.','Incline DB Press'],
+  ['Chest Press','chest','push,compound','machine','beginner','chest','front-delts,triceps','Adjust seat so handles are at mid-chest. Push to full extension.','Machine Chest Press'],
+  ['Incline Chest Press','chest','push,compound','machine','beginner','upper-chest','front-delts,triceps','Adjust seat for incline angle. Drive handles up and forward.','Incline Machine Press'],
+  ['Chest Fly','chest','isolation','dumbbell','beginner','chest','front-delts','Slight bend in elbows. Open arms wide, squeeze together at top.','Butterflies,Dumbbell Fly,Pec Fly'],
+  ['Cable Fly','chest','isolation','cable','intermediate','chest','front-delts','Step forward for stretch. Bring hands together at chest height.','Cable Crossover'],
+  ['Push-Up','chest','push,compound','bodyweight','beginner','chest','front-delts,triceps,core','Hands shoulder-width. Body straight. Lower until chest near floor.','Pushup'],
+  ['Dip','chest,triceps','push,compound','bodyweight','intermediate','chest,triceps','front-delts','Lean forward for chest emphasis. Upright for triceps emphasis.','Chest Dip,Tricep Dip'],
+  // ── BACK ──
+  ['Barbell Row','back','pull,compound','barbell','intermediate','lats,mid-back','biceps,rear-delts','Hinge at hips ~45 degrees. Pull bar to lower chest. Squeeze shoulder blades.','Bent Over Row,Bent Over Barbell Row'],
+  ['Dumbbell Row','back','pull,compound','dumbbell','beginner','lats,mid-back','biceps,rear-delts','One arm at a time on bench. Pull to hip. Keep back flat.','Single Arm Row,One Arm Row,DB Row'],
+  ['Seated Cable Row','back','pull,compound','cable','beginner','mid-back,lats','biceps,rear-delts','Sit upright. Pull handle to lower chest. Squeeze shoulder blades.','Seated Row,Cable Row'],
+  ['Row Machine','back','pull,compound','machine','beginner','mid-back,lats','biceps,rear-delts','Sit with chest against pad. Pull handles back squeezing shoulder blades.','Machine Row'],
+  ['Lat Pulldown','back','pull,compound','cable','beginner','lats','biceps,rear-delts','Wide grip. Pull bar to upper chest. Lead with elbows.','Lat Pull Downs,Lat Pull Down,Cable Pulldown'],
+  ['Pull-Up','back','pull,compound','bodyweight','advanced','lats','biceps,rear-delts,core','Overhand grip. Pull chin above bar. Control the descent.','Pullup,Pull Up'],
+  ['Chin-Up','back,biceps','pull,compound','bodyweight','intermediate','lats,biceps','rear-delts,core','Underhand grip. Pull chin above bar. Great for biceps too.','Chinup,Chin Up'],
+  ['T-Bar Row','back','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Straddle the bar. Pull to chest. Keep core braced.','T Bar Row'],
+  ['Barbell Pullover','back,chest','pull,compound','barbell','intermediate','lats,chest','triceps,core','Lie on bench. Lower bar behind head in arc. Feel lat stretch.','DB Pullover'],
+  ['Cable Pullover','back','pull,isolation','cable','intermediate','lats','core','Face away from cable. Straight arms pull down in arc.','Straight Arm Pulldown'],
+  ['Deadlift','back,hamstrings,glutes','pull,hinge,compound','barbell','advanced','hamstrings,glutes,back','core,traps,forearms','Bar over mid-foot. Hinge at hips. Keep back neutral throughout.','Conventional Deadlift'],
+  ['Rack Pull','back','pull,hinge,compound','barbell','intermediate','back,traps','glutes,hamstrings,forearms','Set pins at knee height. Hinge and pull. Great for upper back.',''],
+  // ── SHOULDERS ──
+  ['Shoulder Press','shoulders','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Press overhead. Dont lock elbows. Control the descent.','Overhead Press,OHP,Dumbbell Shoulder Press'],
+  ['Barbell Overhead Press','shoulders','push,compound','barbell','intermediate','front-delts,mid-delts','triceps,core','Strict press from shoulders to overhead. Brace core throughout.','Military Press,Standing Press,Barbell OHP'],
+  ['Arnold Press','shoulders','push,compound','dumbbell','intermediate','front-delts,mid-delts','triceps','Start palms facing you. Rotate as you press up. Full ROM.','Arnold Dumbbell Press'],
+  ['Lateral Raise','shoulders','isolation','dumbbell','beginner','mid-delts','traps','Slight bend in elbows. Raise to shoulder height. Control descent.','Side Raise,Side Lateral Raise'],
+  ['Front Raise','shoulders','isolation','dumbbell','beginner','front-delts','','Alternate or both arms. Raise to eye level. Dont swing.',''],
+  ['Lateral & Front Raise Combo','shoulders','isolation','dumbbell','beginner','mid-delts,front-delts','traps','Alternate lateral and front raises each rep.',''],
+  ['Face Pull','shoulders','pull,isolation','cable','beginner','rear-delts,mid-back','traps','High cable. Pull rope to face. Externally rotate at end.','Cable Face Pull'],
+  ['Rear Delt Fly','shoulders','pull,isolation','dumbbell','beginner','rear-delts','mid-back,traps','Hinge forward. Raise arms out to sides. Squeeze shoulder blades.','Reverse Fly,Bent Over Raise'],
+  ['Upright Row','shoulders','pull,compound','barbell','intermediate','traps,mid-delts','biceps,forearms','Narrow grip. Pull bar up to chin. Lead with elbows.','Barbell Upright Row'],
+  ['Shrugs','shoulders','isolation','dumbbell','beginner','traps','','Straight arms. Shrug shoulders to ears. Hold at top.','Dumbbell Shrugs,Trap Shrugs'],
+  ['Barbell Shrugs','shoulders','isolation','barbell','beginner','traps','','Overhand grip. Shrug straight up. Dont roll shoulders.',''],
+  ['Cable Lateral Raise','shoulders','isolation','cable','intermediate','mid-delts','traps','Low cable behind back. Raise arm to shoulder height. Constant tension.',''],
+  // ── BICEPS ──
+  ['Barbell Curl','biceps','pull,isolation','barbell','beginner','biceps','forearms','Keep elbows at sides. Curl to shoulders. Dont swing.','Standing Barbell Curl,BB Curl'],
+  ['Dumbbell Curl','biceps','pull,isolation','dumbbell','beginner','biceps','forearms','Alternate or both arms. Full extension at bottom. Supinate at top.','DB Curl,Standing Curl'],
+  ['Hammer Curls','biceps,forearms','pull,isolation','dumbbell','beginner','biceps,brachialis','forearms','Neutral grip (palms in). Curl to shoulder. Hits brachialis.','Hammer Curl,DB Hammer Curl'],
+  ['Preacher Curls','biceps','pull,isolation','dumbbell','intermediate','biceps','forearms','Arm against pad. Full extension. Eliminates momentum.','Preacher Curl,EZ Bar Preacher Curl'],
+  ['Incline Dumbbell Curl','biceps','pull,isolation','dumbbell','intermediate','biceps','forearms','45 degree incline. Arms hanging. Great stretch at bottom.','Incline Curl'],
+  ['Concentration Curl','biceps','pull,isolation','dumbbell','beginner','biceps','forearms','Elbow braced on inner thigh. Curl with full focus. Peak contraction.',''],
+  ['Cable Curl','biceps','pull,isolation','cable','beginner','biceps','forearms','Low cable. Curl with constant tension. Squeeze at top.','Cable Bicep Curl'],
+  ['EZ Bar Curl','biceps','pull,isolation','ez-bar','beginner','biceps','forearms','Angled grip reduces wrist strain. Curl to shoulders.','EZ Curl,Easy Bar Curl'],
+  // ── TRICEPS ──
+  ['Tricep Extension','triceps','push,isolation','cable','beginner','triceps','','Keep elbows at sides. Extend fully. Squeeze at bottom.','Extension,Cable Tricep Extension'],
+  ['Tricep Pushdown','triceps','push,isolation','cable','beginner','triceps','','Bar or rope attachment. Push down to full lockout. Elbows pinned.','Pushdown,Cable Pushdown,Rope Pushdown'],
+  ['Skull Crusher','triceps','push,isolation','barbell','intermediate','triceps','','Lower bar to forehead. Elbows stay pointed up. Extend fully.','Lying Tricep Extension,Skull Crushers'],
+  ['Overhead Tricep Extension','triceps','push,isolation','dumbbell','beginner','triceps','','Both hands on one dumbbell. Lower behind head. Extend overhead.','French Press,DB Overhead Extension'],
+  ['Close Grip Bench Press','triceps,chest','push,compound','barbell','intermediate','triceps','chest,front-delts','Hands shoulder-width or narrower. Elbows close to body.','CGBP,Close Grip Press'],
+  ['Tricep Kickback','triceps','push,isolation','dumbbell','beginner','triceps','','Hinge forward. Extend arm back. Squeeze at full extension.','DB Kickback'],
+  // ── FOREARMS ──
+  ['Wrist Curl','forearms','isolation','dumbbell','beginner','forearm-flexors','','Rest forearms on thighs. Curl wrists up. Full ROM.','Dumbbell Wrist Curl'],
+  ['Reverse Wrist Curl','forearms','isolation','dumbbell','beginner','forearm-extensors','','Palms down. Curl wrists up. Lighter weight than regular curls.','Wrist Extension'],
+  ['Farmer Carry','forearms,core','carry,compound','dumbbell','beginner','forearms,traps','core,shoulders','Heavy dumbbells at sides. Walk with tall posture. Crush the grip.','Farmers Walk,Farmer Walk'],
+  // ── QUADS ──
+  ['Barbell Back Squat','quads,glutes','squat,compound','barbell','intermediate','quads,glutes','hamstrings,core','Bar on upper traps. Sit back and down. Knees track over toes.','Back Squat,Squat,Barbell Squat'],
+  ['Front Squat','quads','squat,compound','barbell','advanced','quads','glutes,core','Bar on front delts. Elbows high. Upright torso.','Barbell Front Squat'],
+  ['Goblet Squat','quads,glutes','squat,compound','dumbbell','beginner','quads,glutes','core','Hold dumbbell at chest. Squat deep. Elbows inside knees.','DB Goblet Squat'],
+  ['Leg Press','quads,glutes','squat,compound','machine','beginner','quads,glutes','hamstrings','Feet shoulder-width on platform. Lower until 90 degrees. Dont lock knees.','Machine Leg Press'],
+  ['Leg Extension','quads','isolation','machine','beginner','quads','','Adjust pad on shins. Extend to straight. Control the descent.','Quad Extension,Machine Leg Extension'],
+  ['Hack Squat','quads,glutes','squat,compound','machine','intermediate','quads','glutes,hamstrings','Shoulders under pads. Squat down. More quad focused than back squat.','Machine Hack Squat'],
+  ['Bulgarian Split Squat','quads,glutes','squat,lunge,compound','dumbbell','intermediate','quads,glutes','hamstrings,core','Rear foot elevated on bench. Lunge down. Keep torso upright.','BSS,Split Squat'],
+  ['Walking Lunges','quads,glutes','lunge,compound','dumbbell','beginner','quads,glutes','hamstrings,core','Step forward, lower back knee toward floor. Alternate legs.','Dumbbell Lunges,Lunges'],
+  ['Step-Up','quads,glutes','lunge,compound','dumbbell','beginner','quads,glutes','hamstrings','Step onto bench or box. Drive through front foot. Alternate legs.','Box Step Up'],
+  ['Sissy Squat','quads','squat,isolation','bodyweight','advanced','quads','core','Lean back, knees forward. Lower body. Intense quad isolation.',''],
+  // ── HAMSTRINGS ──
+  ['Romanian Deadlift','hamstrings,glutes','hinge,compound','barbell','intermediate','hamstrings,glutes','back,core','Slight knee bend. Hinge at hips. Bar close to legs. Feel hamstring stretch.','RDL,Stiff Leg Deadlift'],
+  ['Dumbbell Romanian Deadlift','hamstrings,glutes','hinge,compound','dumbbell','beginner','hamstrings,glutes','back,core','Same as barbell RDL but with dumbbells. Good for beginners.','DB RDL,Dumbbell RDL'],
+  ['Leg Curl','hamstrings','isolation','machine','beginner','hamstrings','calves','Adjust pad on calves. Curl toward glutes. Squeeze at top.','Lying Leg Curl,Hamstring Curl,Machine Leg Curl'],
+  ['Seated Leg Curl','hamstrings','isolation','machine','beginner','hamstrings','calves','Sit with pad on lower calves. Curl down and back. Control both phases.','Seated Hamstring Curl'],
+  ['Good Morning','hamstrings,glutes','hinge,compound','barbell','advanced','hamstrings,glutes','back,core','Bar on upper back. Hinge forward. Feel stretch in hamstrings.',''],
+  ['Nordic Hamstring Curl','hamstrings','isolation','bodyweight','advanced','hamstrings','','Kneel with feet anchored. Lower body forward. Resist gravity eccentrically.','Nordic Curl'],
+  // ── GLUTES ──
+  ['Hip Thrust','glutes','hinge,compound','barbell','intermediate','glutes','hamstrings,core','Upper back on bench. Bar on hips. Drive hips up. Squeeze at top.','Barbell Hip Thrust'],
+  ['Glute Bridge','glutes','hinge,compound','bodyweight','beginner','glutes','hamstrings,core','Lie on back. Feet flat. Drive hips up. Squeeze glutes at top.',''],
+  ['Cable Kickback','glutes','isolation','cable','beginner','glutes','hamstrings','Ankle strap on low cable. Kick leg back. Squeeze glute at top.','Glute Kickback'],
+  ['Sumo Deadlift','glutes,quads,hamstrings','hinge,compound','barbell','intermediate','glutes,hamstrings','quads,back,core','Wide stance, toes out. Grip inside knees. Drive through floor.',''],
+  // ── CALVES ──
+  ['Standing Calf Raise','calves','isolation','machine','beginner','calves','','Full stretch at bottom. Rise onto toes. Hold at top.','Calf Raise,Machine Calf Raise'],
+  ['Seated Calf Raise','calves','isolation','machine','beginner','calves','','Knees under pad. Full stretch and contraction. Targets soleus.','Seated Calf'],
+  ['Single Leg Calf Raise','calves','isolation','bodyweight','beginner','calves','','Hold wall for balance. Full ROM on one leg. Alternate sides.',''],
+  // ── CORE ──
+  ['Plank','core','compound','bodyweight','beginner','core','shoulders','Forearms on floor. Body straight. Hold position. Squeeze everything.','Front Plank'],
+  ['Ab Wheel Rollout','core','compound','bodyweight','advanced','core','shoulders,lats','Kneel with wheel. Roll forward with control. Dont let hips sag.','Ab Roller'],
+  ['Hanging Leg Raise','core','compound','bodyweight','intermediate','core,hip-flexors','forearms','Hang from bar. Raise legs to 90 degrees. Control the swing.','Leg Raise,Hanging Knee Raise'],
+  ['Cable Crunch','core','isolation','cable','intermediate','core','','Kneel at cable. Crunch down bringing elbows to knees. Exhale hard.','Kneeling Cable Crunch'],
+  ['Russian Twist','core','compound','bodyweight','beginner','core,obliques','','Lean back slightly. Rotate side to side. Hold weight for difficulty.',''],
+  ['Dead Bug','core','compound','bodyweight','beginner','core','','Lie on back. Opposite arm/leg extend. Keep low back pressed down.',''],
+  ['Mountain Climber','core,full-body','compound','bodyweight','beginner','core','shoulders,hip-flexors','Pushup position. Drive knees to chest alternately. Keep hips level.',''],
+  ['Pallof Press','core','isolation','cable','intermediate','core,obliques','','Side to cable. Press handle forward. Resist rotation.','Anti-Rotation Press'],
+  ['Side Plank','core','compound','bodyweight','beginner','obliques,core','shoulders','Forearm on floor. Stack feet. Hold straight line. Both sides.',''],
+  ['Bicycle Crunch','core','compound','bodyweight','beginner','core,obliques','','Opposite elbow to knee. Alternate sides. Dont pull on neck.',''],
+  // ── FULL BODY / COMPOUND ──
+  ['Clean and Press','full-body','compound','barbell','advanced','shoulders,glutes,quads','traps,core,back','Explosive pull from floor. Catch at shoulders. Press overhead.','Clean & Press'],
+  ['Kettlebell Swing','full-body,glutes,hamstrings','hinge,compound','kettlebell','intermediate','glutes,hamstrings','core,shoulders','Hinge at hips. Snap hips forward. Arms are pendulum not lifter.','KB Swing'],
+  ['Thruster','full-body','squat,push,compound','barbell','advanced','quads,shoulders','glutes,triceps,core','Front squat into overhead press in one fluid motion. Full depth.','Barbell Thruster'],
+  ['Burpee','full-body','compound','bodyweight','intermediate','full-body','','Squat down, kick back, pushup, jump up. Maintain form over speed.',''],
+  ['Battle Rope','full-body','compound','bodyweight','intermediate','shoulders,core','forearms','Alternating waves. Keep core braced. Fast and controlled.','Battle Ropes'],
+  ['Turkish Get-Up','full-body','compound','kettlebell','advanced','core,shoulders','full-body','Lie to stand with weight overhead. Follow each step precisely.','TGU'],
+  // ── ADDITIONAL VARIATIONS ──
+  ['Smith Machine Squat','quads,glutes','squat,compound','smith-machine','beginner','quads,glutes','hamstrings,core','Feet slightly forward of bar. Squat to parallel. Good for learning form.','Smith Squat'],
+  ['Smith Machine Bench Press','chest','push,compound','smith-machine','beginner','chest','front-delts,triceps','Bar path is fixed. Good for isolation. Lower to mid-chest.','Smith Bench'],
+  ['Cable Fly Low to High','chest','isolation','cable','intermediate','upper-chest','front-delts','Low pulleys. Bring hands together at face height. Great upper chest.','Low Cable Fly'],
+  ['Pendlay Row','back','pull,compound','barbell','intermediate','mid-back,lats','biceps,rear-delts','Bar starts on floor each rep. Explosive pull to lower chest. Reset.',''],
+  ['Meadows Row','back','pull,compound','barbell','intermediate','lats','biceps,rear-delts','Landmine setup. Perpendicular stance. Pull to hip.','Landmine Row'],
+  ['Reverse Grip Barbell Row','back','pull,compound','barbell','intermediate','lats,biceps','mid-back','Underhand grip. More biceps involvement. Pull to waist.','Yates Row'],
+  ['Dumbbell Lateral Raise 21s','shoulders','isolation','dumbbell','intermediate','mid-delts','traps','7 partial bottom, 7 partial top, 7 full range. Brutal shoulder finisher.',''],
+  ['Spider Curl','biceps','pull,isolation','dumbbell','intermediate','biceps','forearms','Lie face down on incline bench. Arms hang straight. Curl with no swing.',''],
+  ['Bayesian Cable Curl','biceps','pull,isolation','cable','intermediate','biceps','forearms','Face away from low cable. Arm behind body. Curl forward for max stretch.',''],
+  ['Diamond Push-Up','triceps,chest','push,compound','bodyweight','intermediate','triceps','chest,front-delts','Hands together forming diamond. Elbows close to body. Full lockout.',''],
+  ['JM Press','triceps','push,compound','barbell','advanced','triceps','chest','Hybrid of close grip bench and skull crusher. Lower to chin level.',''],
+  ['Leg Press Calf Raise','calves','isolation','machine','beginner','calves','','Toes on edge of leg press platform. Push through toes. Full stretch.',''],
+  ['Cable Pull-Through','glutes,hamstrings','hinge,compound','cable','beginner','glutes,hamstrings','core','Face away from low cable. Hinge and pull through legs. Squeeze at top.',''],
+  ['Landmine Press','shoulders,chest','push,compound','barbell','intermediate','front-delts,upper-chest','triceps,core','One end of bar in corner. Press up and out. Great for shoulder health.',''],
+  ['Z Press','shoulders','push,compound','barbell','advanced','front-delts,mid-delts','triceps,core','Seated on floor, legs extended. Press overhead. Pure shoulder strength.',''],
+  ['Reverse Pec Deck','shoulders','pull,isolation','machine','beginner','rear-delts','mid-back,traps','Sit facing pad. Pull handles back. Squeeze shoulder blades together.','Reverse Fly Machine'],
+  ['Dumbbell Pullover','back,chest','pull,compound','dumbbell','intermediate','lats,chest','triceps,core','Lie across bench. Lower dumbbell behind head. Pull back over chest.',''],
+  ['Inverted Row','back','pull,compound','bodyweight','beginner','mid-back,lats','biceps,rear-delts','Hang under bar. Pull chest to bar. Easier pull-up progression.','Body Row,Australian Pull-Up'],
+  ['Band Pull-Apart','shoulders','pull,isolation','band','beginner','rear-delts','mid-back,traps','Hold band at arms length. Pull apart to chest. Great warm-up.',''],
+  ['Trap Bar Deadlift','back,quads,glutes','hinge,compound','barbell','intermediate','quads,glutes,back','hamstrings,traps,core','Step inside trap bar. Grip side handles. Drive through floor.','Hex Bar Deadlift'],
+  ['Single Leg Romanian Deadlift','hamstrings,glutes','hinge,compound','dumbbell','intermediate','hamstrings,glutes','core','Balance on one leg. Hinge forward. Free leg extends back.','Single Leg RDL,SL RDL'],
+  ['Box Squat','quads,glutes','squat,compound','barbell','intermediate','quads,glutes','hamstrings,core','Squat to box. Pause briefly. Drive up explosively. Teaches depth.',''],
+  ['Zercher Squat','quads,glutes,core','squat,compound','barbell','advanced','quads,core','glutes,biceps','Bar in crook of elbows. Squat deep. Forces upright posture.',''],
+  ['Hip Adductor Machine','quads','isolation','machine','beginner','adductors','','Squeeze legs together against pads. Control both phases.','Inner Thigh Machine,Adductor'],
+  ['Hip Abductor Machine','glutes','isolation','machine','beginner','abductors,glutes','','Push legs apart against pads. Control both phases.','Outer Thigh Machine,Abductor'],
+  ['Glute Ham Raise','hamstrings,glutes','hinge,compound','machine','advanced','hamstrings,glutes','core','GHD machine. Lower body forward. Curl back up using hamstrings.','GHR'],
+  ['Reverse Hyperextension','glutes,hamstrings','hinge,isolation','machine','intermediate','glutes,hamstrings','back','Face down on pad. Raise legs behind you. Squeeze at top.','Reverse Hyper'],
+  ['Preacher Curl Machine','biceps','pull,isolation','machine','beginner','biceps','forearms','Arms against pad. Curl handle up. Machine provides consistent resistance.',''],
+  ['Chest Supported Row','back','pull,compound','dumbbell','beginner','mid-back,lats','biceps,rear-delts','Lie face down on incline bench. Row dumbbells. No lower back stress.','Seal Row,Incline DB Row'],
+  ['Plate Loaded Lat Pulldown','back','pull,compound','machine','beginner','lats','biceps,rear-delts','Plate loaded machine pulldown. Smooth arc path. Great for lats.',''],
+];
+const EXERCISE_CATALOG = _CATALOG_RAW.map((r,i) => ({
+  id:'cat_'+i, name:r[0],
+  tags:{bodyPart:r[1].split(','),movement:r[2].split(','),equipment:r[3].split(','),difficulty:r[4]},
+  primaryMuscles:r[5].split(','), secondaryMuscles:r[6]?r[6].split(','):[],
+  tips:r[7], aka:r[8]?r[8].split(','):[]
+}));
+function catalogByName(name){
+  const n=name.toLowerCase();
+  return EXERCISE_CATALOG.find(c=>c.name.toLowerCase()===n||c.aka.some(a=>a.toLowerCase()===n));
+}
+
+/* ── EXERCISE NAME MIGRATION ── */
+const NAME_MIGRATION = {
+  'Extension': 'Tricep Extension',
+  'Pushdown': 'Tricep Pushdown',
+  'Butterflies': 'Chest Fly'
+};
+
 const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}, schemes:['3×10','3×12','4×10']};
 const DEF_MACHINES = [
   {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
@@ -1397,6 +1612,122 @@ const _la={'dark-red':'#e8271f','dark-blue':'#3b6fff','dark-green':'#22c55e','da
 if(_lm[theme]!==undefined){if(!cfg.accentColor&&_la[theme])cfg.accentColor=_la[theme];theme=_lm[theme];sv('fj_theme',theme);sv('fj_cfg',cfg);}
 if(theme!=='dark'&&theme!=='light')theme='dark';}
 
+// ── Exercise name migration (v5) ──
+(function migrateV5(){
+  if(ld('fj_migration_v',0)>=5) return;
+  const hasChanges = Object.keys(NAME_MIGRATION).length>0;
+  if(!hasChanges){sv('fj_migration_v',5);return;}
+  // Migrate stats keys
+  ['exercises','weightHistory','totalReps','prs'].forEach(bucket=>{
+    if(!stats[bucket]) return;
+    const nb={};
+    Object.entries(stats[bucket]).forEach(([key,val])=>{
+      const sep=key.indexOf('::');
+      if(sep===-1){nb[key]=val;return;}
+      let name=key.slice(sep+2);
+      const group=key.slice(0,sep);
+      if(NAME_MIGRATION[name]) name=NAME_MIGRATION[name];
+      const nk=group+'::'+name;
+      nb[nk]=val;
+    });
+    stats[bucket]=nb;
+  });
+  // Migrate session exercise names
+  sessions.forEach(s=>{
+    (s.exercises||[]).forEach(ex=>{
+      if(NAME_MIGRATION[ex.name]) ex.name=NAME_MIGRATION[ex.name];
+    });
+  });
+  // Migrate group exercise names
+  groups.forEach(g=>{
+    (g.exercises||[]).forEach(ex=>{
+      if(NAME_MIGRATION[ex.name]) ex.name=NAME_MIGRATION[ex.name];
+    });
+  });
+  // Migrate templates (load directly since templates var not yet initialized)
+  const _tmpl=ld('fj_templates',[]);
+  _tmpl.forEach(t=>{
+    (t.exercises||[]).forEach(ex=>{
+      if(NAME_MIGRATION[ex.name]) ex.name=NAME_MIGRATION[ex.name];
+    });
+  });
+  sv('fj_sessions',sessions);sv('fj_stats',stats);
+  sv('fj_groups',groups);sv('fj_templates',_tmpl);
+  sv('fj_migration_v',5);
+})();
+
+// ── User Exercise Pool ──
+let pool = ld('fj_pool', []);
+// Seed pool from existing groups on first run
+if(!pool.length && groups.length){
+  groups.forEach(g=>{
+    (g.exercises||[]).forEach(ex=>{
+      const cat=catalogByName(ex.name);
+      pool.push({
+        catalogId: cat?cat.id:null,
+        name: ex.name,
+        cue: ex.cue||'',
+        enabled: ex.enabled!==false,
+        custom: !cat,
+        tags: cat?cat.tags:{bodyPart:[g.name.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}
+      });
+    });
+  });
+  sv('fj_pool',pool);
+}
+function getPoolTags(entry){
+  if(entry.catalogId){const c=EXERCISE_CATALOG.find(c=>c.id===entry.catalogId);if(c)return c.tags;}
+  return entry.tags||{bodyPart:[],movement:[],equipment:[],difficulty:'intermediate'};
+}
+function matchesFilter(ex,filter){
+  if(!filter)return true;
+  const tags=getPoolTags(ex);
+  for(const[dim,vals] of Object.entries(filter)){
+    if(!vals||!vals.length) continue;
+    const exVals=Array.isArray(tags[dim])?tags[dim]:[tags[dim]];
+    if(!vals.some(v=>exVals.includes(v))) return false;
+  }
+  return true;
+}
+function addToPool(catalogId){
+  const cat=EXERCISE_CATALOG.find(c=>c.id===catalogId);
+  if(!cat)return;
+  if(pool.some(p=>p.catalogId===catalogId||p.name.toLowerCase()===cat.name.toLowerCase())){toast('Already in your pool');return;}
+  pool.push({catalogId:cat.id,name:cat.name,cue:'',enabled:true,custom:false,tags:cat.tags});
+  sv('fj_pool',pool);
+  // Also add to the first matching group or create one
+  const bp=(cat.tags.bodyPart||[])[0]||'general';
+  let grp=groups.find(g=>g.name.toLowerCase()===bp||(g.filter&&g.filter.bodyPart&&g.filter.bodyPart.includes(bp)));
+  if(!grp){
+    // Try to find a group that covers this body part by name similarity
+    const bpMap={'chest':'Chest','back':'Back','shoulders':'Shoulders','biceps':'Lower Arm / Biceps','triceps':'Triceps',
+      'forearms':'Lower Arm / Biceps','quads':'Lower','hamstrings':'Lower','glutes':'Lower','calves':'Lower','core':'Core','full-body':'Full Body'};
+    const grpName=bpMap[bp]||bp.charAt(0).toUpperCase()+bp.slice(1);
+    grp=groups.find(g=>g.name===grpName);
+    if(!grp){grp={id:uid(),name:grpName,mode:'bonus',active:true,required:1,exercises:[]};groups.push(grp);}
+  }
+  if(!grp.exercises)grp.exercises=[];
+  if(!grp.exercises.some(e=>e.name.toLowerCase()===cat.name.toLowerCase())){
+    grp.exercises.push({id:uid(),name:cat.name,enabled:true,cue:''});
+    sv('fj_groups',groups);
+  }
+}
+function removeFromPool(catalogIdOrName){
+  const idx=pool.findIndex(p=>p.catalogId===catalogIdOrName||p.name===catalogIdOrName);
+  if(idx===-1)return;
+  const entry=pool[idx];
+  pool.splice(idx,1);
+  sv('fj_pool',pool);
+  // Also remove from groups
+  groups.forEach(g=>{
+    if(g.exercises)g.exercises=g.exercises.filter(e=>e.name.toLowerCase()!==entry.name.toLowerCase());
+  });
+  sv('fj_groups',groups);
+}
+function isInPool(catalogId){return pool.some(p=>p.catalogId===catalogId);}
+let _libExpanded={};
+let _libSearch='';
+let _libFilters={bodyPart:null,movement:null,equipment:null};
 
 let pending  = null;
 let active   = null;
@@ -1593,7 +1924,7 @@ if(cfg.accentColor) applyCustomAccent(cfg.accentColor);
    GIST API
 ═══════════════════════════════════════════ */
 function buildPayload(){
-  return JSON.stringify({version:4,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification},null,2);
+  return JSON.stringify({version:5,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification,pool},null,2);
 }
 function applyPayload(data){
   if(Array.isArray(data.sessions)){sessions=data.sessions;lsSet('fj_sessions',sessions);}
@@ -1620,6 +1951,8 @@ function applyPayload(data){
     }
     lsSet('fj_gamification',gamification);
   }
+  // Import pool data
+  if(Array.isArray(data.pool)){pool=data.pool;lsSet('fj_pool',pool);}
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
@@ -1889,7 +2222,12 @@ function fmtCalFull(s){
   if(strCal)return'🔥 '+fmtCal(s);
   return`🔥 ${crdCal} cal`;
 }
-function enabledEx(g){return g.exercises.filter(e=>e.enabled);}
+function enabledEx(g){
+  if(g.filter&&pool.length){
+    return pool.filter(ex=>ex.enabled&&matchesFilter(ex,g.filter));
+  }
+  return(g.exercises||[]).filter(e=>e.enabled);
+}
 function lastForEx(name){for(const s of sessions){const e=s.exercises.find(e=>e.name===name);if(e)return e;}return null;}
 function lastForExByType(name,type){
   const normType=normalizeWeightType(type);
@@ -2344,8 +2682,9 @@ function renderToday(){
     html+=`<div class="j-ex${allDone?' ex-complete':''}" id="jex-${ei}">
       <div class="j-ex-name-row">
         <div style="min-width:0;flex:1;">
-          <div class="j-ex-name">${esc(ex.name)}</div>
+          <div class="j-ex-name">${esc(ex.name)}${(()=>{const cat=catalogByName(ex.name);return cat&&cat.tips?` <span style="font-size:11px;color:var(--j-acc);cursor:pointer;font-weight:400;" onclick="event.stopPropagation();toggleExTip(${ei})" title="Form tips">ℹ️</span>`:'';})()} </div>
           ${(cp.showGroupLabel!==false||((cp.showCues!==false)&&ex.cue))?`<div class="j-ex-grp">${cp.showGroupLabel!==false?esc(ex.group):''}${(cp.showGroupLabel!==false)&&(cp.showCues!==false)&&ex.cue?' · ':''}<span class="j-ex-cue">${(cp.showCues!==false)&&ex.cue?esc(ex.cue):''}</span></div>`:''}
+          <div class="j-ex-tip" id="jtip-${ei}" style="display:none;font-size:11px;color:var(--j-txt2);background:var(--j-tnt);border-radius:6px;padding:6px 8px;margin-top:4px;line-height:1.4;">${(()=>{const cat=catalogByName(ex.name);return cat?esc(cat.tips):'';})()}</div>
         </div>
         <div class="j-ex-right">
           ${lastInfo}
@@ -2467,6 +2806,10 @@ function updateStickyCalories(){
 }
 
 /* Journal interactions */
+function toggleExTip(ei){
+  const el=document.getElementById('jtip-'+ei);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
 function adjWt(ei,d){
   const ex=active.exercises[ei];
   let newVal=Math.max(0,(ex.weight||0)+d);
@@ -3795,7 +4138,15 @@ function addEx(gid){
   const name=inp.value.trim();if(!name){toast('Enter a name');return;}
   const g=groups.find(g=>g.id===gid);if(!g)return;
   if(g.exercises.some(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already exists');return;}
-  g.exercises.push({id:uid(),name,enabled:true});sv('fj_groups',groups);autoSaveSettings();renderSettings();
+  g.exercises.push({id:uid(),name,enabled:true});sv('fj_groups',groups);
+  // Also add to pool if not already there
+  const cat=catalogByName(name);
+  if(!pool.some(p=>p.name.toLowerCase()===name.toLowerCase())){
+    pool.push({catalogId:cat?cat.id:null,name:cat?cat.name:name,cue:'',enabled:true,custom:!cat,
+      tags:cat?cat.tags:{bodyPart:[g.name.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}});
+    sv('fj_pool',pool);
+  }
+  autoSaveSettings();renderSettings();
 }
 function addGroup(){
   const inp=document.getElementById('ngrp-inp');if(!inp)return;
@@ -3835,7 +4186,7 @@ function setGamifPref(key,val){if(!cfg.gamificationPrefs)cfg.gamificationPrefs=d
 function resetAcc(id){
   armReset('rst_'+id,()=>{
     if(id==='structure'){cfg.bonusSlots=DEF_CFG.bonusSlots;sv('fj_cfg',cfg);}
-    if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);}
+    if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);pool=[];sv('fj_pool',pool);}
     if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
     if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.streakMode=DEF_CFG.streakMode;cfg.streakGoal=DEF_CFG.streakGoal;sv('fj_cfg',cfg);}
     if(id==='profile'){cfg.profile=dc(DEF_CFG.profile);sv('fj_cfg',cfg);}
@@ -3906,11 +4257,11 @@ function nuclearReset(){
 async function _doNuclearReset(){
   groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
   sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
-  gamification=dc(DEF_GAMIFICATION);
+  gamification=dc(DEF_GAMIFICATION);pool=[];
   theme='dark';
   sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
   sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
-  sv('fj_gamification',gamification);
+  sv('fj_gamification',gamification);sv('fj_pool',pool);
   applyBodyClasses();applyCustomAccent(null);
   renderHeaderLevel();
   if(gistCfg.pat){try{await gistPush();}catch(e){}}
@@ -3933,6 +4284,112 @@ function renderStructure(){
       <span style="font-size:13px;font-weight:700;color:var(--accent)">${coreTotal+(cfg.bonusSlots||2)}</span>
     </div>`;
 }
+/* ═══════════════════════════════════════════
+   EXERCISE LIBRARY / DISCOVERY
+═══════════════════════════════════════════ */
+function openExerciseLibrary(){
+  _libSearch='';_libFilters={bodyPart:null,movement:null,equipment:null};_libExpanded={};
+  renderLibraryModal();
+}
+function renderLibraryModal(){
+  const q=_libSearch.toLowerCase().trim();
+  let results=EXERCISE_CATALOG.filter(c=>{
+    // Search filter
+    if(q){
+      const inName=c.name.toLowerCase().includes(q);
+      const inAka=c.aka.some(a=>a.toLowerCase().includes(q));
+      const inMuscles=[...c.primaryMuscles,...c.secondaryMuscles].some(m=>m.toLowerCase().includes(q));
+      const inTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].some(t=>t.toLowerCase().includes(q));
+      if(!inName&&!inAka&&!inMuscles&&!inTags) return false;
+    }
+    // Tag filters
+    for(const[dim,val] of Object.entries(_libFilters)){
+      if(!val) continue;
+      const exVals=Array.isArray(c.tags[dim])?c.tags[dim]:[c.tags[dim]];
+      if(!exVals.includes(val)) return false;
+    }
+    return true;
+  });
+  results.sort((a,b)=>a.name.localeCompare(b.name));
+
+  const filterRow=(dim,label)=>{
+    const vals=TAG_DEFS[dim]||[];
+    const pills=vals.map(v=>`<button class="lib-pill${_libFilters[dim]===v?' active':''}" onclick="setLibFilter('${dim}','${v}')">${v.replace(/-/g,' ')}</button>`).join('');
+    return`<div class="lib-filter-row"><span class="lib-filter-label">${label}</span>${pills}</div>`;
+  };
+
+  const cards=results.map(c=>{
+    const inPool=isInPool(c.id);
+    const expanded=_libExpanded[c.id];
+    const tagPills=(c.tags.movement||[]).slice(0,2).map(t=>`<span class="lib-card-tag">${t}</span>`).join('')
+      +`<span class="lib-card-tag">${c.tags.difficulty||''}</span>`;
+    let body='';
+    if(expanded){
+      const primary=c.primaryMuscles.map(m=>`<span class="lib-muscle-pill primary">${m.replace(/-/g,' ')}</span>`).join('');
+      const secondary=c.secondaryMuscles.filter(m=>m).map(m=>`<span class="lib-muscle-pill secondary">${m.replace(/-/g,' ')}</span>`).join('');
+      const tips=c.tips?c.tips.split('. ').filter(t=>t.trim()).map(t=>`<div class="lib-tip-item">${esc(t.replace(/\.$/,''))}</div>`).join(''):'';
+      const allTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].map(t=>`<span class="lib-card-tag">${t.replace(/-/g,' ')}</span>`).join('');
+      body=`<div class="lib-card-body">
+        <div class="lib-card-section"><div class="lib-card-section-title">Primary Muscles</div><div class="lib-card-muscles">${primary}</div></div>
+        ${secondary?`<div class="lib-card-section"><div class="lib-card-section-title">Secondary Muscles</div><div class="lib-card-muscles">${secondary}</div></div>`:''}
+        ${tips?`<div class="lib-card-section"><div class="lib-card-section-title">Form Tips</div><div class="lib-tips">${tips}</div></div>`:''}
+        <div class="lib-card-section"><div class="lib-card-section-title">Tags</div><div class="lib-all-tags">${allTags}</div></div>
+      </div>`;
+    }
+    return`<div class="lib-card">
+      <div class="lib-card-hdr" onclick="toggleLibCard('${c.id}')">
+        <span class="lib-card-name">${esc(c.name)}</span>
+        <div class="lib-card-tags">${tagPills}</div>
+        <button class="lib-card-btn ${inPool?'added':'add'}" onclick="event.stopPropagation();${inPool?'':`addToPool('${c.id}');renderLibraryModal();renderSettings();`}">${inPool?'ADDED':'+ ADD'}</button>
+      </div>
+      ${body}
+    </div>`;
+  }).join('');
+
+  const empty=results.length===0?`<div class="lib-empty"><div class="lib-empty-title">No exercises found</div><div class="lib-empty-sub">Try adjusting your search or filters</div></div>`:'';
+
+  document.getElementById('modal-root').innerHTML=`
+    <div class="lib-overlay" onclick="closeLibrary(event)">
+      <div class="lib-sheet" onclick="event.stopPropagation()">
+        <div class="lib-hdr">
+          <span class="lib-hdr-title">EXERCISE LIBRARY</span>
+          <button class="lib-close" onclick="closeLibrary()">×</button>
+        </div>
+        <div class="lib-search-wrap">
+          <span class="lib-search-icon">🔍</span>
+          <input class="lib-search" type="text" placeholder="Search exercises..." value="${esc(_libSearch)}" oninput="debounceLibSearch(this.value)">
+        </div>
+        <div class="lib-filters">
+          ${filterRow('bodyPart','Body')}
+          ${filterRow('movement','Type')}
+          ${filterRow('equipment','Gear')}
+        </div>
+        <div class="lib-results">
+          <div class="lib-count">${results.length} exercise${results.length!==1?'s':''} found</div>
+          ${cards}
+          ${empty}
+        </div>
+      </div>
+    </div>`;
+}
+let _libSearchTimer=null;
+function debounceLibSearch(val){
+  clearTimeout(_libSearchTimer);
+  _libSearchTimer=setTimeout(()=>{_libSearch=val;renderLibraryModal();},150);
+}
+function setLibFilter(dim,val){
+  _libFilters[dim]=_libFilters[dim]===val?null:val;
+  renderLibraryModal();
+}
+function toggleLibCard(id){
+  _libExpanded[id]=!_libExpanded[id];
+  renderLibraryModal();
+}
+function closeLibrary(event){
+  if(event&&event.target!==event.currentTarget)return;
+  document.getElementById('modal-root').innerHTML='';
+}
+
 function renderPool(){
   const grpHtml=groups.map(g=>{
     const bodyOpen=openGrp[g.id];
@@ -3981,7 +4438,11 @@ function renderPool(){
       </div>
     </div>`;
   }).join('');
-  return`${grpHtml}
+  return`<div style="margin-bottom:14px;">
+      <button class="gen-btn" style="width:100%;padding:12px;font-size:13px;font-weight:700;letter-spacing:1px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;" onclick="openExerciseLibrary()">BROWSE EXERCISE LIBRARY</button>
+      <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px;">${pool.length} exercise${pool.length!==1?'s':''} in your pool · ${EXERCISE_CATALOG.length} available</div>
+    </div>
+    ${grpHtml}
     <div class="add-row" style="margin-top:12px;">
       <input class="add-inp" type="text" placeholder="New group name..." id="ngrp-inp">
       <button class="add-btn" onclick="addGroup()">+ GROUP</button>
@@ -4526,6 +4987,7 @@ function importData(input){
       if(data.sessions){sessions=data.sessions;sv('fj_sessions',sessions);}
       if(data.stats)   {stats=data.stats;sv('fj_stats',stats);}
       if(data.groups)  {groups=data.groups;sv('fj_groups',groups);}
+      if(data.pool)    {pool=data.pool;sv('fj_pool',pool);}
       if(data.cfg)     {cfg=data.cfg;sv('fj_cfg',cfg);}
       if(data.machines){machines=data.machines;sv('fj_machines',machines);}
       if(data.theme)   {theme=data.theme;sv('fj_theme',theme);applyBodyClasses();if(cfg.accentColor)applyCustomAccent(cfg.accentColor);}
@@ -4660,9 +5122,17 @@ async function saveManualSession(){
         groups.push({id:uid(),name:ng,mode:'bonus',active:true,required:1,exercises:[]});
     }
     if(ex.name==='__new__'&&ex.customName.trim()){
+      const cn=ex.customName.trim();
       const tg=groups.find(g=>g.name===grp);
-      if(tg&&!tg.exercises.some(e=>e.name.toLowerCase()===ex.customName.trim().toLowerCase()))
-        tg.exercises.push({id:uid(),name:ex.customName.trim(),enabled:true});
+      if(tg&&!tg.exercises.some(e=>e.name.toLowerCase()===cn.toLowerCase()))
+        tg.exercises.push({id:uid(),name:cn,enabled:true});
+      // Add to pool
+      if(!pool.some(p=>p.name.toLowerCase()===cn.toLowerCase())){
+        const cat=catalogByName(cn);
+        pool.push({catalogId:cat?cat.id:null,name:cat?cat.name:cn,cue:'',enabled:true,custom:!cat,
+          tags:cat?cat.tags:{bodyPart:[grp.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}});
+        sv('fj_pool',pool);
+      }
     }
     return{name,group:grp,scheme:ex.scheme||'3×10',weight:parseFloat(ex.weight)||0,weightType:ex.weightType||'standard',repsLog:ex.repsLog.map(r=>parseInt(r)||0),arrow:ex.arrow||'eq'};
   });
