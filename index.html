@@ -1186,6 +1186,13 @@ body{
 .summ-badge-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
 .summ-badge-icon{font-size:20px;width:28px;text-align:center;}
 .summ-badge-tier{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-left:auto;}
+.summ-exercises{margin:0 16px 8px;background:var(--j-card);border:1px solid var(--j-bor);border-radius:10px;padding:12px 14px;}
+.summ-ex-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--j-bor);}.summ-ex-row:last-child{border-bottom:none;}
+.summ-ex-info{flex:1;min-width:0;}
+.summ-ex-name{font-size:12px;font-weight:700;color:var(--j-txt);display:flex;align-items:center;gap:6px;}
+.summ-ex-detail{font-size:10px;color:var(--j-mut);margin-top:1px;}
+.summ-ex-wt{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;margin-left:8px;}
+.summ-ex-pr-tag{font-size:8px;font-weight:700;letter-spacing:1px;background:var(--accent);color:#000;padding:1px 5px;border-radius:3px;}
 </style>
 </head>
 <body class="theme-dark-red">
@@ -2823,6 +2830,8 @@ function showWorkoutSummary(session,newPRs,gamResult){
     <div class="summ-xp-bar-wrap"><div class="summ-xp-bar-fill" style="width:${prog.pct}%"></div></div>
   </div>`:'';
   const badgesHtml=newBadges.length?`<div class="summ-prs summ-badges-section"><div class="summ-prs-title">🏅 ACCOLADES EARNED</div>${newBadges.map(b=>`<div class="summ-badge-row"><span class="summ-badge-icon">${b.icon}</span><span style="color:${tierC[b.tier]||'var(--accent)'};font-weight:700;font-size:13px;">${esc(b.name)}</span><span class="summ-badge-tier" style="color:${tierC[b.tier]||'var(--text3)'};">${b.tier}</span></div>`).join('')}</div>`:'';
+  const prNames=new Set(newPRs.map(p=>p.name));
+  const exBreakdownHtml=session.exercises.length?`<div class="summ-exercises"><div class="summ-prs-title">💪 EXERCISES</div>${session.exercises.map(ex=>{const repsStr=(ex.repsLog||[]).join(', ');const isPR=prNames.has(ex.name);return`<div class="summ-ex-row"><div class="summ-ex-info"><div class="summ-ex-name">${esc(ex.name)}${isPR?'<span class="summ-ex-pr-tag">PR</span>':''}</div><div class="summ-ex-detail">${esc(ex.scheme)}${repsStr?' · '+repsStr:''}</div></div><div class="summ-ex-wt">${fmtWt(ex.weight,false,ex.weightType)}</div></div>`;}).join('')}</div>`:'';
   const root=document.getElementById('modal-root');
   root.innerHTML=`<div class="modal-overlay">
     <div class="modal summ-modal" onclick="event.stopPropagation()" style="max-height:85vh;">
@@ -2840,6 +2849,7 @@ function showWorkoutSummary(session,newPRs,gamResult){
       ${xpHtml}
       ${prHtml}
       ${badgesHtml}
+      ${exBreakdownHtml}
       <div style="padding:16px 16px 32px;">
         <button class="me-save-btn" onclick="closeSummaryModal()">Done →</button>
       </div>
@@ -5154,10 +5164,28 @@ function exportSessionCard(id){
   ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText(metaParts.join('  ·  '),20,52);
   // Divider
   ctx.fillStyle='#222';ctx.fillRect(20,62,W-40,1);
+  // Build set of exercise keys that were PRs during this session
+  const sessionPRKeys=new Set();
+  exList.forEach(ex=>{
+    const k=(ex.group||'')+'::'+ex.name;
+    const history=(stats.weightHistory||{})[k]||[];
+    const priorMax=history.filter(h=>h.date<s.date).reduce((m,h)=>Math.max(m,h.weight||0),0);
+    if((ex.weight||0)>0&&(ex.weight||0)>priorMax)sessionPRKeys.add(k);
+  });
   let sy=80;
   // Exercise list
   exList.forEach(ex=>{
-    ctx.font='bold 11px Arial';ctx.fillStyle='#eee';ctx.fillText(ex.name,20,sy);
+    const k=(ex.group||'')+'::'+ex.name;
+    const isPR=sessionPRKeys.has(k);
+    ctx.font='bold 11px Arial';ctx.fillStyle='#eee';
+    const nameX=20;
+    ctx.fillText(ex.name,nameX,sy);
+    if(isPR){
+      const nm=ctx.measureText(ex.name);
+      const tagX=nameX+nm.width+5;const tagY=sy-9;const tagW=22;const tagH=11;
+      ctx.fillStyle=accentColor;ctx.beginPath();ctx.roundRect(tagX,tagY,tagW,tagH,2);ctx.fill();
+      ctx.font='bold 7px Arial';ctx.fillStyle='#000';ctx.fillText('PR',tagX+4,tagY+8);
+    }
     const wtStr=fmtWt(ex.weight,false,ex.weightType);
     const setStr=ex.scheme+(ex.repsLog&&ex.repsLog.length?' · '+ex.repsLog.join(', '):'');
     ctx.font='9px Arial';ctx.fillStyle='#777';ctx.fillText(setStr,20,sy+12);
