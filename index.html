@@ -5128,43 +5128,10 @@ function exportSessionCard(id){
   const exList=s.exercises||[];
   const hasCardio=!!(s.cardio&&s.cardio.machine);
   const hasNotes=!!s.notes;
-  // Dynamic height based on content
-  const rowH=22;
-  const cardioH=hasCardio?34:0;
-  const notesH=hasNotes?28:0;
-  const H=Math.max(260,140+exList.length*rowH+cardioH+notesH+40);
-  const W=360;
-  const canvas=document.createElement('canvas');
-  canvas.width=W*2;canvas.height=H*2;
-  const ctx=canvas.getContext('2d');
-  ctx.scale(2,2);
-  // Background
-  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0a0a0a');bg.addColorStop(1,'#101018');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  // Top accent bar
-  const barGrad=ctx.createLinearGradient(0,0,W,0);barGrad.addColorStop(0,accentColor);barGrad.addColorStop(1,accentColor+'88');
-  ctx.fillStyle=barGrad;ctx.fillRect(0,0,W,4);
-  // Glow
-  const radGrad=ctx.createRadialGradient(W,0,0,W,0,200);radGrad.addColorStop(0,accentColor+'20');radGrad.addColorStop(1,'transparent');
-  ctx.fillStyle=radGrad;ctx.fillRect(0,0,W,H);
-  // Date header
-  const dateStr=`${dotw(s.date)}, ${fmtDate(s.date)}`;
-  ctx.font='bold 16px Arial';ctx.fillStyle='#fff';ctx.fillText(dateStr,20,34);
-  // Effort badge (top right)
-  if(s.effort){
-    const eLabels=EFFORT_LABELS;const eColors=EFFORT_COLORS;
-    ctx.font='bold 11px Arial';ctx.fillStyle=eColors[s.effort]||accentColor;
-    ctx.textAlign='right';ctx.fillText(eLabels[s.effort]||'',W-20,34);ctx.textAlign='left';
-  }
-  // Meta row (duration + calories) — plain text only for canvas
-  const metaParts=[];
-  if(s.duration)metaParts.push('⏱ '+s.duration);
+  const totalSets=exList.reduce((a,ex)=>a+(ex.repsLog||[]).length,0);
   const totCal=sessionTotalCal(s);
-  if(totCal)metaParts.push('🔥 '+(s.caloriesEst?'~':'')+totCal+' cal');
-  ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText(metaParts.join('  ·  '),20,52);
-  // Divider
-  ctx.fillStyle='#222';ctx.fillRect(20,62,W-40,1);
-  // Build set of exercise keys that were PRs during this session
+
+  // Determine which exercises set PRs in this session
   const sessionPRKeys=new Set();
   exList.forEach(ex=>{
     const k=(ex.group||'')+'::'+ex.name;
@@ -5172,50 +5139,189 @@ function exportSessionCard(id){
     const priorMax=history.filter(h=>h.date<s.date).reduce((m,h)=>Math.max(m,h.weight||0),0);
     if((ex.weight||0)>0&&(ex.weight||0)>priorMax)sessionPRKeys.add(k);
   });
-  let sy=80;
-  // Exercise list
-  exList.forEach(ex=>{
+
+  const W=390;
+  const PADX=24;
+  const exRowH=42;
+  // Pre-calculate total canvas height
+  const H=Math.max(300,
+    94                          // header (branding + day + date)
+    +16+56+16                   // divider + stats row + divider
+    +24                         // "EXERCISES" label
+    +exList.length*exRowH       // exercise rows
+    +(hasCardio?56:0)           // cardio block
+    +(hasNotes?46:0)            // notes block
+    +48                         // footer gap + divider + text + bottom pad
+  );
+
+  const canvas=document.createElement('canvas');
+  canvas.width=W*2;canvas.height=H*2;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(2,2);
+
+  // === BACKGROUND ===
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0d0d0d');bg.addColorStop(1,'#0a0a12');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Radial glow from top-right corner
+  const radGrad=ctx.createRadialGradient(W,0,0,W,0,240);
+  radGrad.addColorStop(0,accentColor+'18');radGrad.addColorStop(1,'transparent');
+  ctx.fillStyle=radGrad;ctx.fillRect(0,0,W,H);
+
+  // Top accent bar — gradient fading to transparent
+  const barGrad=ctx.createLinearGradient(0,0,W,0);
+  barGrad.addColorStop(0,accentColor);barGrad.addColorStop(0.55,accentColor+'99');barGrad.addColorStop(1,'transparent');
+  ctx.fillStyle=barGrad;ctx.fillRect(0,0,W,5);
+
+  // === HEADER ===
+  // Subtle branding label
+  ctx.font='700 8px Inter,Arial';ctx.fillStyle='#333';
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='3px';
+  ctx.fillText('FORGE FITNESS JOURNAL',PADX,22);
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='0px';
+
+  // Day of week — large
+  ctx.font='bold 26px Inter,Arial';ctx.fillStyle='#f0f0f0';
+  ctx.fillText(dotw(s.date).toUpperCase(),PADX,56);
+
+  // Full date — subdued
+  ctx.font='11px Inter,Arial';ctx.fillStyle='#4a4a4a';
+  ctx.fillText(fmtDate(s.date),PADX,72);
+
+  // Effort badge — pill, top right
+  if(s.effort){
+    const eLabel=EFFORT_LABELS[s.effort]||'';
+    const eColor=EFFORT_COLORS[s.effort]||accentColor;
+    ctx.font='bold 9px Inter,Arial';
+    const tw=ctx.measureText(eLabel).width;
+    const bW=tw+18;const bH=19;const bX=W-PADX-bW;const bY=44;
+    ctx.fillStyle=eColor+'22';
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(bX,bY,bW,bH,9):ctx.rect(bX,bY,bW,bH);ctx.fill();
+    ctx.strokeStyle=eColor+'77';ctx.lineWidth=0.75;
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(bX,bY,bW,bH,9):ctx.rect(bX,bY,bW,bH);ctx.stroke();
+    ctx.fillStyle=eColor;ctx.textAlign='center';ctx.fillText(eLabel,bX+bW/2,bY+13);ctx.textAlign='left';
+  }
+
+  // === STATS ROW ===
+  let sy=94;
+  ctx.fillStyle='#1c1c1c';ctx.fillRect(PADX,sy,W-PADX*2,1);sy+=16;
+
+  const statItems=[];
+  statItems.push({val:String(exList.length),lbl:exList.length===1?'EXERCISE':'EXERCISES'});
+  statItems.push({val:String(totalSets),lbl:totalSets===1?'SET':'SETS'});
+  if(s.duration)statItems.push({val:s.duration,lbl:'DURATION'});
+  if(totCal)statItems.push({val:(s.caloriesEst?'~':'')+totCal,lbl:'CALORIES'});
+
+  const nStats=statItems.length;
+  const statColW=(W-PADX*2)/nStats;
+  statItems.forEach((st,i)=>{
+    const cx=PADX+i*statColW+statColW/2;
+    ctx.font='bold 16px Inter,Arial';ctx.fillStyle='#e8e8e8';ctx.textAlign='center';
+    ctx.fillText(st.val,cx,sy+16);
+    ctx.font='700 7px Inter,Arial';ctx.fillStyle='#3a3a3a';
+    if(ctx.letterSpacing!==undefined)ctx.letterSpacing='1.5px';
+    ctx.fillText(st.lbl,cx,sy+30);
+    if(ctx.letterSpacing!==undefined)ctx.letterSpacing='0px';
+    // Column separator (skip after last)
+    if(i<nStats-1){ctx.fillStyle='#222';ctx.fillRect(PADX+i*statColW+statColW,sy+4,1,28);}
+  });
+  ctx.textAlign='left';
+  sy+=56;
+
+  ctx.fillStyle='#1c1c1c';ctx.fillRect(PADX,sy,W-PADX*2,1);sy+=16;
+
+  // === EXERCISES SECTION LABEL ===
+  ctx.font='700 8px Inter,Arial';ctx.fillStyle=accentColor;
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='2.5px';
+  ctx.fillText('EXERCISES',PADX,sy+11);
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='0px';
+  sy+=24;
+
+  // === EXERCISE ROWS ===
+  exList.forEach((ex,idx)=>{
     const k=(ex.group||'')+'::'+ex.name;
     const isPR=sessionPRKeys.has(k);
-    ctx.font='bold 11px Arial';ctx.fillStyle='#eee';
-    const nameX=20;
-    ctx.fillText(ex.name,nameX,sy);
-    if(isPR){
-      const nm=ctx.measureText(ex.name);
-      const tagX=nameX+nm.width+5;const tagY=sy-9;const tagW=22;const tagH=11;
-      ctx.fillStyle=accentColor;ctx.beginPath();ctx.roundRect(tagX,tagY,tagW,tagH,2);ctx.fill();
-      ctx.font='bold 7px Arial';ctx.fillStyle='#000';ctx.fillText('PR',tagX+4,tagY+8);
+    const rowY=sy;
+
+    // Subtle row stripe on even rows
+    if(idx%2===0){
+      ctx.fillStyle='#ffffff06';
+      ctx.fillRect(PADX-8,rowY,W-PADX*2+16,exRowH);
     }
+
+    // Exercise name
+    ctx.font='600 12px Inter,Arial';ctx.fillStyle='#e0e0e0';
+    ctx.fillText(ex.name,PADX,rowY+15);
+
+    // PR pill
+    if(isPR){
+      const nameW=ctx.measureText(ex.name).width;
+      const tX=PADX+nameW+7;const tY=rowY+3;const tW=20;const tH=13;
+      ctx.fillStyle=accentColor;
+      ctx.beginPath();ctx.roundRect?ctx.roundRect(tX,tY,tW,tH,3):ctx.rect(tX,tY,tW,tH);ctx.fill();
+      ctx.font='bold 7px Inter,Arial';ctx.fillStyle='#000';
+      ctx.textAlign='center';ctx.fillText('PR',tX+tW/2,tY+9);ctx.textAlign='left';
+    }
+
+    // Weight — accent, right-aligned
     const wtStr=fmtWt(ex.weight,false,ex.weightType);
-    const setStr=ex.scheme+(ex.repsLog&&ex.repsLog.length?' · '+ex.repsLog.join(', '):'');
-    ctx.font='9px Arial';ctx.fillStyle='#777';ctx.fillText(setStr,20,sy+12);
-    ctx.font='bold 11px Arial';ctx.fillStyle=accentColor;ctx.textAlign='right';ctx.fillText(wtStr,W-20,sy);ctx.textAlign='left';
-    sy+=rowH;
+    ctx.font='bold 13px Inter,Arial';ctx.fillStyle=accentColor;
+    ctx.textAlign='right';ctx.fillText(wtStr,W-PADX,rowY+15);ctx.textAlign='left';
+
+    // Scheme + reps — muted, second line
+    const repsStr=(ex.repsLog||[]).join(', ');
+    const detailStr=ex.scheme+(repsStr?' · '+repsStr:'');
+    ctx.font='10px Inter,Arial';ctx.fillStyle='#404040';
+    ctx.fillText(detailStr,PADX,rowY+30);
+
+    // Row divider (skip last)
+    if(idx<exList.length-1){
+      ctx.fillStyle='#1e1e1e';ctx.fillRect(PADX,rowY+exRowH-1,W-PADX*2,1);
+    }
+
+    sy+=exRowH;
   });
-  // Cardio row
+
+  // === CARDIO BLOCK ===
   if(hasCardio){
-    ctx.fillStyle='#1a1a1a';ctx.fillRect(20,sy,W-40,28);
+    sy+=8;
+    const blockH=42;
+    ctx.fillStyle='#111116';
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(PADX-8,sy,W-PADX*2+16,blockH,6):ctx.rect(PADX-8,sy,W-PADX*2+16,blockH);ctx.fill();
+    ctx.strokeStyle='#222';ctx.lineWidth=0.75;
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(PADX-8,sy,W-PADX*2+16,blockH,6):ctx.rect(PADX-8,sy,W-PADX*2+16,blockH);ctx.stroke();
     const m=machById(s.cardio.machine);
     const parts=[];
     if(s.cardio.program)parts.push(s.cardio.program);
     if(s.cardio.duration)parts.push(s.cardio.duration);
     if(s.cardio.metric)parts.push(s.cardio.metric+(m?' '+m.unit:''));
     if(s.cardio.calories)parts.push(parseFloat(s.cardio.calories)+' cal');
-    ctx.font='bold 10px Arial';ctx.fillStyle='#ccc';ctx.fillText((m?m.icon:'🏃')+' '+(m?m.name:'Cardio'),28,sy+12);
-    ctx.font='9px Arial';ctx.fillStyle='#666';ctx.fillText(parts.join(' · '),28,sy+23);
-    sy+=34;
+    ctx.font='bold 10px Inter,Arial';ctx.fillStyle='#bbb';
+    ctx.fillText((m?m.icon+' ':'')+(m?m.name:'Cardio').toUpperCase(),PADX,sy+16);
+    ctx.font='9px Inter,Arial';ctx.fillStyle='#4a4a4a';
+    ctx.fillText(parts.join(' · '),PADX,sy+30);
+    sy+=blockH+6;
   }
-  // Notes
+
+  // === NOTES BLOCK ===
   if(hasNotes){
-    ctx.font='italic 10px Arial';ctx.fillStyle='#666';
-    const maxW=W-40;const note='"'+s.notes+'"';
-    ctx.fillText(note.length>60?note.slice(0,57)+'…"':note,20,sy+14);
-    sy+=notesH;
+    sy+=10;
+    ctx.font='italic 10px Inter,Arial';ctx.fillStyle='#383838';
+    const note='"'+s.notes+'"';
+    ctx.fillText(note.length>72?note.slice(0,69)+'…"':note,PADX,sy+14);
+    sy+=30;
   }
-  // Footer divider + watermark
-  ctx.fillStyle='#1e1e1e';ctx.fillRect(20,H-28,W-40,1);
-  ctx.font='bold 7px Arial';ctx.fillStyle='#2a2a2a';ctx.letterSpacing='3px';
-  ctx.fillText('FORGE FITNESS JOURNAL',20,H-12);
+
+  // === FOOTER ===
+  sy+=14;
+  ctx.fillStyle='#1a1a1a';ctx.fillRect(PADX,sy,W-PADX*2,1);sy+=10;
+  ctx.font='700 7px Inter,Arial';ctx.fillStyle='#272727';
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='3px';
+  ctx.textAlign='center';ctx.fillText('FORGE FITNESS JOURNAL',W/2,sy+14);
+  ctx.textAlign='left';
+  if(ctx.letterSpacing!==undefined)ctx.letterSpacing='0px';
+
   // Download
   const datePart=s.date||'session';
   const a=document.createElement('a');a.download=`forge-session-${datePart}.png`;a.href=canvas.toDataURL('image/png');a.click();
