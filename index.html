@@ -961,39 +961,43 @@ body{
    EXERCISES TAB
 ════════════════════════ */
 .exercises-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
-.ex-tab-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--accent);margin-bottom:14px;text-align:center;text-shadow:0 0 20px var(--accent-glow);}
-.split-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.ex-tab-title{font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:12px;text-align:center;text-shadow:0 0 16px var(--accent-glow);}
+.split-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
 .split-bar::-webkit-scrollbar{display:none;}
-.split-pill{padding:7px 16px;border-radius:18px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;}
+.split-pill{padding:6px 14px;border-radius:18px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;}
 .split-pill:hover{border-color:var(--accent);color:var(--accent);}
 .split-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.ex-count-chip{font-size:11px;color:var(--text3);text-align:center;margin-bottom:14px;}
-.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;}
-.cat-hdr{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;transition:background .15s;}
+.ex-summary{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;}
+.ex-count-chip{font-size:11px;color:var(--text3);}
+.ex-add-btn-sm{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;border-radius:16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap;}
+.ex-add-btn-sm:hover{opacity:.85;}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:opacity .2s;}
+.cat-card.inactive{opacity:.45;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;transition:background .15s;}
 .cat-hdr:hover{background:var(--surface2);}
 .cat-hdr.open{border-bottom:1px solid var(--border);}
 .cat-chev{font-size:8px;color:var(--text3);transition:transform .2s;margin-right:2px;}
 .cat-hdr.open .cat-chev{transform:rotate(180deg);}
 .cat-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
-.cat-count{font-size:10px;color:var(--text3);font-weight:500;}
-.cat-body{display:none;padding:6px 13px 10px;animation:fadeIn .15s ease;}
+.cat-badge{font-size:9px;color:var(--text3);font-weight:600;background:var(--surface2);padding:2px 7px;border-radius:8px;}
+.cat-body{display:none;padding:6px 14px 10px;animation:fadeIn .15s ease;}
 .cat-body.open{display:block;}
-.cat-cfg{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:6px;border-bottom:1px solid var(--border);}
+.cat-cfg{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:4px;border-bottom:1px solid var(--border);}
 .cat-cfg-lbl{font-size:11px;color:var(--text2);flex:1;}
-.cat-ex{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.cat-ex{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
 .cat-ex:last-child{border-bottom:none;}
-.cat-ex-main{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;}
-.cat-ex-name{font-size:12px;color:var(--text);font-weight:500;}
+.cat-ex-main{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+.cat-ex-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cat-ex-name.disabled{color:var(--text3);text-decoration:line-through;}
-.cat-ex-cue{width:100%;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:2px 0;outline:none;font-style:italic;font-family:'Inter',sans-serif;}
+.cat-ex-cue{flex:1;min-width:60px;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed transparent;padding:2px 0;outline:none;font-style:italic;font-family:'Inter',sans-serif;transition:border-color .15s;}
 .cat-ex-cue:focus{border-bottom-color:var(--accent);color:var(--text2);}
+.cat-ex-cue:hover{border-bottom-color:var(--border2);}
 .cat-ex-cue::placeholder{color:var(--border3);}
-.cat-ex-del{width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;margin-top:2px;}
-.cat-ex-del:hover{border-color:#ef4444;color:#ef4444;}
-.uncat-section{margin-top:12px;padding:12px 13px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
-.uncat-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
-.ex-add-btn{width:100%;padding:12px;font-size:13px;font-weight:700;letter-spacing:1px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;margin-top:14px;font-family:'Inter',sans-serif;transition:opacity .15s;}
-.ex-add-btn:hover{opacity:.9;}
+.cat-ex-del{width:20px;height:20px;background:transparent;border:none;color:var(--border3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;}
+.cat-ex-del:hover{color:#ef4444;}
+.uncat-section{margin-top:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.uncat-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.cat-empty{font-size:11px;color:var(--text3);padding:8px 0;text-align:center;}
 
 /* ════════════════════════
    PRs
@@ -1275,40 +1279,51 @@ body{
 .lib-hdr-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:var(--accent);}
 .lib-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border3);background:transparent;font-size:20px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .lib-close:hover{border-color:var(--accent);color:var(--accent);}
-.lib-search-wrap{padding:10px 16px 6px;flex-shrink:0;}
+.lib-search-wrap{padding:10px 16px 6px;flex-shrink:0;position:relative;}
 .lib-search{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px 10px 36px;border-radius:8px;transition:border-color .2s;outline:none;}
 .lib-search:focus{border-color:var(--accent);}
-.lib-search-wrap{position:relative;}
 .lib-search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
-.lib-filters{padding:6px 16px 8px;flex-shrink:0;overflow-x:auto;}
-.lib-filter-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
-.lib-filter-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);min-width:40px;line-height:26px;}
-.lib-pill{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+/* Filter bar: compact row of dropdown triggers + active chips */
+.lib-filter-bar{display:flex;align-items:center;gap:6px;padding:6px 16px 2px;flex-shrink:0;flex-wrap:wrap;}
+.lib-filter-trigger{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+.lib-filter-trigger:hover{border-color:var(--accent);color:var(--accent);}
+.lib-filter-trigger.has-value{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.lib-filter-trigger.open{border-color:var(--accent);color:var(--accent);background:var(--surface2);}
+.lib-filter-trigger svg{width:10px;height:10px;fill:currentColor;transition:transform .15s;}
+.lib-filter-trigger.open svg{transform:rotate(180deg);}
+/* Active filter chips */
+.lib-active-filters{display:flex;gap:5px;padding:4px 16px 0;flex-wrap:wrap;flex-shrink:0;}
+.lib-active-chip{display:flex;align-items:center;gap:3px;padding:3px 8px 3px 10px;border-radius:12px;font-size:10px;font-weight:600;background:var(--accent);color:#fff;cursor:pointer;transition:opacity .15s;text-transform:capitalize;}
+.lib-active-chip:hover{opacity:.8;}
+.lib-active-chip .chip-x{font-size:12px;line-height:1;opacity:.8;}
+/* Dropdown panel */
+.lib-dropdown{position:relative;}
+.lib-dropdown-panel{position:absolute;top:calc(100% + 4px);left:0;z-index:610;background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:4px;max-width:320px;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:fadeIn .1s ease;}
+.lib-pill{padding:5px 11px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;text-transform:capitalize;}
 .lib-pill:hover{border-color:var(--accent);color:var(--accent);}
 .lib-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .lib-results{flex:1;overflow-y:auto;padding:0 16px 16px;}
 .lib-count{font-size:11px;color:var(--text3);padding:8px 0 6px;font-weight:600;}
 .lib-card{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
 .lib-card:hover{border-color:var(--border2);}
-.lib-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;gap:8px;}
-.lib-card-name{font-weight:600;font-size:13px;color:var(--text);flex:1;}
-.lib-card-tags{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
-.lib-card-tag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text2);text-transform:capitalize;}
+.lib-card-hdr{display:flex;align-items:center;padding:10px 12px;cursor:pointer;gap:8px;}
+.lib-card-name{font-weight:600;font-size:13px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lib-card-sub{font-size:10px;color:var(--text3);flex-shrink:0;text-transform:capitalize;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lib-card-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;border:1.5px solid var(--accent);cursor:pointer;transition:all .15s;flex-shrink:0;}
 .lib-card-btn.add{background:transparent;color:var(--accent);}
 .lib-card-btn.add:hover{background:var(--accent);color:#fff;}
-.lib-card-btn.added{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);cursor:default;}
-.lib-card-body{padding:0 12px 12px;border-top:1px solid var(--border);animation:fadeIn .15s ease;}
-.lib-card-section{margin-top:8px;}
-.lib-card-section-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.lib-card-muscles{display:flex;gap:4px;flex-wrap:wrap;}
+.lib-card-btn.added{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);cursor:default;font-size:10px;}
+.lib-card-body{padding:8px 12px 12px;border-top:1px solid var(--border);animation:fadeIn .15s ease;}
+.lib-card-detail{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.lib-card-detail:last-child{margin-bottom:0;}
+.lib-card-detail-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);width:100%;margin-bottom:1px;}
 .lib-muscle-pill{font-size:10px;padding:2px 8px;border-radius:8px;text-transform:capitalize;}
 .lib-muscle-pill.primary{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);font-weight:600;}
 .lib-muscle-pill.secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
-.lib-tips{font-size:12px;color:var(--text2);line-height:1.5;}
-.lib-tip-item{padding:2px 0;padding-left:12px;position:relative;}
+.lib-card-tag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text2);text-transform:capitalize;}
+.lib-tips{font-size:11px;color:var(--text2);line-height:1.5;}
+.lib-tip-item{padding:1px 0 1px 12px;position:relative;}
 .lib-tip-item::before{content:'•';position:absolute;left:0;color:var(--accent);}
-.lib-all-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
 .lib-empty{text-align:center;padding:40px 16px;color:var(--text3);}
 .lib-empty-title{font-size:14px;font-weight:600;margin-bottom:4px;}
 .lib-empty-sub{font-size:12px;}
@@ -1929,6 +1944,7 @@ function setPoolExpanded(){ /* legacy stub — no longer used */ }
 let _libExpanded={};
 let _libSearch='';
 let _libFilters={bodyPart:null,movement:null,equipment:null};
+let _libFilterOpen=null; // which dropdown is open: 'bodyPart'|'movement'|'equipment'|null
 
 let pending  = null;
 let active   = null;
@@ -4232,9 +4248,12 @@ function renderExercises(){
   ).join('');
   const splitBar=`<div class="split-bar">${splitPills}</div>`;
 
-  // Summary chip
+  // Summary row with count + add button inline
   const enabledCount=myExercises.filter(e=>e.enabled).length;
-  const countChip=`<div class="ex-count-chip">${enabledCount} of ${myExercises.length} exercises enabled</div>`;
+  const summaryRow=`<div class="ex-summary">
+    <span class="ex-count-chip">${enabledCount} of ${myExercises.length} exercises enabled</span>
+    <button class="ex-add-btn-sm" onclick="openExerciseLibrary()">+ Add</button>
+  </div>`;
 
   // Category cards
   const cats=getActiveCategories();
@@ -4274,15 +4293,15 @@ function renderExercises(){
         </div>`;
       }).join('');
 
-      const emptyMsg=allMatched.length===0?`<div style="font-size:11px;color:var(--text3);padding:8px 0;">No exercises — add some from the library</div>`:'';
+      const emptyMsg=allMatched.length===0?`<div class="cat-empty">No exercises yet — tap + Add above</div>`:'';
       body=`<div class="cat-body open">${cfgRow}${exList}${emptyMsg}</div>`;
     }
 
-    return`<div class="cat-card${!isActive?' style="opacity:.5;"':''}">
+    return`<div class="cat-card${!isActive?' inactive':''}">
       <div class="cat-hdr${isOpen?' open':''}" onclick="toggleExCat('${esc(cat.name)}')">
         <span class="cat-chev">▲</span>
         <span class="cat-name">${esc(cat.name)}</span>
-        <span class="cat-count">${enabled.length} / ${allMatched.length}</span>
+        <span class="cat-badge">${enabled.length}/${allMatched.length}</span>
       </div>
       ${body}
     </div>`;
@@ -4308,10 +4327,7 @@ function renderExercises(){
     </div>`;
   }
 
-  // Add exercises button
-  const addBtn=`<button class="ex-add-btn" onclick="openExerciseLibrary()">+ ADD EXERCISES</button>`;
-
-  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div>${splitBar}${countChip}${catCards}${uncatHtml}${addBtn}`;
+  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div>${splitBar}${summaryRow}${catCards}${uncatHtml}`;
 }
 
 function toggleExCat(name){_exTabOpen[name]=!_exTabOpen[name];renderExercises();}
@@ -4627,13 +4643,12 @@ function renderStructure(){
    EXERCISE LIBRARY / DISCOVERY
 ═══════════════════════════════════════════ */
 function openExerciseLibrary(){
-  _libSearch='';_libFilters={bodyPart:null,movement:null,equipment:null};_libExpanded={};
+  _libSearch='';_libFilters={bodyPart:null,movement:null,equipment:null};_libExpanded={};_libFilterOpen=null;
   renderLibraryModal();
 }
 function renderLibraryModal(){
   const q=_libSearch.toLowerCase().trim();
   let results=EXERCISE_CATALOG.filter(c=>{
-    // Search filter
     if(q){
       const inName=c.name.toLowerCase().includes(q);
       const inAka=c.aka.some(a=>a.toLowerCase().includes(q));
@@ -4641,7 +4656,6 @@ function renderLibraryModal(){
       const inTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].some(t=>t.toLowerCase().includes(q));
       if(!inName&&!inAka&&!inMuscles&&!inTags) return false;
     }
-    // Tag filters
     for(const[dim,val] of Object.entries(_libFilters)){
       if(!val) continue;
       const exVals=Array.isArray(c.tags[dim])?c.tags[dim]:[c.tags[dim]];
@@ -4651,17 +4665,32 @@ function renderLibraryModal(){
   });
   results.sort((a,b)=>a.name.localeCompare(b.name));
 
-  const filterRow=(dim,label)=>{
-    const vals=TAG_DEFS[dim]||[];
-    const pills=vals.map(v=>`<button class="lib-pill${_libFilters[dim]===v?' active':''}" onclick="setLibFilter('${dim}','${v}')">${v.replace(/-/g,' ')}</button>`).join('');
-    return`<div class="lib-filter-row"><span class="lib-filter-label">${label}</span>${pills}</div>`;
+  // Compact dropdown filter triggers
+  const chevSvg=`<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>`;
+  const filterBtn=(dim,label)=>{
+    const val=_libFilters[dim];
+    const isOpen=_libFilterOpen===dim;
+    const cls=val?'has-value':isOpen?'open':'';
+    const displayLabel=val?val.replace(/-/g,' '):label;
+    let dropdown='';
+    if(isOpen){
+      const vals=TAG_DEFS[dim]||[];
+      const pills=vals.map(v=>`<button class="lib-pill${_libFilters[dim]===v?' active':''}" onclick="event.stopPropagation();setLibFilter('${dim}','${v}')">${v.replace(/-/g,' ')}</button>`).join('');
+      dropdown=`<div class="lib-dropdown-panel" onclick="event.stopPropagation()">${pills}</div>`;
+    }
+    return`<div class="lib-dropdown"><button class="lib-filter-trigger ${cls}" onclick="toggleLibDropdown('${dim}')">${esc(displayLabel)} ${chevSvg}</button>${dropdown}</div>`;
   };
 
+  // Active filter chips (dismissible)
+  const activeChips=Object.entries(_libFilters).filter(([,v])=>v).map(([dim,val])=>
+    `<button class="lib-active-chip" onclick="clearLibFilter('${dim}')">${val.replace(/-/g,' ')} <span class="chip-x">×</span></button>`
+  ).join('');
+
+  // Exercise cards — compact with muscle info inline
   const cards=results.map(c=>{
     const inPool=isInPool(c.id);
     const expanded=_libExpanded[c.id];
-    const tagPills=(c.tags.movement||[]).slice(0,2).map(t=>`<span class="lib-card-tag">${t}</span>`).join('')
-      +`<span class="lib-card-tag">${c.tags.difficulty||''}</span>`;
+    const subtitle=c.primaryMuscles.slice(0,2).map(m=>m.replace(/-/g,' ')).join(', ');
     let body='';
     if(expanded){
       const primary=c.primaryMuscles.map(m=>`<span class="lib-muscle-pill primary">${m.replace(/-/g,' ')}</span>`).join('');
@@ -4669,17 +4698,16 @@ function renderLibraryModal(){
       const tips=c.tips?c.tips.split('. ').filter(t=>t.trim()).map(t=>`<div class="lib-tip-item">${esc(t.replace(/\.$/,''))}</div>`).join(''):'';
       const allTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].map(t=>`<span class="lib-card-tag">${t.replace(/-/g,' ')}</span>`).join('');
       body=`<div class="lib-card-body">
-        <div class="lib-card-section"><div class="lib-card-section-title">Primary Muscles</div><div class="lib-card-muscles">${primary}</div></div>
-        ${secondary?`<div class="lib-card-section"><div class="lib-card-section-title">Secondary Muscles</div><div class="lib-card-muscles">${secondary}</div></div>`:''}
-        ${tips?`<div class="lib-card-section"><div class="lib-card-section-title">Form Tips</div><div class="lib-tips">${tips}</div></div>`:''}
-        <div class="lib-card-section"><div class="lib-card-section-title">Tags</div><div class="lib-all-tags">${allTags}</div></div>
+        <div class="lib-card-detail"><span class="lib-card-detail-label">Muscles</span>${primary}${secondary}</div>
+        ${tips?`<div class="lib-card-detail"><span class="lib-card-detail-label">Form Tips</span><div class="lib-tips">${tips}</div></div>`:''}
+        <div class="lib-card-detail"><span class="lib-card-detail-label">Tags</span>${allTags}</div>
       </div>`;
     }
     return`<div class="lib-card">
       <div class="lib-card-hdr" onclick="toggleLibCard('${c.id}')">
         <span class="lib-card-name">${esc(c.name)}</span>
-        <div class="lib-card-tags">${tagPills}</div>
-        <button class="lib-card-btn ${inPool?'added':'add'}" onclick="event.stopPropagation();${inPool?'':`addExercise('${c.id}');renderLibraryModal();`}">${inPool?'ADDED':'+ ADD'}</button>
+        <span class="lib-card-sub">${subtitle}</span>
+        <button class="lib-card-btn ${inPool?'added':'add'}" onclick="event.stopPropagation();${inPool?'':`addExercise('${c.id}');renderLibraryModal();`}">${inPool?'✓':'+'}</button>
       </div>
       ${body}
     </div>`;
@@ -4698,13 +4726,14 @@ function renderLibraryModal(){
           <span class="lib-search-icon">🔍</span>
           <input class="lib-search" type="text" placeholder="Search exercises..." value="${esc(_libSearch)}" oninput="debounceLibSearch(this.value)">
         </div>
-        <div class="lib-filters">
-          ${filterRow('bodyPart','Body')}
-          ${filterRow('movement','Type')}
-          ${filterRow('equipment','Gear')}
+        <div class="lib-filter-bar">
+          ${filterBtn('bodyPart','Body Part')}
+          ${filterBtn('movement','Movement')}
+          ${filterBtn('equipment','Equipment')}
         </div>
+        ${activeChips?`<div class="lib-active-filters">${activeChips}</div>`:''}
         <div class="lib-results">
-          <div class="lib-count">${results.length} exercise${results.length!==1?'s':''} found</div>
+          <div class="lib-count">${results.length} exercise${results.length!==1?'s':''}</div>
           ${cards}
           ${empty}
         </div>
@@ -4718,6 +4747,15 @@ function debounceLibSearch(val){
 }
 function setLibFilter(dim,val){
   _libFilters[dim]=_libFilters[dim]===val?null:val;
+  _libFilterOpen=null;
+  renderLibraryModal();
+}
+function clearLibFilter(dim){
+  _libFilters[dim]=null;
+  renderLibraryModal();
+}
+function toggleLibDropdown(dim){
+  _libFilterOpen=_libFilterOpen===dim?null:dim;
   renderLibraryModal();
 }
 function toggleLibCard(id){
@@ -4726,6 +4764,7 @@ function toggleLibCard(id){
 }
 function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
+  _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
 }
 
