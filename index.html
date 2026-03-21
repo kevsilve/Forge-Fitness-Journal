@@ -5416,9 +5416,12 @@ function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
   _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
-  // Refresh gen-context if on Generate tab so pool count updates after adding exercises
+  // Refresh visible tab after adding exercises
   if(document.getElementById('view-generate')&&document.getElementById('view-generate').classList.contains('active')){
     renderGenContext();
+  }
+  if(document.getElementById('view-exercises')&&document.getElementById('view-exercises').classList.contains('active')){
+    renderExercises();
   }
 }
 
