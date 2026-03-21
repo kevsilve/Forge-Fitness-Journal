@@ -1327,6 +1327,55 @@ body{
 .lib-empty{text-align:center;padding:40px 16px;color:var(--text3);}
 .lib-empty-title{font-size:14px;font-weight:600;margin-bottom:4px;}
 .lib-empty-sub{font-size:12px;}
+
+/* ── GEN-CONTEXT PANEL ── */
+.gen-context{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+.gen-ctx-split-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;position:relative;}
+.gen-ctx-split-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:14px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.gen-ctx-split-btn:hover,.gen-ctx-split-btn.open{border-color:var(--accent);color:var(--accent);}
+.gen-ctx-split-btn .chev{font-size:8px;transition:transform .15s;}
+.gen-ctx-split-btn.open .chev{transform:rotate(180deg);}
+.gen-ctx-split-dd{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:20;min-width:180px;overflow:hidden;}
+.gen-ctx-split-opt{padding:10px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:background .1s;font-family:'Inter',sans-serif;}
+.gen-ctx-split-opt:hover{background:var(--surface2);}
+.gen-ctx-split-opt.active{color:var(--accent);font-weight:600;}
+.gen-ctx-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.gen-ctx-chip{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;background:var(--surface);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;}
+.gen-ctx-chip:hover{border-color:var(--accent);color:var(--accent);}
+.gen-ctx-chip .chip-ct{color:var(--accent);margin-left:3px;}
+.gen-ctx-pool{font-size:10px;color:var(--text3);letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
+.gen-ctx-pool.warn{color:var(--accent);font-weight:600;}
+.gen-browse-btn{display:block;width:100%;padding:8px;margin-top:6px;margin-bottom:4px;background:none;border:none;color:var(--text3);font-size:11px;font-weight:600;letter-spacing:2px;cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s;text-transform:uppercase;}
+.gen-browse-btn:hover{color:var(--accent);}
+
+/* ── GEN WORKOUT HEADER ── */
+.gen-workout-hdr{font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;padding:0 2px;}
+.ex-group-chip{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--accent-dim);color:var(--accent);margin-top:2px;}
+
+/* ── ONBOARDING WIZARD ── */
+.onboard-wrap{padding:8px 0;}
+.onboard-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;text-align:center;color:var(--text);margin-bottom:4px;}
+.onboard-sub{font-size:12px;color:var(--text3);text-align:center;margin-bottom:16px;}
+.onboard-split-cards{display:flex;flex-direction:column;gap:8px;}
+.onboard-split-card{padding:14px 16px;border-radius:10px;border:1.5px solid var(--border2);background:var(--surface2);cursor:pointer;transition:all .15s;}
+.onboard-split-card:hover{border-color:var(--accent);}
+.onboard-split-card .osc-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.onboard-split-card .osc-cats{font-size:10px;color:var(--text3);letter-spacing:.5px;}
+.onboard-ex-cats{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.onboard-cat-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:6px;}
+.onboard-ex-item{display:flex;align-items:center;gap:10px;padding:6px 0;}
+.onboard-ex-item label{font-size:12px;color:var(--text);cursor:pointer;}
+.onboard-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:8px;}
+.onboard-continue-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;cursor:pointer;transition:opacity .15s;}
+.onboard-continue-btn:active{opacity:.85;}
+.onboard-link{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'Inter',sans-serif;}
+.onboard-link:hover{color:var(--accent);}
+.onboard-select-all{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;color:var(--text2);}
+
+/* ── EXERCISES TAB HELPERS ── */
+.ex-tab-helper{font-size:10px;color:var(--text3);text-align:center;margin-bottom:8px;letter-spacing:1px;}
+.ex-preview-gen-btn{display:block;width:100%;padding:12px;margin-top:12px;background:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.ex-preview-gen-btn:hover{background:var(--accent);color:#fff;}
 </style>
 </head>
 <body class="theme-dark-red">
@@ -1394,10 +1443,12 @@ body{
     <button class="bm-btn" id="bm-custom" onclick="setBuildMode('custom')">✎ Custom</button>
   </div>
   <div id="gen-streak-chip"></div>
+  <div id="gen-context"></div>
   <div id="templates-section"></div>
   <button class="gen-btn" id="gen-btn" onclick="generate()">
     <span class="shimmer"></span>⚡ GENERATE WORKOUT
   </button>
+  <button class="gen-browse-btn" id="gen-browse-btn" onclick="openExerciseLibrary()">+ Browse &amp; Add Exercises</button>
   <div class="ex-cards" id="ex-cards">
     <div class="empty-gen">
       <span class="empty-big">FORGE IT</span>
@@ -1864,6 +1915,9 @@ function isInPool(catalogId){return myExercises.some(p=>p.catalogId===catalogId)
 
 // ── Split & Category Helpers ──
 let _exTabOpen = {}; // which category cards are expanded in Exercises tab
+let _genSplitOpen = false; // split dropdown state on Generate tab
+let _onboardStep = 0; // onboarding wizard step (0=split, 1=exercises, 2=done)
+let _onboardSelected = {}; // {catalogId: true/false} for onboarding exercise picks
 
 function getActiveCategories(){
   const s=SPLITS[activeSplit];
@@ -2625,12 +2679,60 @@ function switchTab(tab){
   const todayBtn=document.getElementById('bnav-today');
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   if(tab!=='today') clearInterval(_timerInterval);
-  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenStreakChip();renderTemplates();}
+  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenStreakChip();renderGenContext();renderTemplates();}
   if(tab==='today')     renderToday();
   if(tab==='exercises') renderExercises();
   if(tab==='history')   renderHistory();
   if(tab==='settings')  renderSettings();
   if(tab==='stats')     renderStats();
+}
+
+/* ═══════════════════════════════════════════
+   GENERATE – CONTEXT PANEL
+═══════════════════════════════════════════ */
+function renderGenContext(){
+  const el=document.getElementById('gen-context');if(!el)return;
+  // Hide context panel during onboarding (no exercises yet)
+  if(!myExercises.length){el.innerHTML='';return;}
+  const splitDef=SPLITS[activeSplit];
+  if(!splitDef){el.innerHTML='';return;}
+
+  // Split selector
+  const ddItems=_genSplitOpen?`<div class="gen-ctx-split-dd">${Object.entries(SPLITS).map(([id,s])=>
+    `<div class="gen-ctx-split-opt${activeSplit===id?' active':''}" onclick="genSetSplit('${id}')">${s.label}</div>`
+  ).join('')}</div>`:'';
+  const splitRow=`<div class="gen-ctx-split-row">
+    <button class="gen-ctx-split-btn${_genSplitOpen?' open':''}" onclick="_genSplitOpen=!_genSplitOpen;renderGenContext();">
+      ${esc(splitDef.label)} <span class="chev">▼</span>
+    </button>
+    ${ddItems}
+  </div>`;
+
+  // Category chips
+  const cats=getActiveCategories().filter(c=>getCatConfig(c.name).active!==false);
+  const totalPerWorkout=cats.reduce((a,c)=>a+(c.count||1),0);
+  const catChips=`<div class="gen-ctx-cats">${cats.map(c=>
+    `<span class="gen-ctx-chip" onclick="genNavToCat('${esc(c.name)}')">${esc(c.name)}<span class="chip-ct">${c.count||1}</span></span>`
+  ).join('')}</div>`;
+
+  // Pool count
+  const enabledCount=myExercises.filter(e=>e.enabled).length;
+  const isWarn=enabledCount===0;
+  const poolLine=`<div class="gen-ctx-pool${isWarn?' warn':''}">
+    <span>${isWarn?'No exercises enabled — add some to generate':`${enabledCount} exercise${enabledCount!==1?'s':''} in pool`}</span>
+    <span>${totalPerWorkout} per workout</span>
+  </div>`;
+
+  el.innerHTML=splitRow+catChips+poolLine;
+}
+function genSetSplit(id){
+  setSplit(id);
+  _genSplitOpen=false;
+  renderGenContext();
+}
+function genNavToCat(name){
+  _exTabOpen[name]=true;
+  switchTab('exercises');
 }
 
 /* ═══════════════════════════════════════════
@@ -2664,20 +2766,30 @@ function renderPending(){
   if(rBtn)rBtn.classList.toggle('active',buildMode==='random');
   if(cBtn)cBtn.classList.toggle('active',buildMode==='custom');
   const genBtn=document.getElementById('gen-btn');
-  if(genBtn)genBtn.style.display=buildMode==='random'?'':'none';
+  const browseBtn=document.getElementById('gen-browse-btn');
+  const isOnboarding=!myExercises.length;
+  if(genBtn)genBtn.style.display=(buildMode==='random'&&!isOnboarding)?'':'none';
+  if(browseBtn)browseBtn.style.display=isOnboarding?'none':'';
   const sb=document.getElementById('start-row');
   if(!pending||!pending.length){
     if(buildMode==='custom'){
       c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
     } else {
-      const firstTime=!sessions.length;
-      c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Add your exercises first, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('exercises')">Add Exercises →</button>`:''}</div>`;
+      if(!myExercises.length){
+        // Show onboarding wizard for brand new users
+        renderOnboarding(c);
+      } else {
+        c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">Hit generate to build your workout</span></div>`;
+      }
     }
     if(sb)sb.style.display='none';
     return;
   }
   const isCustom=buildMode==='custom';
-  c.innerHTML=pending.map(ex=>{
+  // Workout header showing what was generated
+  const splitLabel=SPLITS[activeSplit]?SPLITS[activeSplit].label:activeSplit;
+  const hdr=`<div class="gen-workout-hdr">Your Workout — ${pending.length} exercise${pending.length!==1?'s':''} from ${esc(splitLabel)}</div>`;
+  c.innerHTML=hdr+pending.map(ex=>{
     const last=lastForEx(ex.name);
     const plateau=getPlateauCount(ex.name,ex.group);
     const plateauHtml=plateau>=3?`<span class="plateau-hint${plateau>=5?' strong':''}">↑ Push it! (${plateau}× same)</span>`:'';
@@ -2689,7 +2801,7 @@ function renderPending(){
     return`<div class="ex-card${ex.isBonus&&!isCustom?' bonus-card':''}">
       <div class="ex-card-top">
         <div style="flex:1;min-width:0;"><div class="ex-name">${esc(ex.name)}${ex.isBonus&&!isCustom?'<span class="bonus-tag">BONUS</span>':''}</div>
-        <div class="ex-group-lbl">${esc(ex.group)}</div></div>
+        <span class="ex-group-chip">${esc(ex.group)}</span></div>
         ${isCustom?`<button class="scheme-cycle" onclick="cycleScheme('${nameEsc}')">${esc(ex.scheme)}</button><button class="ex-card-remove" onclick="removeCustomEx('${nameEsc}')">×</button>`:`<div class="ex-scheme-lbl">${esc(ex.scheme)}</div>`}
       </div>${lastHtml}
     </div>`;
@@ -2699,6 +2811,100 @@ function renderPending(){
   }
   // Start row: visible when exercises are queued and no workout is already running
   if(sb)sb.style.display=active?'none':'flex';
+}
+
+/* ═══════════════════════════════════════════
+   ONBOARDING WIZARD
+═══════════════════════════════════════════ */
+function renderOnboarding(container){
+  if(_onboardStep===0){
+    // Step 1: Choose your split
+    const cards=Object.entries(SPLITS).map(([id,s])=>{
+      const catNames=s.categories?s.categories.map(c=>c.name).join(', '):(s.dynamic==='bodyPart'?'Auto-created from body parts':'Auto-created from equipment');
+      return`<div class="onboard-split-card" onclick="onboardPickSplit('${id}')">
+        <div class="osc-name">${s.label}</div>
+        <div class="osc-cats">${catNames}</div>
+      </div>`;
+    }).join('');
+    container.innerHTML=`<div class="onboard-wrap">
+      <div class="onboard-title">LET'S BUILD YOUR FORGE</div>
+      <div class="onboard-sub">Pick how you like to train</div>
+      <div class="onboard-split-cards">${cards}</div>
+    </div>`;
+  } else if(_onboardStep===1){
+    // Step 2: Quick add exercises — show starter pack for selected split
+    const splitDef=SPLITS[activeSplit];
+    const cats=splitDef.categories||[];
+    // For dynamic splits, fall back to a reasonable set
+    if(!cats.length){
+      // Dynamic split selected — just add all beginner exercises and skip to generation
+      const beginners=EXERCISE_CATALOG.filter(c=>c.tags.difficulty==='beginner').slice(0,12);
+      beginners.forEach(c=>{_onboardSelected[c.id]=true;});
+    }
+    // Build starter pack: for each category, find matching beginner-friendly exercises
+    let catHtml='';
+    const usedIds=new Set();
+    const catsToShow=cats.length?cats:([{name:'Exercises',filter:null,count:4}]);
+    for(const cat of catsToShow){
+      const matching=EXERCISE_CATALOG.filter(c=>{
+        if(usedIds.has(c.id))return false;
+        if(!cat.filter)return true;
+        return matchesFilter({catalogId:c.id,tags:c.tags},cat.filter);
+      });
+      // Sort beginner first, then intermediate
+      matching.sort((a,b)=>{
+        const order={beginner:0,intermediate:1,advanced:2};
+        return(order[a.tags.difficulty]||1)-(order[b.tags.difficulty]||1);
+      });
+      const picks=matching.slice(0,4);
+      picks.forEach(p=>usedIds.add(p.id));
+      // Pre-select all if not yet configured
+      picks.forEach(p=>{if(!(p.id in _onboardSelected))_onboardSelected[p.id]=true;});
+      const items=picks.map(p=>
+        `<div class="onboard-ex-item">
+          <label class="tog"><input type="checkbox" ${_onboardSelected[p.id]?'checked':''} onchange="_onboardSelected['${p.id}']=this.checked"><span class="tog-track"></span></label>
+          <span style="cursor:pointer;" onclick="var cb=this.previousElementSibling.querySelector('input');cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));">${esc(p.name)}</span>
+        </div>`
+      ).join('');
+      catHtml+=`<div><div class="onboard-cat-title">${esc(cat.name)}</div>${items}</div>`;
+    }
+    const allChecked=Object.values(_onboardSelected).every(v=>v);
+    container.innerHTML=`<div class="onboard-wrap">
+      <div class="onboard-title">ADD YOUR EXERCISES</div>
+      <div class="onboard-sub">We picked some starters for ${esc(SPLITS[activeSplit].label)}</div>
+      <div class="onboard-select-all">
+        <label class="tog"><input type="checkbox" ${allChecked?'checked':''} onchange="onboardToggleAll(this.checked)"><span class="tog-track"></span></label>
+        <span>Select All</span>
+      </div>
+      <div class="onboard-ex-cats">${catHtml}</div>
+      <div class="onboard-actions">
+        <button class="onboard-continue-btn" onclick="onboardFinish()">CONTINUE</button>
+        <button class="onboard-link" onclick="openExerciseLibrary()">Open Full Library</button>
+      </div>
+    </div>`;
+  }
+}
+function onboardPickSplit(id){
+  setSplit(id);
+  _onboardStep=1;
+  _onboardSelected={};
+  renderPending();
+}
+function onboardToggleAll(checked){
+  for(const k in _onboardSelected) _onboardSelected[k]=checked;
+  renderPending();
+}
+function onboardFinish(){
+  const ids=Object.entries(_onboardSelected).filter(([,v])=>v).map(([id])=>id);
+  if(!ids.length){toast('Select at least one exercise');return;}
+  ids.forEach(id=>addExercise(id));
+  _onboardStep=0;
+  _onboardSelected={};
+  pending=null;
+  // Auto-generate and show result
+  renderGenContext();
+  generate();
+  toast('Your forge is ready! Customize anytime in Exercises.');
 }
 
 function renderGenStreakChip(){
@@ -4327,7 +4533,8 @@ function renderExercises(){
     </div>`;
   }
 
-  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div>${splitBar}${summaryRow}${catCards}${uncatHtml}`;
+  const previewBtn=myExercises.length?`<button class="ex-preview-gen-btn" onclick="previewGeneration()">⚡ Preview Generation</button>`:'';
+  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div><div class="ex-tab-helper">Configure your exercise pool for the Generate tab</div>${splitBar}${summaryRow}${catCards}${uncatHtml}${previewBtn}`;
 }
 
 function toggleExCat(name){_exTabOpen[name]=!_exTabOpen[name];renderExercises();}
@@ -4342,6 +4549,11 @@ function adjCatCount(name,d){
 function toggleCatActive(name,val){
   setCatConfig(name,'active',val);
   renderExercises();
+}
+function previewGeneration(){
+  buildMode='random';
+  switchTab('generate');
+  generate();
 }
 
 /* ═══════════════════════════════════════════
@@ -4766,6 +4978,10 @@ function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
   _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
+  // Refresh gen-context if on Generate tab so pool count updates after adding exercises
+  if(document.getElementById('view-generate')&&document.getElementById('view-generate').classList.contains('active')){
+    renderGenContext();
+  }
 }
 
 /* renderPool removed — exercises now managed in Exercises tab */
