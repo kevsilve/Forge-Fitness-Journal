@@ -958,6 +958,48 @@ body{
 .week-bar-num{font-size:9px;font-weight:700;color:var(--text3);}
 
 /* ════════════════════════
+   EXERCISES TAB
+════════════════════════ */
+.exercises-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
+.ex-tab-title{font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:12px;text-align:center;text-shadow:0 0 16px var(--accent-glow);}
+.split-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
+.split-bar::-webkit-scrollbar{display:none;}
+.split-pill{padding:6px 14px;border-radius:18px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;}
+.split-pill:hover{border-color:var(--accent);color:var(--accent);}
+.split-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.ex-summary{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;}
+.ex-count-chip{font-size:11px;color:var(--text3);}
+.ex-add-btn-sm{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;border-radius:16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap;}
+.ex-add-btn-sm:hover{opacity:.85;}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:opacity .2s;}
+.cat-card.inactive{opacity:.45;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;transition:background .15s;}
+.cat-hdr:hover{background:var(--surface2);}
+.cat-hdr.open{border-bottom:1px solid var(--border);}
+.cat-chev{font-size:8px;color:var(--text3);transition:transform .2s;margin-right:2px;}
+.cat-hdr.open .cat-chev{transform:rotate(180deg);}
+.cat-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+.cat-badge{font-size:9px;color:var(--text3);font-weight:600;background:var(--surface2);padding:2px 7px;border-radius:8px;}
+.cat-body{display:none;padding:6px 14px 10px;animation:fadeIn .15s ease;}
+.cat-body.open{display:block;}
+.cat-cfg{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:4px;border-bottom:1px solid var(--border);}
+.cat-cfg-lbl{font-size:11px;color:var(--text2);flex:1;}
+.cat-ex{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
+.cat-ex:last-child{border-bottom:none;}
+.cat-ex-main{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+.cat-ex-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-ex-name.disabled{color:var(--text3);text-decoration:line-through;}
+.cat-ex-cue{flex:1;min-width:60px;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed transparent;padding:2px 0;outline:none;font-style:italic;font-family:'Inter',sans-serif;transition:border-color .15s;}
+.cat-ex-cue:focus{border-bottom-color:var(--accent);color:var(--text2);}
+.cat-ex-cue:hover{border-bottom-color:var(--border2);}
+.cat-ex-cue::placeholder{color:var(--border3);}
+.cat-ex-del{width:20px;height:20px;background:transparent;border:none;color:var(--border3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;}
+.cat-ex-del:hover{color:#ef4444;}
+.uncat-section{margin-top:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.uncat-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.cat-empty{font-size:11px;color:var(--text3);padding:8px 0;text-align:center;}
+
+/* ════════════════════════
    PRs
 ════════════════════════ */
 .prs-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
@@ -1237,40 +1279,51 @@ body{
 .lib-hdr-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:var(--accent);}
 .lib-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border3);background:transparent;font-size:20px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .lib-close:hover{border-color:var(--accent);color:var(--accent);}
-.lib-search-wrap{padding:10px 16px 6px;flex-shrink:0;}
+.lib-search-wrap{padding:10px 16px 6px;flex-shrink:0;position:relative;}
 .lib-search{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px 10px 36px;border-radius:8px;transition:border-color .2s;outline:none;}
 .lib-search:focus{border-color:var(--accent);}
-.lib-search-wrap{position:relative;}
 .lib-search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
-.lib-filters{padding:6px 16px 8px;flex-shrink:0;overflow-x:auto;}
-.lib-filter-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
-.lib-filter-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);min-width:40px;line-height:26px;}
-.lib-pill{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+/* Filter bar: compact row of dropdown triggers + active chips */
+.lib-filter-bar{display:flex;align-items:center;gap:6px;padding:6px 16px 2px;flex-shrink:0;flex-wrap:wrap;}
+.lib-filter-trigger{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+.lib-filter-trigger:hover{border-color:var(--accent);color:var(--accent);}
+.lib-filter-trigger.has-value{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.lib-filter-trigger.open{border-color:var(--accent);color:var(--accent);background:var(--surface2);}
+.lib-filter-trigger svg{width:10px;height:10px;fill:currentColor;transition:transform .15s;}
+.lib-filter-trigger.open svg{transform:rotate(180deg);}
+/* Active filter chips */
+.lib-active-filters{display:flex;gap:5px;padding:4px 16px 0;flex-wrap:wrap;flex-shrink:0;}
+.lib-active-chip{display:flex;align-items:center;gap:3px;padding:3px 8px 3px 10px;border-radius:12px;font-size:10px;font-weight:600;background:var(--accent);color:#fff;cursor:pointer;transition:opacity .15s;text-transform:capitalize;}
+.lib-active-chip:hover{opacity:.8;}
+.lib-active-chip .chip-x{font-size:12px;line-height:1;opacity:.8;}
+/* Dropdown panel */
+.lib-dropdown{position:relative;}
+.lib-dropdown-panel{position:absolute;top:calc(100% + 4px);left:0;z-index:610;background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:4px;max-width:320px;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:fadeIn .1s ease;}
+.lib-pill{padding:5px 11px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;text-transform:capitalize;}
 .lib-pill:hover{border-color:var(--accent);color:var(--accent);}
 .lib-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .lib-results{flex:1;overflow-y:auto;padding:0 16px 16px;}
 .lib-count{font-size:11px;color:var(--text3);padding:8px 0 6px;font-weight:600;}
 .lib-card{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
 .lib-card:hover{border-color:var(--border2);}
-.lib-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;gap:8px;}
-.lib-card-name{font-weight:600;font-size:13px;color:var(--text);flex:1;}
-.lib-card-tags{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
-.lib-card-tag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text2);text-transform:capitalize;}
+.lib-card-hdr{display:flex;align-items:center;padding:10px 12px;cursor:pointer;gap:8px;}
+.lib-card-name{font-weight:600;font-size:13px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lib-card-sub{font-size:10px;color:var(--text3);flex-shrink:0;text-transform:capitalize;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lib-card-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;border:1.5px solid var(--accent);cursor:pointer;transition:all .15s;flex-shrink:0;}
 .lib-card-btn.add{background:transparent;color:var(--accent);}
 .lib-card-btn.add:hover{background:var(--accent);color:#fff;}
-.lib-card-btn.added{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);cursor:default;}
-.lib-card-body{padding:0 12px 12px;border-top:1px solid var(--border);animation:fadeIn .15s ease;}
-.lib-card-section{margin-top:8px;}
-.lib-card-section-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.lib-card-muscles{display:flex;gap:4px;flex-wrap:wrap;}
+.lib-card-btn.added{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);cursor:default;font-size:10px;}
+.lib-card-body{padding:8px 12px 12px;border-top:1px solid var(--border);animation:fadeIn .15s ease;}
+.lib-card-detail{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.lib-card-detail:last-child{margin-bottom:0;}
+.lib-card-detail-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);width:100%;margin-bottom:1px;}
 .lib-muscle-pill{font-size:10px;padding:2px 8px;border-radius:8px;text-transform:capitalize;}
 .lib-muscle-pill.primary{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);font-weight:600;}
 .lib-muscle-pill.secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);}
-.lib-tips{font-size:12px;color:var(--text2);line-height:1.5;}
-.lib-tip-item{padding:2px 0;padding-left:12px;position:relative;}
+.lib-card-tag{font-size:9px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text2);text-transform:capitalize;}
+.lib-tips{font-size:11px;color:var(--text2);line-height:1.5;}
+.lib-tip-item{padding:1px 0 1px 12px;position:relative;}
 .lib-tip-item::before{content:'•';position:absolute;left:0;color:var(--accent);}
-.lib-all-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
 .lib-empty{text-align:center;padding:40px 16px;color:var(--text3);}
 .lib-empty-title{font-size:14px;font-weight:600;margin-bottom:4px;}
 .lib-empty-sub{font-size:12px;}
@@ -1366,7 +1419,7 @@ body{
     <div id="hist-wrap" style="display:none;"></div>
   </div>
 </div>
-<div class="view" id="view-prs"><div class="prs-wrap" id="prs-wrap"></div></div>
+<div class="view" id="view-exercises"><div class="exercises-wrap" id="exercises-wrap"></div></div>
 <div class="view" id="view-stats"><div class="stats-wrap" id="stats-wrap"></div></div>
 <div class="view" id="view-settings"><div class="sett-wrap" id="sett-wrap"></div></div>
 
@@ -1382,13 +1435,13 @@ body{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span class="bnav-lbl">Log</span>
     </button>
+    <button class="bnav-btn" id="bnav-exercises" onclick="switchTab('exercises')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 5v14M18 5v14M2 8h6M2 16h6M16 8h6M16 16h6M6 8h12M6 16h12"/></svg>
+      <span class="bnav-lbl">Exercises</span>
+    </button>
     <button class="bnav-btn" id="bnav-history" onclick="switchTab('history')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="13" y2="18"/></svg>
       <span class="bnav-lbl">History</span>
-    </button>
-    <button class="bnav-btn" id="bnav-prs" onclick="switchTab('prs')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="18 20 22 16 18 12"/><line x1="2" y1="16" x2="22" y2="16"/><polyline points="6 4 2 8 6 12"/><line x1="22" y1="8" x2="2" y2="8"/></svg>
-      <span class="bnav-lbl">PRs</span>
     </button>
     <button class="bnav-btn" id="bnav-stats" onclick="switchTab('stats')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -1411,61 +1464,43 @@ body{
 /* ═══════════════════════════════════════════
    DEFAULTS
 ═══════════════════════════════════════════ */
-const DEF_GROUPS = [
-  {id:'g1',name:'Lower',mode:'core',active:true,required:1,exercises:[
-    {id:'e1',name:'Leg Press',enabled:true},{id:'e2',name:'Leg Extension',enabled:true},
-    {id:'e3',name:'Leg Curl',enabled:true},{id:'e4',name:'Goblet Squat',enabled:true},
-    {id:'e5',name:'Romanian Deadlift',enabled:true},{id:'e6',name:'Walking Lunges',enabled:true}]},
-  {id:'g2',name:'Shoulders',mode:'core',active:true,required:1,exercises:[
-    {id:'e7',name:'Shoulder Press',enabled:true},{id:'e8',name:'Shrugs',enabled:true},
-    {id:'e9',name:'Lateral & Front Raise Combo',enabled:true},{id:'e10',name:'Face Pull',enabled:true}]},
-  {id:'g3',name:'Triceps',mode:'core',active:true,required:1,exercises:[
-    {id:'e11',name:'Extension',enabled:true},{id:'e12',name:'Pushdown',enabled:true},{id:'e13',name:'Skull Crusher',enabled:true}]},
-  {id:'g4',name:'Lower Arm / Biceps',mode:'core',active:true,required:1,exercises:[
-    {id:'e14',name:'Preacher Curls',enabled:true},{id:'e15',name:'Wrist Curl',enabled:true},
-    {id:'e16',name:'Hammer Curls',enabled:true},{id:'e17',name:'Single Arm Row',enabled:true},{id:'e18',name:'Upright Row',enabled:true}]},
-  {id:'g5',name:'Chest',mode:'core',active:true,required:1,exercises:[
-    {id:'e19',name:'Butterflies',enabled:true},{id:'e20',name:'Chest Press',enabled:true},{id:'e21',name:'Incline Chest Press',enabled:true}]},
-  {id:'g6',name:'Back',mode:'core',active:true,required:1,exercises:[
-    {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
-    {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
-];
-
 /* ═══════════════════════════════════════════
-   GROUP PRESETS (lenses over the pool)
+   WORKOUT SPLITS
+   Each split defines categories that exercises
+   auto-sort into based on their tags.
 ═══════════════════════════════════════════ */
-const GROUP_PRESETS = {
+const SPLITS = {
   ppl: {
     label:'Push / Pull / Legs',
-    groups:[
-      {name:'Push',mode:'core',filter:{movement:['push']}},
-      {name:'Pull',mode:'core',filter:{movement:['pull']}},
-      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']}},
-      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques']}}
+    categories:[
+      {name:'Push',filter:{movement:['push']},count:2},
+      {name:'Pull',filter:{movement:['pull']},count:2},
+      {name:'Legs',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']},count:2},
+      {name:'Core',filter:{bodyPart:['core','obliques']},count:1}
+    ]
+  },
+  upperLower: {
+    label:'Upper / Lower',
+    categories:[
+      {name:'Upper Body',filter:{bodyPart:['chest','upper-chest','lower-chest','lats','mid-back','upper-back','front-delts','mid-delts','rear-delts','traps','biceps','triceps','forearms']},count:3},
+      {name:'Lower Body',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors','hip-flexors']},count:3},
+      {name:'Core',filter:{bodyPart:['core','obliques']},count:1}
+    ]
+  },
+  muscleGroup: {
+    label:'Muscle Groups',
+    categories:[
+      {name:'Chest',filter:{bodyPart:['chest','upper-chest','lower-chest']},count:1},
+      {name:'Back',filter:{bodyPart:['lats','mid-back','upper-back']},count:1},
+      {name:'Shoulders',filter:{bodyPart:['front-delts','mid-delts','rear-delts','traps']},count:1},
+      {name:'Arms',filter:{bodyPart:['biceps','triceps','forearms']},count:1},
+      {name:'Legs',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']},count:1},
+      {name:'Core',filter:{bodyPart:['core','obliques','hip-flexors']},count:1}
     ]
   },
   bodyParts: {
     label:'Body Parts',
     dynamic:'bodyPart'
-  },
-  upperLower: {
-    label:'Upper / Lower',
-    groups:[
-      {name:'Upper Body',mode:'core',filter:{bodyPart:['chest','upper-chest','lower-chest','lats','mid-back','upper-back','front-delts','mid-delts','rear-delts','traps','biceps','triceps','forearms']}},
-      {name:'Lower Body',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors','hip-flexors']}},
-      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques']}}
-    ]
-  },
-  muscleGroup: {
-    label:'Muscle Groups',
-    groups:[
-      {name:'Chest',mode:'core',filter:{bodyPart:['chest','upper-chest','lower-chest']}},
-      {name:'Back',mode:'core',filter:{bodyPart:['lats','mid-back','upper-back']}},
-      {name:'Shoulders',mode:'core',filter:{bodyPart:['front-delts','mid-delts','rear-delts','traps']}},
-      {name:'Arms',mode:'core',filter:{bodyPart:['biceps','triceps','forearms']}},
-      {name:'Legs',mode:'core',filter:{bodyPart:['quads','hamstrings','glutes','calves','adductors','abductors']}},
-      {name:'Core',mode:'bonus',filter:{bodyPart:['core','obliques','hip-flexors']}}
-    ]
   },
   equipment: {
     label:'By Equipment',
@@ -1668,7 +1703,7 @@ const lsGet=ld, lsSet=sv;
 const GIST_FILENAME='forge-backup.json';
 let gistCfg = ld('fj_gist_cfg', {pat:'',gistId:''});
 
-let groups   = ld('fj_groups',   DEF_GROUPS);
+let groups   = ld('fj_groups',   []); // legacy — kept for migration only
 let cfg      = ld('fj_cfg',      DEF_CFG);
 // Migrate: ensure profile sub-object exists for users upgrading from older versions
 if(!cfg.profile) cfg.profile=dc(DEF_CFG.profile);
@@ -1739,29 +1774,67 @@ if(theme!=='dark'&&theme!=='light')theme='dark';}
   sv('fj_migration_v',5);
 })();
 
-// ── User Exercise Pool ──
-let pool = ld('fj_pool', []);
-// Seed pool from existing groups on first run
-if(!pool.length && groups.length){
-  groups.forEach(g=>{
-    (g.exercises||[]).forEach(ex=>{
-      const cat=catalogByName(ex.name);
-      pool.push({
-        catalogId: cat?cat.id:null,
-        name: ex.name,
-        cue: ex.cue||'',
-        enabled: ex.enabled!==false,
-        custom: !cat,
-        tags: cat?cat.tags:{bodyPart:[g.name.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}
+// ── My Exercises (unified model — replaces pool + groups) ──
+let myExercises = ld('fj_exercises', []);
+let activeSplit = ld('fj_split', 'ppl');
+let splitConfig = ld('fj_split_config', {}); // { "Push": { active:true, count:2 }, ... }
+
+// ── Migration from old pool/groups model ──
+(function migrateToMyExercises(){
+  const oldPool = ld('fj_pool', null);
+  const oldPreset = ld('fj_active_preset', null);
+  if(myExercises.length || !oldPool) return; // already migrated or fresh install
+  // Migrate pool → myExercises
+  if(oldPool && oldPool.length){
+    myExercises = oldPool.map(p => ({
+      catalogId: p.catalogId || null,
+      name: p.name,
+      cue: p.cue || '',
+      enabled: p.enabled !== false
+    }));
+    sv('fj_exercises', myExercises);
+  }
+  // Migrate preset → split
+  if(oldPreset && oldPreset !== 'custom' && SPLITS[oldPreset]){
+    activeSplit = oldPreset;
+    sv('fj_split', activeSplit);
+  }
+  // Migrate group counts → splitConfig
+  const oldGroups = ld('fj_groups', []);
+  if(oldGroups.length){
+    oldGroups.forEach(g => {
+      if(g.required && g.required > 1){
+        splitConfig[g.name] = { active: g.active !== false, count: g.required };
+      }
+    });
+    if(Object.keys(splitConfig).length) sv('fj_split_config', splitConfig);
+  }
+  // Seed from legacy groups if pool was empty too
+  if(!myExercises.length && oldGroups && oldGroups.length){
+    oldGroups.forEach(g => {
+      (g.exercises||[]).forEach(ex => {
+        if(myExercises.some(m => m.name.toLowerCase() === ex.name.toLowerCase())) return;
+        const cat = catalogByName(ex.name);
+        myExercises.push({
+          catalogId: cat ? cat.id : null,
+          name: cat ? cat.name : ex.name,
+          cue: ex.cue || '',
+          enabled: ex.enabled !== false
+        });
       });
     });
-  });
-  sv('fj_pool',pool);
-}
-function getPoolTags(entry){
+    sv('fj_exercises', myExercises);
+  }
+})();
+
+// Keep pool as alias for backward compatibility during transition
+let pool = myExercises;
+function getExTags(entry){
+  // Always derive tags from catalog to avoid stale cached copies
   if(entry.catalogId){const c=EXERCISE_CATALOG.find(c=>c.id===entry.catalogId);if(c)return c.tags;}
   return entry.tags||{bodyPart:[],movement:[],equipment:[],difficulty:'intermediate'};
 }
+const getPoolTags = getExTags; // backward compat alias
 function matchesFilter(ex,filter){
   if(!filter)return true;
   const tags=getPoolTags(ex);
@@ -1772,169 +1845,106 @@ function matchesFilter(ex,filter){
   }
   return true;
 }
-function addToPool(catalogId){
+function addExercise(catalogId){
   const cat=EXERCISE_CATALOG.find(c=>c.id===catalogId);
   if(!cat)return;
-  if(pool.some(p=>p.catalogId===catalogId||p.name.toLowerCase()===cat.name.toLowerCase())){toast('Already in your pool');return;}
-  pool.push({catalogId:cat.id,name:cat.name,cue:'',enabled:true,custom:false,tags:cat.tags});
-  sv('fj_pool',pool);
-  // If using filter-based groups (preset active), exercises auto-match via tags — skip manual group assignment
-  if(_activePreset!=='custom'&&groups.some(g=>g.filter)) return;
-  // Legacy: also add to the first matching group or create one
-  const bp=(cat.tags.bodyPart||[])[0]||'general';
-  let grp=groups.find(g=>g.name.toLowerCase()===bp||(g.filter&&g.filter.bodyPart&&g.filter.bodyPart.includes(bp)));
-  if(!grp){
-    const bpMap={'chest':'Chest','upper-chest':'Chest','lower-chest':'Chest','lats':'Back','mid-back':'Back','upper-back':'Back',
-      'front-delts':'Shoulders','mid-delts':'Shoulders','rear-delts':'Shoulders','traps':'Shoulders',
-      'biceps':'Arms','triceps':'Arms','forearms':'Arms',
-      'quads':'Legs','hamstrings':'Legs','glutes':'Legs','calves':'Legs','adductors':'Legs','abductors':'Legs','hip-flexors':'Legs',
-      'core':'Core','obliques':'Core','full-body':'Full Body'};
-    const grpName=bpMap[bp]||bp.charAt(0).toUpperCase()+bp.slice(1);
-    grp=groups.find(g=>g.name===grpName);
-    if(!grp){grp={id:uid(),name:grpName,mode:'bonus',active:true,required:1,exercises:[]};groups.push(grp);}
-  }
-  if(!grp.exercises)grp.exercises=[];
-  if(!grp.exercises.some(e=>e.name.toLowerCase()===cat.name.toLowerCase())){
-    grp.exercises.push({id:uid(),name:cat.name,enabled:true,cue:''});
-    sv('fj_groups',groups);
-  }
+  if(myExercises.some(p=>p.catalogId===catalogId||p.name.toLowerCase()===cat.name.toLowerCase())){toast('Already added');return;}
+  myExercises.push({catalogId:cat.id,name:cat.name,cue:'',enabled:true});
+  sv('fj_exercises',myExercises);
 }
-function removeFromPool(catalogIdOrName){
-  const idx=pool.findIndex(p=>p.catalogId===catalogIdOrName||p.name===catalogIdOrName);
+const addToPool = addExercise; // backward compat alias
+function removeExercise(name){
+  const idx=myExercises.findIndex(p=>p.name===name);
   if(idx===-1)return;
-  const entry=pool[idx];
-  pool.splice(idx,1);
-  sv('fj_pool',pool);
-  // Also remove from groups
-  groups.forEach(g=>{
-    if(g.exercises)g.exercises=g.exercises.filter(e=>e.name.toLowerCase()!==entry.name.toLowerCase());
-  });
-  sv('fj_groups',groups);
+  myExercises.splice(idx,1);
+  sv('fj_exercises',myExercises);
 }
-function isInPool(catalogId){return pool.some(p=>p.catalogId===catalogId);}
+function removeFromPool(n){ removeExercise(n); }
+function isInPool(catalogId){return myExercises.some(p=>p.catalogId===catalogId);}
 
-// ── Pool Overview & Group Presets ──
-let _activePreset = ld('fj_active_preset','custom');
-let _poolOverviewExpanded = null; // null, 'all', or {dim,val}
-let _editingFilterGrp = null; // group id whose filter is being edited
+// ── Split & Category Helpers ──
+let _exTabOpen = {}; // which category cards are expanded in Exercises tab
 
-function poolTagSummary(){
-  const summary={};
-  ['bodyPart','movement','equipment'].forEach(dim=>{summary[dim]={};});
-  pool.forEach(p=>{
-    const tags=getPoolTags(p);
-    ['bodyPart','movement','equipment'].forEach(dim=>{
-      const vals=Array.isArray(tags[dim])?tags[dim]:[tags[dim]].filter(Boolean);
-      vals.forEach(v=>{summary[dim][v]=(summary[dim][v]||0)+1;});
-    });
-  });
-  return summary;
-}
-function poolExercisesForTag(dim,val){
-  if(!dim) return pool; // 'all'
-  return pool.filter(p=>{
-    const tags=getPoolTags(p);
-    const vals=Array.isArray(tags[dim])?tags[dim]:[tags[dim]];
-    return vals.includes(val);
-  });
-}
-function togglePoolExEnabled(name,val){
-  const p=pool.find(p=>p.name===name);
-  if(p){p.enabled=val;sv('fj_pool',pool);}
-  // Also toggle in group exercises for legacy groups
-  groups.forEach(g=>{
-    if(g.exercises){const ex=g.exercises.find(e=>e.name===name);if(ex)ex.enabled=val;}
-  });
-  sv('fj_groups',groups);
-  renderSettings();
-}
-function savePoolExCue(name,val){
-  const p=pool.find(p=>p.name===name);
-  if(p){p.cue=val.trim();sv('fj_pool',pool);}
-}
-function removeFromPoolByName(name){
-  removeFromPool(name);
-  renderSettings();
-}
-function applyGroupPreset(presetId){
-  const preset=GROUP_PRESETS[presetId];
-  if(!preset)return;
-  let newGroups;
-  if(preset.dynamic){
-    // Auto-create one group per tag value present in pool
-    const dim=preset.dynamic;
+function getActiveCategories(){
+  const s=SPLITS[activeSplit];
+  if(!s) return [];
+  if(s.dynamic){
+    // Auto-create categories from tags present in myExercises
+    const dim=s.dynamic;
     const vals=new Set();
-    pool.forEach(p=>{
-      const tags=getPoolTags(p);
+    myExercises.forEach(ex=>{
+      const tags=getExTags(ex);
       const v=Array.isArray(tags[dim])?tags[dim]:[tags[dim]];
       v.filter(Boolean).forEach(t=>vals.add(t));
     });
-    newGroups=[...vals].sort().map(v=>({
-      id:uid(),name:v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
-      mode:'core',active:true,required:1,exercises:[],
-      filter:{[dim]:[v]}
-    }));
-  } else {
-    newGroups=preset.groups.map(g=>({
-      id:uid(),name:g.name,mode:g.mode,active:true,required:1,exercises:[],
-      filter:dc(g.filter)
+    return [...vals].sort().map(v=>({
+      name:v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+      filter:{[dim]:[v]},
+      count:getCatConfig(v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())).count
     }));
   }
-  if(!newGroups.length){toast('No exercises in pool match this preset');return;}
-  groups=newGroups;
-  sv('fj_groups',groups);
-  _activePreset=presetId;
-  sv('fj_active_preset',_activePreset);
-  autoSaveSettings();
-  renderSettings();
+  return s.categories.map(c=>({
+    ...c,
+    count: getCatConfig(c.name).count || c.count || 1,
+    active: getCatConfig(c.name).active !== false
+  }));
 }
-function toggleEditFilter(gid){
-  _editingFilterGrp=_editingFilterGrp===gid?null:gid;
-  renderSettings();
+
+function getCatConfig(name){
+  return splitConfig[name] || {};
 }
-function toggleFilterTag(gid,dim,val){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(!g.filter)g.filter={};
-  if(!g.filter[dim])g.filter[dim]=[];
-  const idx=g.filter[dim].indexOf(val);
-  if(idx===-1)g.filter[dim].push(val);
-  else g.filter[dim].splice(idx,1);
-  if(!g.filter[dim].length)delete g.filter[dim];
-  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+function setCatConfig(name, key, val){
+  if(!splitConfig[name]) splitConfig[name] = {};
+  splitConfig[name][key] = val;
+  sv('fj_split_config', splitConfig);
 }
-function addFilterGroup(){
-  const inp=document.getElementById('ngrp-inp');
-  const name=inp?inp.value.trim():'';
-  if(!name){toast('Enter a group name');return;}
-  if(groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){toast('Group exists');return;}
-  const gid=uid();
-  groups.push({id:gid,name,mode:'core',active:true,required:1,exercises:[],filter:{}});
-  _editingFilterGrp=gid;
-  openGrp[gid]=true;
-  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+
+function exercisesForCategory(cat){
+  return myExercises.filter(ex=>ex.enabled && matchesFilter(ex, cat.filter));
 }
-function convertToFilterGroup(gid){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  g.filter={};
-  g.exercises=[];
-  _editingFilterGrp=gid;
-  openGrp[gid]=true;
-  sv('fj_groups',groups);autoSaveSettings();renderSettings();
+
+function allCategorizedNames(){
+  const cats = getActiveCategories();
+  const names = new Set();
+  cats.forEach(cat => {
+    myExercises.forEach(ex => {
+      if(matchesFilter(ex, cat.filter)) names.add(ex.name);
+    });
+  });
+  return names;
 }
-function setPoolExpanded(dim,val){
-  if(_poolOverviewExpanded&&_poolOverviewExpanded.dim===dim&&_poolOverviewExpanded.val===val){
-    _poolOverviewExpanded=null;
-  } else if(dim===null&&_poolOverviewExpanded==='all'){
-    _poolOverviewExpanded=null;
-  } else {
-    _poolOverviewExpanded=dim===null?'all':{dim,val};
-  }
-  renderSettings();
+
+function uncategorizedExercises(){
+  const catNames = allCategorizedNames();
+  return myExercises.filter(ex => !catNames.has(ex.name));
 }
+function toggleExEnabled(name,val){
+  const ex=myExercises.find(p=>p.name===name);
+  if(ex){ex.enabled=val;sv('fj_exercises',myExercises);}
+  renderExercises();
+}
+const togglePoolExEnabled = toggleExEnabled; // backward compat
+function saveExCueByName(name,val){
+  const ex=myExercises.find(p=>p.name===name);
+  if(ex){ex.cue=val.trim();sv('fj_exercises',myExercises);}
+}
+const savePoolExCue = saveExCueByName;
+function removeExByName(name){
+  removeExercise(name);
+  renderExercises();
+}
+function setSplit(splitId){
+  if(!SPLITS[splitId])return;
+  activeSplit=splitId;
+  sv('fj_split',activeSplit);
+  renderExercises();
+}
+function setPoolExpanded(){ /* legacy stub — no longer used */ }
 
 let _libExpanded={};
 let _libSearch='';
 let _libFilters={bodyPart:null,movement:null,equipment:null};
+let _libFilterOpen=null; // which dropdown is open: 'bodyPart'|'movement'|'equipment'|null
 
 let pending  = null;
 let active   = null;
@@ -2131,7 +2141,7 @@ if(cfg.accentColor) applyCustomAccent(cfg.accentColor);
    GIST API
 ═══════════════════════════════════════════ */
 function buildPayload(){
-  return JSON.stringify({version:5,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification,pool,activePreset:_activePreset},null,2);
+  return JSON.stringify({version:5,exportedAt:new Date().toISOString(),sessions,stats,groups,cfg,machines,theme,gamification,pool:myExercises,myExercises,activeSplit,splitConfig},null,2);
 }
 function applyPayload(data){
   if(Array.isArray(data.sessions)){sessions=data.sessions;lsSet('fj_sessions',sessions);}
@@ -2158,9 +2168,11 @@ function applyPayload(data){
     }
     lsSet('fj_gamification',gamification);
   }
-  // Import pool data
-  if(Array.isArray(data.pool)){pool=data.pool;lsSet('fj_pool',pool);}
-  if(data.activePreset){_activePreset=data.activePreset;sv('fj_active_preset',_activePreset);}
+  // Import exercises data (new model)
+  if(Array.isArray(data.myExercises)){myExercises=data.myExercises;pool=myExercises;lsSet('fj_exercises',myExercises);}
+  else if(Array.isArray(data.pool)){myExercises=data.pool;pool=myExercises;lsSet('fj_exercises',myExercises);}
+  if(data.activeSplit&&SPLITS[data.activeSplit]){activeSplit=data.activeSplit;sv('fj_split',activeSplit);}
+  if(data.splitConfig){splitConfig=data.splitConfig;sv('fj_split_config',splitConfig);}
   // Post-apply migrations
   if(!cfg.profile)cfg.profile=dc(DEF_CFG.profile);
   if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);
@@ -2431,8 +2443,9 @@ function fmtCalFull(s){
   return`🔥 ${crdCal} cal`;
 }
 function enabledEx(g){
-  if(g.filter&&pool.length){
-    return pool.filter(ex=>ex.enabled&&matchesFilter(ex,g.filter));
+  // New model: always use filter-based matching against myExercises
+  if(g.filter&&myExercises.length){
+    return myExercises.filter(ex=>ex.enabled&&matchesFilter(ex,g.filter));
   }
   return(g.exercises||[]).filter(e=>e.enabled);
 }
@@ -2532,19 +2545,21 @@ function openExercisePicker(){
 function renderPickerGroups(){
   if(!pending)pending=[];
   const added=new Set(pending.map(e=>e.name));
-  return groups.filter(g=>g.active).map(g=>{
-    const open=openPicker[g.id];
-    const exItems=g.exercises.filter(e=>e.enabled).map(ex=>{
+  const cats=getActiveCategories();
+  return cats.map(cat=>{
+    const open=openPicker[cat.name];
+    const matched=exercisesForCategory(cat);
+    const exItems=matched.map(ex=>{
       const sel=added.has(ex.name);
-      return`<div class="picker-ex-item${sel?' selected':''}" onclick="togglePickerEx('${esc(ex.name).replace(/'/g,"\\'")}','${esc(g.name).replace(/'/g,"\\'")}')">
+      return`<div class="picker-ex-item${sel?' selected':''}" onclick="togglePickerEx('${esc(ex.name).replace(/'/g,"\\'")}','${esc(cat.name).replace(/'/g,"\\'")}')">
         <span class="picker-ex-name">${esc(ex.name)}</span>
         <span class="picker-ex-check">${sel?'✓':''}</span>
       </div>`;
     }).join('');
     return`<div class="picker-group">
-      <div class="picker-group-hdr${open?' open':''}" onclick="togglePickerGroup('${g.id}')">
-        <span class="picker-group-name">${esc(g.name)}</span>
-        <span class="picker-group-count">${g.exercises.filter(e=>e.enabled).length} exercises</span>
+      <div class="picker-group-hdr${open?' open':''}" onclick="togglePickerGroup('${cat.name}')">
+        <span class="picker-group-name">${esc(cat.name)}</span>
+        <span class="picker-group-count">${matched.length} exercises</span>
         <span class="picker-group-chev">▼</span>
       </div>
       ${open?`<div class="picker-ex-list">${exItems}</div>`:''}
@@ -2597,7 +2612,7 @@ function armReset(key,fn,render){
 /* ═══════════════════════════════════════════
    TABS
 ═══════════════════════════════════════════ */
-const TAB_IDS=['generate','today','history','prs','stats','settings'];
+const TAB_IDS=['generate','today','exercises','history','stats','settings'];
 function switchTab(tab){
   TAB_IDS.forEach(id=>{
     const btn=document.getElementById('bnav-'+id);
@@ -2611,11 +2626,11 @@ function switchTab(tab){
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   if(tab!=='today') clearInterval(_timerInterval);
   if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenStreakChip();renderTemplates();}
-  if(tab==='today')    renderToday();
-  if(tab==='history')  renderHistory();
-  if(tab==='settings') renderSettings();
-  if(tab==='stats')    renderStats();
-  if(tab==='prs')      renderPRs();
+  if(tab==='today')     renderToday();
+  if(tab==='exercises') renderExercises();
+  if(tab==='history')   renderHistory();
+  if(tab==='settings')  renderSettings();
+  if(tab==='stats')     renderStats();
 }
 
 /* ═══════════════════════════════════════════
@@ -2628,25 +2643,17 @@ function generate(){
   btn.classList.remove('rolling');void btn.offsetWidth;btn.classList.add('rolling');
   const used=new Set();
   const result=[];
-  for(const g of shuffle(groups.filter(g=>g.active&&g.mode==='core'))){
-    const avail=enabledEx(g).filter(e=>!used.has(e.name));
-    const count=Math.min(g.required||1, avail.length);
+  const cats=getActiveCategories().filter(c=>getCatConfig(c.name).active!==false);
+  for(const cat of shuffle(cats)){
+    const avail=exercisesForCategory(cat).filter(e=>!used.has(e.name));
+    const count=Math.min(cat.count||1, avail.length);
     const picked=shuffle(avail).slice(0,count);
-    for(const ex of picked){used.add(ex.name);result.push({name:ex.name,group:g.name,isBonus:false,scheme:pick(getSchemes())});}
+    for(const ex of picked){
+      used.add(ex.name);
+      result.push({name:ex.name,group:cat.name,isBonus:false,scheme:pick(getSchemes())});
+    }
   }
-  const bonusN=cfg.bonusSlots||2;
-  const allGroups=groups.filter(g=>g.active);
-  let att=0;const bonusGroupsUsed=[];
-  while(bonusGroupsUsed.length<bonusN && att<300){
-    att++;
-    const cands=allGroups.filter(g=>!bonusGroupsUsed.includes(g.id));
-    if(!cands.length)break;
-    const g=pick(cands);
-    const avail=enabledEx(g).filter(e=>!used.has(e.name));
-    if(avail.length){const ex=pick(avail);used.add(ex.name);bonusGroupsUsed.push(g.id);result.push({name:ex.name,group:g.name,isBonus:true,scheme:pick(getSchemes())});}
-    else bonusGroupsUsed.push(g.id);
-  }
-  if(!result.length){toast('No exercises available! Check Settings → Exercise Pool');return;}
+  if(!result.length){toast('No exercises available! Add exercises in the Exercises tab');return;}
   pending=result;renderPending();
 }
 
@@ -2664,7 +2671,7 @@ function renderPending(){
       c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
     } else {
       const firstTime=!sessions.length;
-      c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Customize your exercises in Settings, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('settings')">Go to Settings →</button>`:''}</div>`;
+      c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Add your exercises first, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('exercises')">Add Exercises →</button>`:''}</div>`;
     }
     if(sb)sb.style.display='none';
     return;
@@ -2730,9 +2737,8 @@ function saveAsTemplate(){
 function loadTemplate(id){
   if(active){toast('Finish your active workout first');return;}
   const t=templates.find(t=>t.id===id);if(!t)return;
-  const exMap=groups.flatMap(g=>g.exercises.map(e=>({...e,group:g.name})));
   pending=t.exercises.map(te=>{
-    const matched=exMap.find(e=>e.name===te.name);
+    const matched=myExercises.find(e=>e.name===te.name);
     const last=lastForEx(te.name);
     return{name:te.name,group:te.group,scheme:te.scheme||'3×10',isBonus:false,
       weight:last?last.weight:0,last:last||null,
@@ -2805,8 +2811,7 @@ function startWorkout(){
     exercises:pending.map(ex=>{
       const{sets,reps}=parseScheme(ex.scheme);
       const last=lastForEx(ex.name);
-      const grp=groups.find(g=>g.name===ex.group);
-      const exDef=grp?grp.exercises.find(e=>e.name===ex.name):null;
+      const exDef=myExercises.find(e=>e.name===ex.name);
       let weight=0;
       const weightType=last?last.weightType||'standard':'standard';
       if(last){
@@ -4147,6 +4152,197 @@ function renderPRs(){
   });
   wrap.innerHTML=html;
 }
+function renderPRsPanel(){
+  const prs=stats.prs||{};
+  const wh=stats.weightHistory||{};
+  const keys=Object.keys(prs);
+  if(!keys.length){
+    return`<div class="prs-title">Personal Records</div><div class="empty-state-card">
+      <span class="es-icon">🏆</span>
+      <div class="es-title">NO PRs YET</div>
+      <div class="es-sub">Complete workouts to start tracking your personal bests</div>
+    </div>`;
+  }
+  const byGroup={};
+  keys.forEach(k=>{
+    const sep=k.indexOf('::');
+    const grp=k.slice(0,sep);
+    if(!byGroup[grp])byGroup[grp]=[];
+    byGroup[grp].push({key:k,name:k.slice(sep+2),...prs[k]});
+  });
+  Object.values(byGroup).forEach(arr=>arr.sort((a,b)=>b.weight-a.weight));
+  let html=`<div class="prs-title">Personal Records</div>`;
+  Object.entries(byGroup).sort((a,b)=>b[1][0].weight-a[1][0].weight).forEach(([grp,arr])=>{
+    html+=`<div class="pr-group"><div class="pr-group-name">${esc(grp)}</div>`;
+    arr.forEach(pr=>{
+      const hist=wh[pr.key]||[];
+      const sparkW=80,sparkH=24;
+      let sparkHtml='';
+      if(hist.length>1){
+        const weights=hist.map(d=>isNaN(d.weight)?0:d.weight);
+        const minW=Math.min(...weights),maxW=Math.max(...weights);
+        const range=maxW-minW||1;
+        const n=hist.length;
+        const pts=hist.map((d,i)=>{
+          const x=(n>1?(i/(n-1)):0.5)*(sparkW-4)+2;
+          const y=sparkH-2-((d.weight-minW)/range)*(sparkH-4);
+          return`${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        const prIdx=hist.reduce((mx,d,i)=>d.weight>hist[mx].weight?i:mx,0);
+        const prX=(prIdx/(n-1))*(sparkW-4)+2;
+        const prY=sparkH-2-((hist[prIdx].weight-minW)/range)*(sparkH-4);
+        sparkHtml=`<svg width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}" style="flex-shrink:0;opacity:.8">
+          <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${prX.toFixed(1)}" cy="${prY.toFixed(1)}" r="3" fill="var(--accent)"/>
+        </svg>`;
+      }
+      let trendHtml='';
+      if(hist.length>=2){
+        const diff=hist[hist.length-1].weight-hist[hist.length-2].weight;
+        const isKg=cfg.profile&&cfg.profile.weightUnit==='kg';
+        const diffDisp=isKg?(diff*0.453592).toFixed(1):Math.abs(diff);
+        const unit=isKg?'kg':'lb';
+        if(diff>0)trendHtml=`<span style="font-size:9px;color:var(--up);font-weight:700;">↑${diffDisp}${unit}</span>`;
+        else if(diff<0)trendHtml=`<span style="font-size:9px;color:var(--dn);font-weight:700;">↓${diffDisp}${unit}</span>`;
+      }
+      const prSession=sessions.find(s=>s.date===pr.date&&s.exercises&&s.exercises.some(ex=>ex.name===pr.name));
+      const prCalHtml=prSession&&prSession.calories?`<span style="font-size:9px;color:var(--accent);font-weight:600;margin-left:6px;">🔥${prSession.caloriesEst?'~':''}${prSession.calories}${prSession.caloriesEst?' (est.)':''}</span>`:'';
+      const prMaxReps=Math.max(...((pr.reps||[]).filter(r=>!isNaN(r)&&r>0)),0);
+      const prWtType=pr.weightType||'standard';
+      const normPrWtType=normalizeWeightType(prWtType);
+      const est1rm=normPrWtType==='standard'&&prMaxReps>1?Math.round(pr.weight*(1+prMaxReps/30)):0;
+      const wtUnit=normPrWtType==='level'?'Lvl':normPrWtType==='bodyweight'?((cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs')+'+'):(cfg.profile&&cfg.profile.weightUnit==='kg'?'kg':'lbs');
+      html+=`<div class="pr-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="pr-info">
+            <div class="pr-name">${esc(pr.name)}</div>
+            <div class="pr-meta">${esc(pr.scheme||'')} · ${esc(pr.date||'')}${prCalHtml} ${trendHtml}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="pr-weight">${fmtWt(pr.weight,true,prWtType)}</div>
+            <div class="pr-unit">${wtUnit} PR</div>
+            ${est1rm?`<div class="pr-1rm">~${fmtWt(est1rm)} 1RM</div>`:''}
+          </div>
+        </div>
+        ${hist.length>1?`<div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:9px;color:var(--text3);">${hist.length} sessions · started ${fmtWt(hist[0].weight,false,hist[0].weightType)}</div>
+          ${sparkHtml}
+        </div>`:''}
+      </div>`;
+    });
+    html+='</div>';
+  });
+  return html;
+}
+
+/* ═══════════════════════════════════════════
+   EXERCISES TAB
+═══════════════════════════════════════════ */
+function renderExercises(){
+  const wrap=document.getElementById('exercises-wrap');
+  if(!wrap) return;
+
+  // Split selector bar
+  const splitPills=Object.entries(SPLITS).map(([id,s])=>
+    `<button class="split-pill${activeSplit===id?' active':''}" onclick="setSplit('${id}')">${s.label}</button>`
+  ).join('');
+  const splitBar=`<div class="split-bar">${splitPills}</div>`;
+
+  // Summary row with count + add button inline
+  const enabledCount=myExercises.filter(e=>e.enabled).length;
+  const summaryRow=`<div class="ex-summary">
+    <span class="ex-count-chip">${enabledCount} of ${myExercises.length} exercises enabled</span>
+    <button class="ex-add-btn-sm" onclick="openExerciseLibrary()">+ Add</button>
+  </div>`;
+
+  // Category cards
+  const cats=getActiveCategories();
+  const catCards=cats.map(cat=>{
+    const allMatched=myExercises.filter(ex=>matchesFilter(ex,cat.filter));
+    const enabled=allMatched.filter(e=>e.enabled);
+    const isOpen=_exTabOpen[cat.name];
+    const catCfg=getCatConfig(cat.name);
+    const count=catCfg.count||cat.count||1;
+    const isActive=catCfg.active!==false;
+
+    let body='';
+    if(isOpen){
+      // Category config row
+      const cfgRow=`<div class="cat-cfg">
+        <span class="cat-cfg-lbl">Per workout</span>
+        <div class="num-ctrl">
+          <button class="num-btn" onclick="adjCatCount('${esc(cat.name)}',-1)">−</button>
+          <span class="num-val">${count}</span>
+          <button class="num-btn" onclick="adjCatCount('${esc(cat.name)}',1)">+</button>
+        </div>
+        <span class="cat-cfg-lbl" style="flex:0;white-space:nowrap;">Active</span>
+        <label class="tog"><input type="checkbox" ${isActive?'checked':''} onchange="toggleCatActive('${esc(cat.name)}',this.checked)"><span class="tog-track"></span></label>
+      </div>`;
+
+      // Exercise list
+      const exList=allMatched.map(ex=>{
+        const sn=esc(ex.name).replace(/'/g,"\\'");
+        return`<div class="cat-ex">
+          <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleExEnabled('${sn}',this.checked)"><span class="tog-track"></span></label>
+          <div class="cat-ex-main">
+            <span class="cat-ex-name${!ex.enabled?' disabled':''}">${esc(ex.name)}</span>
+            <input class="cat-ex-cue" type="text" placeholder="Add cue..." maxlength="80"
+              value="${esc(ex.cue||'')}" oninput="saveExCueByName('${sn}',this.value)">
+          </div>
+          <button class="cat-ex-del" onclick="removeExByName('${sn}')">×</button>
+        </div>`;
+      }).join('');
+
+      const emptyMsg=allMatched.length===0?`<div class="cat-empty">No exercises yet — tap + Add above</div>`:'';
+      body=`<div class="cat-body open">${cfgRow}${exList}${emptyMsg}</div>`;
+    }
+
+    return`<div class="cat-card${!isActive?' inactive':''}">
+      <div class="cat-hdr${isOpen?' open':''}" onclick="toggleExCat('${esc(cat.name)}')">
+        <span class="cat-chev">▲</span>
+        <span class="cat-name">${esc(cat.name)}</span>
+        <span class="cat-badge">${enabled.length}/${allMatched.length}</span>
+      </div>
+      ${body}
+    </div>`;
+  }).join('');
+
+  // Uncategorized exercises
+  const uncat=uncategorizedExercises();
+  let uncatHtml='';
+  if(uncat.length){
+    const items=uncat.map(ex=>{
+      const sn=esc(ex.name).replace(/'/g,"\\'");
+      return`<div class="cat-ex">
+        <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleExEnabled('${sn}',this.checked)"><span class="tog-track"></span></label>
+        <div class="cat-ex-main">
+          <span class="cat-ex-name${!ex.enabled?' disabled':''}">${esc(ex.name)}</span>
+        </div>
+        <button class="cat-ex-del" onclick="removeExByName('${sn}')">×</button>
+      </div>`;
+    }).join('');
+    uncatHtml=`<div class="uncat-section">
+      <div class="uncat-title">Uncategorized (${uncat.length})</div>
+      ${items}
+    </div>`;
+  }
+
+  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div>${splitBar}${summaryRow}${catCards}${uncatHtml}`;
+}
+
+function toggleExCat(name){_exTabOpen[name]=!_exTabOpen[name];renderExercises();}
+function adjCatCount(name,d){
+  const cats=getActiveCategories();
+  const cat=cats.find(c=>c.name===name);
+  const maxEx=cat?myExercises.filter(ex=>matchesFilter(ex,cat.filter)).length:10;
+  const cur=getCatConfig(name).count||(cat?cat.count:1)||1;
+  setCatConfig(name,'count',Math.max(1,Math.min(maxEx||10,cur+d)));
+  renderExercises();
+}
+function toggleCatActive(name,val){
+  setCatConfig(name,'active',val);
+  renderExercises();
+}
 
 /* ═══════════════════════════════════════════
    SETTINGS
@@ -4156,7 +4352,6 @@ function renderSettings(){
   const tabs=[
     {id:'profile',icon:'👤',lbl:'Profile'},
     {id:'workout',icon:'⚡',lbl:'Workout'},
-    {id:'exercises',icon:'🏋️',lbl:'Exercises'},
     {id:'cardio',icon:'🏃',lbl:'Cardio'},
     {id:'theme',icon:'🎨',lbl:'Theme'},
     {id:'data',icon:'💾',lbl:'Data'},
@@ -4177,7 +4372,7 @@ function renderSettings(){
     </div>`;
   }
   else if(settingsTab==='workout') panel=renderWorkoutSettings();
-  else if(settingsTab==='exercises') panel=renderPool();
+  else if(settingsTab==='exercises'){settingsTab='workout';} // Exercises moved to own tab
   else if(settingsTab==='cardio') panel=`<div class="sett-card">${renderMachines()}</div>`;
   else if(settingsTab==='theme') panel=`<div class="sett-card">${renderTheme()}</div><div style="height:24px"></div>`;
   else if(settingsTab==='data') panel=renderDataTab();
@@ -4190,8 +4385,8 @@ function renderSettings(){
 }
 function setSettTab(t){settingsTab=t;renderSettings();}
 function renderWorkoutSettings(){
-  const coreTotal=groups.filter(g=>g.active&&g.mode==='core').reduce((a,g)=>a+(g.required||1),0);
-  const total=coreTotal+(cfg.bonusSlots||2);
+  const cats=getActiveCategories().filter(c=>getCatConfig(c.name).active!==false);
+  const total=cats.reduce((a,c)=>(getCatConfig(c.name).count||c.count||1)+a,0);
   const incOpts=[2.5,5,10].map(v=>`<button class="inc-pill${(cfg.weightIncrement||5)===v?' active':''}" onclick="setIncrement(${v})">${v}lb</button>`).join('');
   const mode=cfg.streakMode||'weekly';
   const rt=cfg.restTimer||{enabled:false,duration:60};
@@ -4199,11 +4394,7 @@ function renderWorkoutSettings(){
   const goalStepper=mode!=='daily'?`<div class="s-row"><div class="s-lbl">Sessions per ${mode==='weekly'?'Week':'Month'}<span class="s-sub">Minimum workouts needed to count the ${mode==='weekly'?'week':'month'}</span></div><div class="num-ctrl"><button class="num-btn" onclick="adjStreakGoal(-1)">−</button><span class="num-val">${cfg.streakGoal||3}</span><button class="num-btn" onclick="adjStreakGoal(1)">+</button></div></div>`:'';
   return`<div class="sett-card">
     <div class="sett-card-title">Workout Structure</div>
-    <div class="s-row"><div class="s-lbl">Bonus Slots<span class="s-sub">Extra exercises beyond core requirements</span></div>
-      <div class="num-ctrl"><button class="num-btn" onclick="adjCfg('bonusSlots',-1)">−</button><span class="num-val">${cfg.bonusSlots}</span><button class="num-btn" onclick="adjCfg('bonusSlots',1)">+</button></div>
-    </div>
-    <div class="s-row"><div class="s-lbl">Core Exercises<span class="s-sub">Sum of required per active core group</span></div><span style="font-size:13px;font-weight:700;color:var(--accent)">${coreTotal}</span></div>
-    <div class="s-row"><div class="s-lbl">Total Per Workout<span class="s-sub">Core + Bonus</span></div><span style="font-size:13px;font-weight:700;color:var(--accent)">${total}</span></div>
+    ${renderStructure()}
   </div>
   <div class="sett-card">
     <div class="sett-card-title">Workout Schemes</div>
@@ -4299,7 +4490,7 @@ function renderDataManagement(){
     </button>
   </div>`;
 }
-function toggleGrp(id){openGrp[id]=!openGrp[id];renderSettings();}
+function toggleGrp(){} // legacy stub
 function adjCfg(k,d){
   if(k==='bonusSlots')cfg.bonusSlots=Math.max(0,Math.min(10,(cfg.bonusSlots||2)+d));
   sv('fj_cfg',cfg);autoSaveSettings();renderSettings();
@@ -4320,53 +4511,7 @@ function removeScheme(sc){
   if(cfg.schemes.length<=1){toast('Must keep at least one scheme');return;}
   cfg.schemes=cfg.schemes.filter(s=>s!==sc);sv('fj_cfg',cfg);renderSettings();
 }
-function adjRequired(gid,d){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  g.required=Math.max(1,Math.min(enabledEx(g).length,(g.required||1)+d));
-  sv('fj_groups',groups);autoSaveSettings();renderSettings();
-}
-function toggleGroupActive(gid,val){const g=groups.find(g=>g.id===gid);if(g){g.active=val;sv('fj_groups',groups);autoSaveSettings();}renderSettings();}
-function setGroupMode(gid,mode){const g=groups.find(g=>g.id===gid);if(g){g.mode=mode;sv('fj_groups',groups);autoSaveSettings();}renderSettings();}
-function saveExCue(gid,eid,val){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  const ex=g.exercises.find(e=>e.id===eid);if(ex){ex.cue=val.trim();sv('fj_groups',groups);autoSaveSettings();}
-}
-function toggleEx(gid,eid,val){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(!val&&enabledEx(g).length<=1){toast('Must keep at least one enabled');renderSettings();return;}
-  const ex=g.exercises.find(e=>e.id===eid);if(ex){ex.enabled=val;sv('fj_groups',groups);autoSaveSettings();}renderSettings();
-}
-function deleteEx(gid,eid){
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(enabledEx(g).length<=1&&g.exercises.find(e=>e.id===eid&&e.enabled)){toast('Must keep at least one');return;}
-  g.exercises=g.exercises.filter(e=>e.id!==eid);sv('fj_groups',groups);autoSaveSettings();renderSettings();
-}
-function addEx(gid){
-  const inp=document.getElementById('nex-'+gid);if(!inp)return;
-  const name=inp.value.trim();if(!name){toast('Enter a name');return;}
-  const g=groups.find(g=>g.id===gid);if(!g)return;
-  if(g.exercises.some(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already exists');return;}
-  g.exercises.push({id:uid(),name,enabled:true});sv('fj_groups',groups);
-  // Also add to pool if not already there
-  const cat=catalogByName(name);
-  if(!pool.some(p=>p.name.toLowerCase()===name.toLowerCase())){
-    pool.push({catalogId:cat?cat.id:null,name:cat?cat.name:name,cue:'',enabled:true,custom:!cat,
-      tags:cat?cat.tags:{bodyPart:[g.name.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}});
-    sv('fj_pool',pool);
-  }
-  autoSaveSettings();renderSettings();
-}
-function addGroup(){
-  const inp=document.getElementById('ngrp-inp');if(!inp)return;
-  const name=inp.value.trim();if(!name){toast('Enter a group name');return;}
-  if(groups.some(g=>g.name.toLowerCase()===name.toLowerCase())){toast('Group exists');return;}
-  groups.push({id:uid(),name,mode:'bonus',active:true,required:1,exercises:[]});
-  sv('fj_groups',groups);autoSaveSettings();renderSettings();
-}
-function deleteGroup(gid){
-  if(groups.length<=1){toast('Must keep at least one group');return;}
-  groups=groups.filter(g=>g.id!==gid);sv('fj_groups',groups);autoSaveSettings();renderSettings();
-}
+/* Legacy group management functions removed — exercises managed via Exercises tab */
 function addMachine(){
   const icon=document.getElementById('nm-icon')?.value.trim()||'💪';
   const name=document.getElementById('nm-name')?.value.trim();
@@ -4394,7 +4539,7 @@ function setGamifPref(key,val){if(!cfg.gamificationPrefs)cfg.gamificationPrefs=d
 function resetAcc(id){
   armReset('rst_'+id,()=>{
     if(id==='structure'){cfg.bonusSlots=DEF_CFG.bonusSlots;sv('fj_cfg',cfg);}
-    if(id==='pool'){groups=dc(DEF_GROUPS);sv('fj_groups',groups);pool=[];sv('fj_pool',pool);}
+    if(id==='pool'){myExercises=[];pool=myExercises;sv('fj_exercises',myExercises);splitConfig={};sv('fj_split_config',splitConfig);}
     if(id==='machines'){machines=dc(DEF_MACHINES);sv('fj_machines',machines);}
     if(id==='prefs'){cfg.weightIncrement=DEF_CFG.weightIncrement;cfg.streakMode=DEF_CFG.streakMode;cfg.streakGoal=DEF_CFG.streakGoal;sv('fj_cfg',cfg);}
     if(id==='profile'){cfg.profile=dc(DEF_CFG.profile);sv('fj_cfg',cfg);}
@@ -4463,46 +4608,47 @@ function nuclearReset(){
   </div>`;
 }
 async function _doNuclearReset(){
-  groups=dc(DEF_GROUPS);cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);
+  myExercises=[];pool=myExercises;activeSplit='ppl';splitConfig={};
+  cfg=dc(DEF_CFG);machines=dc(DEF_MACHINES);groups=[];
   sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
-  gamification=dc(DEF_GAMIFICATION);pool=[];
+  gamification=dc(DEF_GAMIFICATION);
   theme='dark';
-  sv('fj_groups',groups);sv('fj_cfg',cfg);sv('fj_machines',machines);
+  sv('fj_exercises',myExercises);sv('fj_split',activeSplit);sv('fj_split_config',splitConfig);
+  sv('fj_cfg',cfg);sv('fj_machines',machines);sv('fj_groups',groups);
   sv('fj_sessions',sessions);sv('fj_stats',stats);sv('fj_theme',theme);
-  sv('fj_gamification',gamification);sv('fj_pool',pool);
+  sv('fj_gamification',gamification);sv('fj_pool',[]);
   applyBodyClasses();applyCustomAccent(null);
   renderHeaderLevel();
   if(gistCfg.pat){try{await gistPush();}catch(e){}}
   toast('Everything reset to defaults');renderSettings();
 }
 function renderStructure(){
-  const coreTotal=groups.filter(g=>g.active&&g.mode==='core').reduce((a,g)=>a+(g.required||1),0);
+  const cats=getActiveCategories().filter(c=>getCatConfig(c.name).active!==false);
+  const total=cats.reduce((a,c)=>(getCatConfig(c.name).count||c.count||1)+a,0);
   return`
-    <div class="s-row"><div class="s-lbl">Bonus Slots<span class="s-sub">Extra exercises beyond core requirements</span></div>
-      <div class="num-ctrl">
-        <button class="num-btn" onclick="adjCfg('bonusSlots',-1)">−</button>
-        <span class="num-val">${cfg.bonusSlots}</span>
-        <button class="num-btn" onclick="adjCfg('bonusSlots',1)">+</button>
-      </div>
+    <div class="s-row"><div class="s-lbl">Active Split<span class="s-sub">How exercises are organized for generation</span></div>
+      <span style="font-size:12px;font-weight:600;color:var(--accent)">${SPLITS[activeSplit]?SPLITS[activeSplit].label:activeSplit}</span>
     </div>
-    <div class="s-row"><div class="s-lbl">Core Exercises<span class="s-sub">Sum of required per active core group</span></div>
-      <span style="font-size:13px;font-weight:700;color:var(--accent)">${coreTotal}</span>
+    <div class="s-row"><div class="s-lbl">Categories<span class="s-sub">Active exercise groups in current split</span></div>
+      <span style="font-size:13px;font-weight:700;color:var(--accent)">${cats.length}</span>
     </div>
-    <div class="s-row"><div class="s-lbl">Total Per Workout<span class="s-sub">Core + Bonus</span></div>
-      <span style="font-size:13px;font-weight:700;color:var(--accent)">${coreTotal+(cfg.bonusSlots||2)}</span>
+    <div class="s-row"><div class="s-lbl">Total Per Workout<span class="s-sub">Sum of exercises per category</span></div>
+      <span style="font-size:13px;font-weight:700;color:var(--accent)">${total}</span>
+    </div>
+    <div class="s-row"><div class="s-lbl" style="flex:1"></div>
+      <button class="rst-btn" onclick="switchTab('exercises')">Manage Exercises →</button>
     </div>`;
 }
 /* ═══════════════════════════════════════════
    EXERCISE LIBRARY / DISCOVERY
 ═══════════════════════════════════════════ */
 function openExerciseLibrary(){
-  _libSearch='';_libFilters={bodyPart:null,movement:null,equipment:null};_libExpanded={};
+  _libSearch='';_libFilters={bodyPart:null,movement:null,equipment:null};_libExpanded={};_libFilterOpen=null;
   renderLibraryModal();
 }
 function renderLibraryModal(){
   const q=_libSearch.toLowerCase().trim();
   let results=EXERCISE_CATALOG.filter(c=>{
-    // Search filter
     if(q){
       const inName=c.name.toLowerCase().includes(q);
       const inAka=c.aka.some(a=>a.toLowerCase().includes(q));
@@ -4510,7 +4656,6 @@ function renderLibraryModal(){
       const inTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].some(t=>t.toLowerCase().includes(q));
       if(!inName&&!inAka&&!inMuscles&&!inTags) return false;
     }
-    // Tag filters
     for(const[dim,val] of Object.entries(_libFilters)){
       if(!val) continue;
       const exVals=Array.isArray(c.tags[dim])?c.tags[dim]:[c.tags[dim]];
@@ -4520,17 +4665,32 @@ function renderLibraryModal(){
   });
   results.sort((a,b)=>a.name.localeCompare(b.name));
 
-  const filterRow=(dim,label)=>{
-    const vals=TAG_DEFS[dim]||[];
-    const pills=vals.map(v=>`<button class="lib-pill${_libFilters[dim]===v?' active':''}" onclick="setLibFilter('${dim}','${v}')">${v.replace(/-/g,' ')}</button>`).join('');
-    return`<div class="lib-filter-row"><span class="lib-filter-label">${label}</span>${pills}</div>`;
+  // Compact dropdown filter triggers
+  const chevSvg=`<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg>`;
+  const filterBtn=(dim,label)=>{
+    const val=_libFilters[dim];
+    const isOpen=_libFilterOpen===dim;
+    const cls=val?'has-value':isOpen?'open':'';
+    const displayLabel=val?val.replace(/-/g,' '):label;
+    let dropdown='';
+    if(isOpen){
+      const vals=TAG_DEFS[dim]||[];
+      const pills=vals.map(v=>`<button class="lib-pill${_libFilters[dim]===v?' active':''}" onclick="event.stopPropagation();setLibFilter('${dim}','${v}')">${v.replace(/-/g,' ')}</button>`).join('');
+      dropdown=`<div class="lib-dropdown-panel" onclick="event.stopPropagation()">${pills}</div>`;
+    }
+    return`<div class="lib-dropdown"><button class="lib-filter-trigger ${cls}" onclick="toggleLibDropdown('${dim}')">${esc(displayLabel)} ${chevSvg}</button>${dropdown}</div>`;
   };
 
+  // Active filter chips (dismissible)
+  const activeChips=Object.entries(_libFilters).filter(([,v])=>v).map(([dim,val])=>
+    `<button class="lib-active-chip" onclick="clearLibFilter('${dim}')">${val.replace(/-/g,' ')} <span class="chip-x">×</span></button>`
+  ).join('');
+
+  // Exercise cards — compact with muscle info inline
   const cards=results.map(c=>{
     const inPool=isInPool(c.id);
     const expanded=_libExpanded[c.id];
-    const tagPills=(c.tags.movement||[]).slice(0,2).map(t=>`<span class="lib-card-tag">${t}</span>`).join('')
-      +`<span class="lib-card-tag">${c.tags.difficulty||''}</span>`;
+    const subtitle=c.primaryMuscles.slice(0,2).map(m=>m.replace(/-/g,' ')).join(', ');
     let body='';
     if(expanded){
       const primary=c.primaryMuscles.map(m=>`<span class="lib-muscle-pill primary">${m.replace(/-/g,' ')}</span>`).join('');
@@ -4538,17 +4698,16 @@ function renderLibraryModal(){
       const tips=c.tips?c.tips.split('. ').filter(t=>t.trim()).map(t=>`<div class="lib-tip-item">${esc(t.replace(/\.$/,''))}</div>`).join(''):'';
       const allTags=[...(c.tags.bodyPart||[]),...(c.tags.movement||[]),...(c.tags.equipment||[])].map(t=>`<span class="lib-card-tag">${t.replace(/-/g,' ')}</span>`).join('');
       body=`<div class="lib-card-body">
-        <div class="lib-card-section"><div class="lib-card-section-title">Primary Muscles</div><div class="lib-card-muscles">${primary}</div></div>
-        ${secondary?`<div class="lib-card-section"><div class="lib-card-section-title">Secondary Muscles</div><div class="lib-card-muscles">${secondary}</div></div>`:''}
-        ${tips?`<div class="lib-card-section"><div class="lib-card-section-title">Form Tips</div><div class="lib-tips">${tips}</div></div>`:''}
-        <div class="lib-card-section"><div class="lib-card-section-title">Tags</div><div class="lib-all-tags">${allTags}</div></div>
+        <div class="lib-card-detail"><span class="lib-card-detail-label">Muscles</span>${primary}${secondary}</div>
+        ${tips?`<div class="lib-card-detail"><span class="lib-card-detail-label">Form Tips</span><div class="lib-tips">${tips}</div></div>`:''}
+        <div class="lib-card-detail"><span class="lib-card-detail-label">Tags</span>${allTags}</div>
       </div>`;
     }
     return`<div class="lib-card">
       <div class="lib-card-hdr" onclick="toggleLibCard('${c.id}')">
         <span class="lib-card-name">${esc(c.name)}</span>
-        <div class="lib-card-tags">${tagPills}</div>
-        <button class="lib-card-btn ${inPool?'added':'add'}" onclick="event.stopPropagation();${inPool?'':`addToPool('${c.id}');renderLibraryModal();renderSettings();`}">${inPool?'ADDED':'+ ADD'}</button>
+        <span class="lib-card-sub">${subtitle}</span>
+        <button class="lib-card-btn ${inPool?'added':'add'}" onclick="event.stopPropagation();${inPool?'':`addExercise('${c.id}');renderLibraryModal();`}">${inPool?'✓':'+'}</button>
       </div>
       ${body}
     </div>`;
@@ -4567,13 +4726,14 @@ function renderLibraryModal(){
           <span class="lib-search-icon">🔍</span>
           <input class="lib-search" type="text" placeholder="Search exercises..." value="${esc(_libSearch)}" oninput="debounceLibSearch(this.value)">
         </div>
-        <div class="lib-filters">
-          ${filterRow('bodyPart','Body')}
-          ${filterRow('movement','Type')}
-          ${filterRow('equipment','Gear')}
+        <div class="lib-filter-bar">
+          ${filterBtn('bodyPart','Body Part')}
+          ${filterBtn('movement','Movement')}
+          ${filterBtn('equipment','Equipment')}
         </div>
+        ${activeChips?`<div class="lib-active-filters">${activeChips}</div>`:''}
         <div class="lib-results">
-          <div class="lib-count">${results.length} exercise${results.length!==1?'s':''} found</div>
+          <div class="lib-count">${results.length} exercise${results.length!==1?'s':''}</div>
           ${cards}
           ${empty}
         </div>
@@ -4587,6 +4747,15 @@ function debounceLibSearch(val){
 }
 function setLibFilter(dim,val){
   _libFilters[dim]=_libFilters[dim]===val?null:val;
+  _libFilterOpen=null;
+  renderLibraryModal();
+}
+function clearLibFilter(dim){
+  _libFilters[dim]=null;
+  renderLibraryModal();
+}
+function toggleLibDropdown(dim){
+  _libFilterOpen=_libFilterOpen===dim?null:dim;
   renderLibraryModal();
 }
 function toggleLibCard(id){
@@ -4595,209 +4764,11 @@ function toggleLibCard(id){
 }
 function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
+  _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
 }
 
-function renderPool(){
-  // ── Section 1: Browse Library button ──
-  const libBtn=`<div style="margin-bottom:14px;">
-    <button class="gen-btn" style="width:100%;padding:12px;font-size:13px;font-weight:700;letter-spacing:1px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;" onclick="openExerciseLibrary()">BROWSE EXERCISE LIBRARY</button>
-    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px;">${pool.length} exercise${pool.length!==1?'s':''} in your pool · ${EXERCISE_CATALOG.length} available</div>
-  </div>`;
-
-  // ── Section 2: Pool Overview Card ──
-  const summary=poolTagSummary();
-  const dimLabels={bodyPart:'Body',movement:'Type',equipment:'Gear'};
-
-  const isAllExpanded=_poolOverviewExpanded==='all';
-  const allPill=`<div class="pool-tag-row">
-    <button class="pool-tag-pill${isAllExpanded?' active':''}" onclick="setPoolExpanded(null,'all')">All <span class="pool-tag-count">${pool.length}</span></button>
-  </div>`;
-
-  const tagRows=Object.entries(dimLabels).map(([dim,label])=>{
-    const tags=summary[dim];
-    const sorted=Object.entries(tags).sort((a,b)=>b[1]-a[1]);
-    if(!sorted.length)return'';
-    const pills=sorted.map(([val,count])=>{
-      const isExp=_poolOverviewExpanded&&typeof _poolOverviewExpanded==='object'&&_poolOverviewExpanded.dim===dim&&_poolOverviewExpanded.val===val;
-      return`<button class="pool-tag-pill${isExp?' active':''}" onclick="setPoolExpanded('${dim}','${val}')">${val.replace(/-/g,' ')} <span class="pool-tag-count">${count}</span></button>`;
-    }).join('');
-    return`<div class="pool-tag-row"><span class="pool-tag-label">${label}</span>${pills}</div>`;
-  }).join('');
-
-  // Expanded exercise list for selected tag
-  let expandedHtml='';
-  if(_poolOverviewExpanded){
-    const exList=_poolOverviewExpanded==='all'?pool:poolExercisesForTag(_poolOverviewExpanded.dim,_poolOverviewExpanded.val);
-    const exItems=exList.map(p=>{
-      const tags=getPoolTags(p);
-      const tagPills=[...(tags.bodyPart||[]).slice(0,1),...(tags.movement||[]).slice(0,1),...(tags.equipment||[]).slice(0,1)]
-        .map(t=>`<span class="pool-ex-tag">${t.replace(/-/g,' ')}</span>`).join('');
-      const safeName=esc(p.name).replace(/'/g,"\\'");
-      return`<div class="pool-ex-item">
-        <label class="tog"><input type="checkbox" ${p.enabled?'checked':''} onchange="togglePoolExEnabled('${safeName}',this.checked)"><span class="tog-track"></span></label>
-        <div class="pool-ex-main">
-          <div class="pool-ex-name-row">
-            <span class="pool-ex-name" style="${!p.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(p.name)}</span>
-            <div class="pool-ex-tags">${tagPills}</div>
-          </div>
-          <input class="ex-cue-inp" type="text" placeholder="Add cue..." maxlength="80"
-            value="${esc(p.cue||'')}" oninput="savePoolExCue('${safeName}',this.value)">
-        </div>
-        <button class="ex-del" onclick="removeFromPoolByName('${safeName}')">×</button>
-      </div>`;
-    }).join('');
-    const label=_poolOverviewExpanded==='all'?'All Exercises'
-      :`${(_poolOverviewExpanded.val||'').replace(/-/g,' ')} exercises`;
-    expandedHtml=`<div class="pool-expanded">
-      <div class="pool-expanded-title">${label} (${exList.length})</div>
-      ${exItems.length?exItems:'<div style="font-size:11px;color:var(--text3);padding:8px 0;">No exercises</div>'}
-    </div>`;
-  }
-
-  const overviewCard=`<div class="sett-card pool-overview-card">
-    <div class="pool-overview-title">YOUR POOL</div>
-    ${allPill}
-    ${tagRows}
-    ${expandedHtml}
-  </div>`;
-
-  // ── Section 3: Group Presets Bar ──
-  const presetPills=Object.entries(GROUP_PRESETS).map(([id,p])=>
-    `<button class="preset-pill${_activePreset===id?' active':''}" onclick="applyGroupPreset('${id}')">${p.label}</button>`
-  ).join('');
-  const presetBar=`<div class="preset-bar-wrap">
-    <div class="preset-bar-label">WORKOUT STRUCTURE</div>
-    <div class="preset-bar">
-      ${presetPills}
-      <button class="preset-pill${_activePreset==='custom'?' active':''}" onclick="_activePreset='custom';sv('fj_active_preset','custom');renderSettings();">Custom</button>
-    </div>
-  </div>`;
-
-  // ── Section 4: Groups list ──
-  const grpHtml=groups.map(g=>{
-    const bodyOpen=openGrp[g.id];
-    const isFilterGroup=!!g.filter;
-    const exs=enabledEx(g);
-    const totalEx=isFilterGroup?pool.filter(p=>matchesFilter(p,g.filter)).length:(g.exercises||[]).length;
-    const metaText=isFilterGroup?`${exs.length} matched`:`${exs.length}/${totalEx}`;
-
-    // Build filter editor / summary for filter groups
-    let filterEditorHtml='';
-    if(isFilterGroup){
-      const isEditing=_editingFilterGrp===g.id;
-      if(isEditing){
-        // Full tag picker for all dimensions
-        const dims=[['bodyPart','Body Part'],['movement','Movement'],['equipment','Equipment']];
-        const dimRows=dims.map(([dim,label])=>{
-          const tagBtns=TAG_DEFS[dim].map(v=>{
-            const isActive=g.filter[dim]&&g.filter[dim].includes(v);
-            // Check if this tag has any pool exercises
-            const hasMatches=pool.some(p=>{const t=getPoolTags(p);const vs=Array.isArray(t[dim])?t[dim]:[t[dim]];return vs.includes(v);});
-            return`<button class="filter-tag${isActive?' active':''}${hasMatches?' has-matches':''}" onclick="toggleFilterTag('${g.id}','${dim}','${v}')">${v.replace(/-/g,' ')}</button>`;
-          }).join('');
-          return`<div class="filter-dim-row"><div class="filter-dim-label">${label}</div><div class="filter-tag-wrap">${tagBtns}</div></div>`;
-        }).join('');
-        filterEditorHtml=`<div class="filter-editor">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);">Select Tags to Match</span>
-            <button class="filter-edit-btn" onclick="toggleEditFilter('${g.id}')">Done</button>
-          </div>
-          ${dimRows}
-          <div style="font-size:9px;color:var(--text3);margin-top:4px;">Exercises matching ANY selected tag in EACH dimension will appear in this group.</div>
-        </div>`;
-      } else {
-        // Show compact filter summary + edit button
-        const activeFilters=Object.entries(g.filter||{}).flatMap(([dim,vals])=>(vals||[]).map(v=>`<span class="filter-summary-tag">${v.replace(/-/g,' ')}</span>`)).join('');
-        const editBtn=_activePreset==='custom'?`<button class="filter-edit-btn" onclick="event.stopPropagation();toggleEditFilter('${g.id}')">Edit Filter</button>`:'';
-        if(activeFilters||_activePreset==='custom'){
-          filterEditorHtml=`<div class="filter-summary">${activeFilters||'<span style="color:var(--text3);font-size:10px;">No tags selected — click Edit Filter</span>'}${editBtn}</div>`;
-        }
-      }
-    }
-
-    let exHtml='';
-    if(isFilterGroup){
-      // Filter-based group: show matched pool exercises
-      const matched=pool.filter(p=>matchesFilter(p,g.filter));
-      exHtml=matched.map(p=>{const sn=esc(p.name).replace(/'/g,"\\'");return`
-        <div class="ex-item">
-          <label class="tog"><input type="checkbox" ${p.enabled?'checked':''} onchange="togglePoolExEnabled('${sn}',this.checked)"><span class="tog-track"></span></label>
-          <div class="ex-item-main">
-            <span class="ex-item-name" style="${!p.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(p.name)}</span>
-          </div>
-        </div>`;}).join('');
-      if(!matched.length) exHtml=`<div style="font-size:11px;color:var(--text3);padding:8px 4px;">No exercises match — add more via the library or edit the filter</div>`;
-    } else {
-      // Legacy manual group
-      const convertBtn=_activePreset==='custom'?`<button class="filter-edit-btn" style="margin:6px 4px;" onclick="convertToFilterGroup('${g.id}')">Convert to Filter Group</button>`:'';
-      exHtml=(g.exercises||[]).map(ex=>`
-        <div class="ex-item">
-          <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleEx('${g.id}','${ex.id}',this.checked)"><span class="tog-track"></span></label>
-          <div class="ex-item-main">
-            <span class="ex-item-name" style="${!ex.enabled?'color:var(--text3);text-decoration:line-through;':''}">${esc(ex.name)}</span>
-            <input class="ex-cue-inp" type="text" placeholder="Add cue..." maxlength="80"
-              value="${esc(ex.cue||'')}" oninput="saveExCue('${g.id}','${ex.id}',this.value)">
-          </div>
-          <button class="ex-del" onclick="deleteEx('${g.id}','${ex.id}')">×</button>
-        </div>`).join('');
-      exHtml+=convertBtn;
-    }
-
-    const filterBadge=isFilterGroup?`<span class="grp-auto-badge">auto</span>`:'';
-    const filterHint=isFilterGroup&&_editingFilterGrp!==g.id?`<div style="font-size:10px;color:var(--text3);padding:6px 4px 2px;">Matched by tags · add more via the library</div>`:'';
-    const addRow=isFilterGroup?'':
-      `<div class="add-row">
-        <input class="add-inp" type="text" placeholder="Add exercise..." id="nex-${g.id}">
-        <button class="add-btn" onclick="addEx('${g.id}')">ADD</button>
-      </div>`;
-
-    return`<div class="grp-block">
-      <div class="grp-block-hdr${bodyOpen?' open':''}" onclick="toggleGrp('${g.id}')">
-        <span class="grp-block-chev">▲</span>
-        <span class="grp-block-name">${g.name}</span>
-        ${filterBadge}
-        <span class="grp-block-meta">${metaText}</span>
-        <button class="grp-del" onclick="event.stopPropagation();deleteGroup('${g.id}')">Delete</button>
-      </div>
-      <div class="grp-block-body${bodyOpen?' open':''}">
-        <div class="grp-cfg">
-          <div class="grp-cfg-row"><span class="grp-cfg-lbl">Active in workout</span>
-            <label class="tog"><input type="checkbox" ${g.active?'checked':''} onchange="toggleGroupActive('${g.id}',this.checked)"><span class="tog-track"></span></label>
-          </div>
-          <div class="grp-cfg-row"><span class="grp-cfg-lbl">Slot type</span>
-            <div class="slot-pills">
-              <button class="slot-pill${g.mode==='core'?' active':''}" onclick="setGroupMode('${g.id}','core')">Core</button>
-              <button class="slot-pill${g.mode==='bonus'?' active':''}" onclick="setGroupMode('${g.id}','bonus')">Bonus</button>
-            </div>
-          </div>
-          <div class="grp-cfg-row" style="${g.mode==='core'?'':'display:none'}">
-            <span class="grp-cfg-lbl">Required exercises</span>
-            <div class="num-ctrl">
-              <button class="num-btn" onclick="adjRequired('${g.id}',-1)">−</button>
-              <span class="num-val">${g.required||1}</span>
-              <button class="num-btn" onclick="adjRequired('${g.id}',1)">+</button>
-            </div>
-          </div>
-        </div>
-        ${filterEditorHtml}
-        ${exHtml}
-        ${filterHint}
-        ${addRow}
-      </div>
-    </div>`;
-  }).join('');
-
-  const addGroupRow=_activePreset==='custom'?`<div class="add-row" style="margin-top:12px;">
-    <input class="add-inp" type="text" placeholder="New group name..." id="ngrp-inp">
-    <div style="display:flex;gap:6px;">
-      <button class="add-btn" onclick="addGroup()">+ GROUP</button>
-      <button class="add-btn" style="background:var(--accent);color:#fff;" onclick="addFilterGroup()">+ FILTER GROUP</button>
-    </div>
-  </div>`:'';
-
-  return`${libBtn}${overviewCard}${presetBar}${grpHtml}${addGroupRow}`;
-}
+/* renderPool removed — exercises now managed in Exercises tab */
 function renderMachines(){
   const items=machines.map(m=>`
     <div class="machine-item">
@@ -4977,8 +4948,13 @@ function renderStats(){
   const tabs=`<div class="stat-tabs">
     <button class="stat-tab${statTab==='sessions'?' active':''}" onclick="setStatTab('sessions')">Sessions</button>
     <button class="stat-tab${statTab==='exercises'?' active':''}" onclick="setStatTab('exercises')">Exercises</button>
+    <button class="stat-tab${statTab==='prs'?' active':''}" onclick="setStatTab('prs')">PRs</button>
   </div>`;
-  wrap.innerHTML=tabs+(statTab==='sessions'?renderStatSessions():renderStatExercises());
+  let panel='';
+  if(statTab==='prs') panel=renderPRsPanel();
+  else if(statTab==='exercises') panel=renderStatExercises();
+  else panel=renderStatSessions();
+  wrap.innerHTML=tabs+panel;
 }
 function setStatTab(t){statTab=t;renderStats();}
 
@@ -5288,8 +5264,8 @@ function dismissBackupPrompt(){
 function exportDataAndDismiss(){exportData();dismissBackupPrompt();}
 function exportData(){
   const payload={
-    version:4,exportedAt:new Date().toISOString(),
-    sessions,stats,groups,cfg,machines,theme
+    version:5,exportedAt:new Date().toISOString(),
+    sessions,stats,groups,cfg,machines,theme,myExercises,activeSplit,splitConfig
   };
   const json=JSON.stringify(payload,null,2);
   const root=document.getElementById('modal-root');root.innerHTML='';
@@ -5337,7 +5313,10 @@ function importData(input){
       if(data.sessions){sessions=data.sessions;sv('fj_sessions',sessions);}
       if(data.stats)   {stats=data.stats;sv('fj_stats',stats);}
       if(data.groups)  {groups=data.groups;sv('fj_groups',groups);}
-      if(data.pool)    {pool=data.pool;sv('fj_pool',pool);}
+      if(data.myExercises){myExercises=data.myExercises;pool=myExercises;sv('fj_exercises',myExercises);}
+      else if(data.pool){myExercises=data.pool;pool=myExercises;sv('fj_exercises',myExercises);}
+      if(data.activeSplit&&SPLITS[data.activeSplit]){activeSplit=data.activeSplit;sv('fj_split',activeSplit);}
+      if(data.splitConfig){splitConfig=data.splitConfig;sv('fj_split_config',splitConfig);}
       if(data.cfg)     {cfg=data.cfg;sv('fj_cfg',cfg);}
       if(data.machines){machines=data.machines;sv('fj_machines',machines);}
       if(data.theme)   {theme=data.theme;sv('fj_theme',theme);applyBodyClasses();if(cfg.accentColor)applyCustomAccent(cfg.accentColor);}
@@ -5355,7 +5334,11 @@ function importData(input){
 let manualExercises=[];
 function openManualEntry(){manualExercises=[];renderManualModal();}
 function getGroupExerciseMap(){
-  return groups.map(g=>({id:g.id,name:g.name,exercises:g.exercises.filter(e=>e.enabled).map(e=>e.name)})).filter(g=>g.exercises.length>0);
+  const cats=getActiveCategories();
+  return cats.map(cat=>({
+    id:cat.name,name:cat.name,
+    exercises:exercisesForCategory(cat).map(e=>e.name)
+  })).filter(g=>g.exercises.length>0);
 }
 function renderManualModal(){
   const root=document.getElementById('modal-root');
@@ -5466,27 +5449,17 @@ async function saveManualSession(){
   const exercises=manualExercises.map(ex=>{
     const grp=ex.group==='__new__'?(ex.customGroup.trim()||'General'):ex.group||'General';
     const name=ex.name==='__new__'?(ex.customName.trim()||'Unnamed'):ex.name||'Unnamed';
-    if(ex.group==='__new__'&&ex.customGroup.trim()){
-      const ng=ex.customGroup.trim();
-      if(!groups.some(g=>g.name.toLowerCase()===ng.toLowerCase()))
-        groups.push({id:uid(),name:ng,mode:'bonus',active:true,required:1,exercises:[]});
-    }
     if(ex.name==='__new__'&&ex.customName.trim()){
       const cn=ex.customName.trim();
-      const tg=groups.find(g=>g.name===grp);
-      if(tg&&!tg.exercises.some(e=>e.name.toLowerCase()===cn.toLowerCase()))
-        tg.exercises.push({id:uid(),name:cn,enabled:true});
-      // Add to pool
-      if(!pool.some(p=>p.name.toLowerCase()===cn.toLowerCase())){
+      // Add to myExercises if not already there
+      if(!myExercises.some(p=>p.name.toLowerCase()===cn.toLowerCase())){
         const cat=catalogByName(cn);
-        pool.push({catalogId:cat?cat.id:null,name:cat?cat.name:cn,cue:'',enabled:true,custom:!cat,
-          tags:cat?cat.tags:{bodyPart:[grp.toLowerCase()],movement:[],equipment:[],difficulty:'intermediate'}});
-        sv('fj_pool',pool);
+        myExercises.push({catalogId:cat?cat.id:null,name:cat?cat.name:cn,cue:'',enabled:true});
+        sv('fj_exercises',myExercises);
       }
     }
     return{name,group:grp,scheme:ex.scheme||'3×10',weight:parseFloat(ex.weight)||0,weightType:ex.weightType||'standard',repsLog:ex.repsLog.map(r=>parseInt(r)||0),arrow:ex.arrow||'eq'};
   });
-  sv('fj_groups',groups);
   const notesEl=document.getElementById('me-notes');
   const effortEl=document.getElementById('me-effort');
   const durEl=document.getElementById('me-duration');
