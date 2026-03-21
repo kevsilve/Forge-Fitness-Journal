@@ -222,7 +222,7 @@ body{
 .view.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 #view-generate{padding:14px 13px 16px;}
-#view-today,#view-history,#view-settings,#view-stats,#view-prs{padding:0;}
+#view-today,#view-history,#view-settings,#view-prs{padding:0;}
 
 /* ════════════════════════
    GENERATE
@@ -918,6 +918,7 @@ body{
    STATS
 ════════════════════════ */
 .stats-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
+#stats-section{padding:14px 12px 40px;}
 .stat-tabs{display:flex;gap:0;border:1px solid var(--border);margin-bottom:14px;border-radius:4px;overflow:hidden;}
 .stat-tab{flex:1;padding:9px 4px;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
 .stat-tab:last-child{border-right:none;}
@@ -961,25 +962,23 @@ body{
    EXERCISES TAB
 ════════════════════════ */
 .exercises-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
-.ex-tab-title{font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:12px;text-align:center;text-shadow:0 0 16px var(--accent-glow);}
-.split-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
-.split-bar::-webkit-scrollbar{display:none;}
-.split-pill{padding:6px 14px;border-radius:18px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;}
-.split-pill:hover{border-color:var(--accent);color:var(--accent);}
-.split-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.ex-summary{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;}
-.ex-count-chip{font-size:11px;color:var(--text3);}
-.ex-add-btn-sm{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;border-radius:16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap;}
+.ex-tab-title-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:0 2px;}
+.ex-tab-title{font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--accent);text-shadow:0 0 16px var(--accent-glow);flex:1;}
+.ex-count-inline{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.5px;}
+.ex-split-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;position:relative;padding:0 2px;}
+.ex-split-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.ex-add-btn-sm{padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;border-radius:16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap;flex-shrink:0;}
 .ex-add-btn-sm:hover{opacity:.85;}
-.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:opacity .2s;}
+.cat-card{border-bottom:1px solid var(--border);margin-bottom:0;overflow:hidden;transition:opacity .2s;}
+.cat-card:last-child{border-bottom:none;}
 .cat-card.inactive{opacity:.45;}
-.cat-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;transition:background .15s;}
+.cat-hdr{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;transition:background .15s;}
 .cat-hdr:hover{background:var(--surface2);}
 .cat-hdr.open{border-bottom:1px solid var(--border);}
 .cat-chev{font-size:8px;color:var(--text3);transition:transform .2s;margin-right:2px;}
 .cat-hdr.open .cat-chev{transform:rotate(180deg);}
 .cat-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
-.cat-badge{font-size:9px;color:var(--text3);font-weight:600;background:var(--surface2);padding:2px 7px;border-radius:8px;}
+.cat-badge{font-size:10px;color:var(--text3);font-weight:600;background:var(--surface2);padding:2px 7px;border-radius:8px;}
 .cat-body{display:none;padding:6px 14px 10px;animation:fadeIn .15s ease;}
 .cat-body.open{display:block;}
 .cat-cfg{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:4px;border-bottom:1px solid var(--border);}
@@ -1198,18 +1197,17 @@ body{
 .build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:0 0 12px;overflow:hidden;}
 .bm-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
 .bm-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
-#gen-streak-chip{margin:0 0 10px;}
-.gen-streak-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;}
+.gen-streak-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;}
 .gen-streak-count{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:1px;color:var(--up);display:flex;align-items:center;gap:7px;}
 .gen-streak-fire{font-size:15px;line-height:1;}
-.gen-streak-idle{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.gen-streak-idle{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
 .gen-streak-prog{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);}
 .gen-streak-prog.done{color:var(--up);}
 .start-row{display:flex;gap:8px;align-items:stretch;padding:12px 0 0;}
 .save-tpl-btn{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:4px;font-family:'Black Ops One',sans-serif;font-size:10px;letter-spacing:1.5px;padding:0 14px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;}
 .save-tpl-btn:hover{border-color:var(--accent);color:var(--accent);}
-.tpl-bar{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;margin:0 0 10px;}
-.tpl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.tpl-bar{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;margin:0 0 10px;}
+.tpl-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
 .tpl-chips{display:flex;flex-wrap:wrap;gap:6px;}
 .tpl-chip{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border2);border-radius:6px;overflow:hidden;}
 .tpl-load{background:transparent;border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
@@ -1217,7 +1215,7 @@ body{
 .tpl-count{font-size:9px;color:var(--text3);}
 .tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:#ef4444;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
 .tpl-del:hover{background:rgba(239,68,68,0.08);}
-/* ─── Custom Workout Cards ─── */
+/* ─── Manual Workout Cards ─── */
 .ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
 .ex-card-remove:hover{border-color:#ef4444;color:#ef4444;}
 .scheme-cycle{font-size:10px;font-weight:700;padding:3px 9px;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;}
@@ -1327,6 +1325,85 @@ body{
 .lib-empty{text-align:center;padding:40px 16px;color:var(--text3);}
 .lib-empty-title{font-size:14px;font-weight:600;margin-bottom:4px;}
 .lib-empty-sub{font-size:12px;}
+
+/* ── GEN-CONTEXT PANEL ── */
+.gen-context{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+.gen-ctx-summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;font-family:'Inter',sans-serif;transition:color .15s;user-select:none;}
+.gen-ctx-summary:hover{color:var(--text);}
+.gen-ctx-summary.warn{color:var(--accent);}
+.gen-ctx-chev{font-size:8px;color:var(--text3);transition:transform .2s;}
+.gen-ctx-chev.open{transform:rotate(180deg);}
+.gen-ctx-split-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;margin-top:10px;position:relative;}
+.gen-ctx-split-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:14px;font-size:11px;font-weight:600;border:1.5px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.gen-ctx-split-btn:hover,.gen-ctx-split-btn.open{border-color:var(--accent);color:var(--accent);}
+.gen-ctx-split-btn .chev{font-size:8px;transition:transform .15s;}
+.gen-ctx-split-btn.open .chev{transform:rotate(180deg);}
+.gen-ctx-split-dd{position:absolute;top:100%;left:0;margin-top:4px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:20;min-width:180px;overflow:hidden;}
+.gen-ctx-split-opt{padding:10px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:background .1s;font-family:'Inter',sans-serif;}
+.gen-ctx-split-opt:hover{background:var(--surface2);}
+.gen-ctx-split-opt.active{color:var(--accent);font-weight:600;}
+.gen-ctx-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.gen-ctx-chip{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;background:var(--surface);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;}
+.gen-ctx-chip:hover{border-color:var(--accent);color:var(--accent);}
+.gen-ctx-chip .chip-ct{color:var(--accent);margin-left:3px;}
+.gen-ctx-pool{font-size:10px;color:var(--text3);letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
+.gen-ctx-pool.warn{color:var(--accent);font-weight:600;}
+.gen-browse-btn{display:block;width:auto;padding:4px 0;margin:4px 0 4px auto;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;letter-spacing:1.5px;cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s;text-transform:uppercase;text-align:right;}
+.gen-browse-btn:hover{color:var(--accent);}
+
+/* ── GEN WORKOUT HEADER ── */
+.gen-workout-hdr{font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;padding:0 2px;}
+.ex-group-chip{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--accent-dim);color:var(--accent);margin-top:2px;}
+
+/* ── ONBOARDING WIZARD ── */
+.onboard-wrap{padding:8px 0;}
+.onboard-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;text-align:center;color:var(--text);margin-bottom:4px;}
+.onboard-sub{font-size:12px;color:var(--text3);text-align:center;margin-bottom:16px;}
+.onboard-split-cards{display:flex;flex-direction:column;gap:8px;}
+.onboard-split-card{padding:14px 16px;border-radius:10px;border:1.5px solid var(--border2);background:var(--surface2);cursor:pointer;transition:all .15s;}
+.onboard-split-card:hover{border-color:var(--accent);}
+.onboard-split-card .osc-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.onboard-split-card .osc-cats{font-size:10px;color:var(--text3);letter-spacing:.5px;}
+.onboard-ex-cats{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.onboard-cat-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:6px;}
+.onboard-ex-item{display:flex;align-items:center;gap:10px;padding:6px 0;}
+.onboard-ex-item label{font-size:12px;color:var(--text);cursor:pointer;}
+.onboard-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:8px;}
+.onboard-continue-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;cursor:pointer;transition:opacity .15s;}
+.onboard-continue-btn:active{opacity:.85;}
+.onboard-link{font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'Inter',sans-serif;}
+.onboard-link:hover{color:var(--accent);}
+.onboard-select-all{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;color:var(--text2);}
+
+/* ── Custom Split Editor ── */
+.cse-subtitle{font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.5;}
+.cse-cat-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.cse-cat-info{flex:1;min-width:0;}
+.cse-cat-name{font-size:13px;font-weight:600;color:var(--text);}
+.cse-cat-tags{font-size:10px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cse-cat-edit{font-size:10px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .15s;}
+.cse-cat-edit:hover{background:var(--accent);color:#fff;}
+.cse-cat-del{font-size:16px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 6px;transition:color .15s;}
+.cse-cat-del:hover{color:#ef4444;}
+.cse-form{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin:10px 0;}
+.cse-name-input{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;margin-bottom:10px;box-sizing:border-box;}
+.cse-name-input:focus{outline:none;border-color:var(--accent);}
+.cse-section-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin:8px 0 6px;}
+.cse-pills{display:flex;flex-wrap:wrap;gap:5px;}
+.cse-pill{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:600;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif;}
+.cse-pill:hover{border-color:var(--accent);color:var(--accent);}
+.cse-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.cse-form-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:8px;}
+.cse-cancel{font-size:11px;color:var(--text3);background:none;border:1px solid var(--border2);border-radius:6px;padding:6px 14px;cursor:pointer;transition:all .15s;}
+.cse-cancel:hover{border-color:var(--text2);color:var(--text2);}
+.cse-save-cat{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;transition:opacity .15s;}
+.cse-save-cat:hover{opacity:.85;}
+.cse-add-btn{display:block;width:100%;padding:10px;margin:10px 0;background:none;border:1.5px dashed var(--border2);border-radius:8px;color:var(--text3);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
+.cse-add-btn:hover{border-color:var(--accent);color:var(--accent);}
+.cse-footer{margin-top:14px;}
+.cse-apply{display:block;width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;cursor:pointer;transition:opacity .15s;}
+.cse-apply:hover{opacity:.85;}
+.cse-empty-hint{text-align:center;font-size:11px;color:var(--text3);padding:8px;}
 </style>
 </head>
 <body class="theme-dark-red">
@@ -1391,13 +1468,14 @@ body{
 <div class="view active" id="view-generate">
   <div class="build-mode-bar">
     <button class="bm-btn active" id="bm-random" onclick="setBuildMode('random')">⚡ Random</button>
-    <button class="bm-btn" id="bm-custom" onclick="setBuildMode('custom')">✎ Custom</button>
+    <button class="bm-btn" id="bm-manual" onclick="setBuildMode('manual')">✎ Manual</button>
   </div>
-  <div id="gen-streak-chip"></div>
+  <div id="gen-context"></div>
   <div id="templates-section"></div>
   <button class="gen-btn" id="gen-btn" onclick="generate()">
     <span class="shimmer"></span>⚡ GENERATE WORKOUT
   </button>
+  <button class="gen-browse-btn" id="gen-browse-btn" onclick="openExerciseLibrary()">+ Browse &amp; Add Exercises</button>
   <div class="ex-cards" id="ex-cards">
     <div class="empty-gen">
       <span class="empty-big">FORGE IT</span>
@@ -1417,10 +1495,10 @@ body{
     <div id="week-section" style="display:none;"></div>
     <div id="cal-section" style="display:none;"></div>
     <div id="hist-wrap" style="display:none;"></div>
+    <div id="stats-section" style="display:none;"></div>
   </div>
 </div>
 <div class="view" id="view-exercises"><div class="exercises-wrap" id="exercises-wrap"></div></div>
-<div class="view" id="view-stats"><div class="stats-wrap" id="stats-wrap"></div></div>
 <div class="view" id="view-settings"><div class="sett-wrap" id="sett-wrap"></div></div>
 
 <!-- BOTTOM NAV -->
@@ -1442,10 +1520,6 @@ body{
     <button class="bnav-btn" id="bnav-history" onclick="switchTab('history')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="13" y2="18"/></svg>
       <span class="bnav-lbl">History</span>
-    </button>
-    <button class="bnav-btn" id="bnav-stats" onclick="switchTab('stats')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span class="bnav-lbl">Stats</span>
     </button>
     <button class="bnav-btn" id="bnav-settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1505,6 +1579,10 @@ const SPLITS = {
   equipment: {
     label:'By Equipment',
     dynamic:'equipment'
+  },
+  custom: {
+    label:'Custom Split',
+    categories:[]
   }
 };
 
@@ -1864,6 +1942,12 @@ function isInPool(catalogId){return myExercises.some(p=>p.catalogId===catalogId)
 
 // ── Split & Category Helpers ──
 let _exTabOpen = {}; // which category cards are expanded in Exercises tab
+let _genSplitOpen = false; // split dropdown state on Generate tab
+let _genContextExpanded = false; // context panel collapsed/expanded
+let _tplExpanded = false; // templates collapsed/expanded when 4+
+let _exSplitOpen = false; // exercises tab split dropdown state
+let _onboardStep = 0; // onboarding wizard step (0=split, 1=exercises, 2=done)
+let _onboardSelected = {}; // {catalogId: true/false} for onboarding exercise picks
 
 function getActiveCategories(){
   const s=SPLITS[activeSplit];
@@ -1881,6 +1965,16 @@ function getActiveCategories(){
       name:v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
       filter:{[dim]:[v]},
       count:getCatConfig(v.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())).count
+    }));
+  }
+  // Custom split: read categories from splitConfig._customCategories
+  if(activeSplit==='custom'){
+    const customCats=splitConfig._customCategories||[];
+    return customCats.map(c=>({
+      name:c.name,
+      filter:{bodyPart:c.bodyParts||[],movement:c.movements||[]},
+      count: getCatConfig(c.name).count || c.count || 1,
+      active: getCatConfig(c.name).active !== false
     }));
   }
   return s.categories.map(c=>({
@@ -2524,7 +2618,7 @@ function _renderRestTimer(done){
 }
 function setRestTimerEnabled(v){if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);cfg.restTimer.enabled=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
 function setRestDuration(v){if(!cfg.restTimer)cfg.restTimer=dc(DEF_CFG.restTimer);cfg.restTimer.duration=v;sv('fj_cfg',cfg);autoSaveSettings();renderSettings();}
-/* ── Build Mode / Custom Workout ── */
+/* ── Build Mode / Manual Workout ── */
 function setBuildMode(mode){
   buildMode=mode;
   renderPending();
@@ -2584,7 +2678,7 @@ function cycleScheme(name){
   const schemes=getSchemes();const idx=schemes.indexOf(ex.scheme);ex.scheme=schemes[(idx+1)%schemes.length];
   renderPending();
 }
-function removeCustomEx(name){
+function removeManualEx(name){
   if(!pending)return;
   pending=pending.filter(e=>e.name!==name);
   renderPending();
@@ -2595,7 +2689,7 @@ function repeatSession(id){
   const s=sessions.find(s=>String(s.id)===String(id));
   if(!s||!s.exercises.length){toast('No exercises to repeat');return;}
   pending=s.exercises.map(ex=>({name:ex.name,group:ex.group,scheme:ex.scheme,isBonus:false}));
-  buildMode='custom';
+  buildMode='manual';
   switchTab('generate');
   toast('Loaded '+s.exercises.length+' exercises from '+fmtDate(s.date));
 }
@@ -2612,7 +2706,7 @@ function armReset(key,fn,render){
 /* ═══════════════════════════════════════════
    TABS
 ═══════════════════════════════════════════ */
-const TAB_IDS=['generate','today','exercises','history','stats','settings'];
+const TAB_IDS=['generate','today','exercises','history','settings'];
 function switchTab(tab){
   TAB_IDS.forEach(id=>{
     const btn=document.getElementById('bnav-'+id);
@@ -2625,12 +2719,76 @@ function switchTab(tab){
   const todayBtn=document.getElementById('bnav-today');
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   if(tab!=='today') clearInterval(_timerInterval);
-  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenStreakChip();renderTemplates();}
+  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenContext();renderTemplates();}
   if(tab==='today')     renderToday();
   if(tab==='exercises') renderExercises();
   if(tab==='history')   renderHistory();
   if(tab==='settings')  renderSettings();
-  if(tab==='stats')     renderStats();
+}
+
+/* ═══════════════════════════════════════════
+   GENERATE – CONTEXT PANEL
+═══════════════════════════════════════════ */
+function renderGenContext(){
+  const el=document.getElementById('gen-context');if(!el)return;
+  // Hide context panel during onboarding (no exercises yet)
+  if(!myExercises.length){el.innerHTML='';return;}
+  const splitDef=SPLITS[activeSplit];
+  if(!splitDef){el.innerHTML='';return;}
+
+  const cats=getActiveCategories().filter(c=>getCatConfig(c.name).active!==false);
+  const totalPerWorkout=cats.reduce((a,c)=>a+(c.count||1),0);
+  const enabledCount=myExercises.filter(e=>e.enabled).length;
+  const isWarn=enabledCount===0;
+
+  // Collapsed: single summary line
+  const summaryText=isWarn
+    ?'No exercises enabled'
+    :`${esc(splitDef.label)} · ${enabledCount} exercises · ${totalPerWorkout} per workout`;
+  const summaryLine=`<div class="gen-ctx-summary${isWarn?' warn':''}" onclick="_genContextExpanded=!_genContextExpanded;renderGenContext();">
+    <span>${summaryText}</span>
+    <span class="gen-ctx-chev${_genContextExpanded?' open':''}">▼</span>
+  </div>`;
+
+  if(!_genContextExpanded){
+    el.innerHTML=`<div class="gen-context">${summaryLine}</div>`;
+    return;
+  }
+
+  // Expanded: split selector + category chips + pool count
+  const ddItems=_genSplitOpen?`<div class="gen-ctx-split-dd">${Object.entries(SPLITS).map(([id,s])=>
+    `<div class="gen-ctx-split-opt${activeSplit===id?' active':''}" onclick="genSetSplit('${id}')">${s.label}</div>`
+  ).join('')}</div>`:'';
+  const splitRow=`<div class="gen-ctx-split-row">
+    <button class="gen-ctx-split-btn${_genSplitOpen?' open':''}" onclick="_genSplitOpen=!_genSplitOpen;renderGenContext();">
+      ${esc(splitDef.label)} <span class="chev">▼</span>
+    </button>
+    ${ddItems}
+  </div>`;
+
+  const catChips=`<div class="gen-ctx-cats">${cats.map(c=>
+    `<span class="gen-ctx-chip" onclick="genNavToCat('${esc(c.name)}')">${esc(c.name)}<span class="chip-ct">${c.count||1}</span></span>`
+  ).join('')}</div>`;
+
+  const poolLine=`<div class="gen-ctx-pool${isWarn?' warn':''}">
+    <span>${isWarn?'No exercises enabled — add some to generate':`${enabledCount} exercise${enabledCount!==1?'s':''} in pool`}</span>
+    <span>${totalPerWorkout} per workout</span>
+  </div>`;
+
+  el.innerHTML=`<div class="gen-context">${summaryLine}${splitRow}${catChips}${poolLine}</div>`;
+}
+function genSetSplit(id){
+  if(id==='custom'){
+    const customCats=splitConfig._customCategories||[];
+    if(!customCats.length){_genSplitOpen=false;openCustomSplitEditor();return;}
+  }
+  setSplit(id);
+  _genSplitOpen=false;
+  renderGenContext();
+}
+function genNavToCat(name){
+  _exTabOpen[name]=true;
+  switchTab('exercises');
 }
 
 /* ═══════════════════════════════════════════
@@ -2638,7 +2796,7 @@ function switchTab(tab){
 ═══════════════════════════════════════════ */
 function generate(){
   if(active){toast('Finish or discard your active workout first');return;}
-  if(buildMode==='custom'){toast('Switch to Random mode to generate a workout');return;}
+  if(buildMode==='manual'){toast('Switch to Random mode to generate a workout');return;}
   const btn=document.getElementById('gen-btn');
   btn.classList.remove('rolling');void btn.offsetWidth;btn.classList.add('rolling');
   const used=new Set();
@@ -2660,24 +2818,34 @@ function generate(){
 function renderPending(){
   const c=document.getElementById('ex-cards');
   // Sync mode toggle buttons
-  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-custom');
+  const rBtn=document.getElementById('bm-random'),cBtn=document.getElementById('bm-manual');
   if(rBtn)rBtn.classList.toggle('active',buildMode==='random');
-  if(cBtn)cBtn.classList.toggle('active',buildMode==='custom');
+  if(cBtn)cBtn.classList.toggle('active',buildMode==='manual');
   const genBtn=document.getElementById('gen-btn');
-  if(genBtn)genBtn.style.display=buildMode==='random'?'':'none';
+  const browseBtn=document.getElementById('gen-browse-btn');
+  const isOnboarding=!myExercises.length;
+  if(genBtn)genBtn.style.display=(buildMode==='random'&&!isOnboarding)?'':'none';
+  if(browseBtn)browseBtn.style.display=isOnboarding?'none':'';
   const sb=document.getElementById('start-row');
   if(!pending||!pending.length){
-    if(buildMode==='custom'){
+    if(buildMode==='manual'){
       c.innerHTML=`<div class="empty-gen"><span class="empty-big">BUILD IT</span><span class="empty-sub">Tap + Add Exercise to choose your lifts</span><button class="es-secondary" style="margin-top:18px;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
     } else {
-      const firstTime=!sessions.length;
-      c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">${firstTime?'Add your exercises first, then hit Generate':'Hit generate to build your workout'}</span>${firstTime?`<button class="es-secondary" style="margin-top:18px;" onclick="switchTab('exercises')">Add Exercises →</button>`:''}</div>`;
+      if(!myExercises.length){
+        // Show onboarding wizard for brand new users
+        renderOnboarding(c);
+      } else {
+        c.innerHTML=`<div class="empty-gen"><span class="empty-big">FORGE IT</span><span class="empty-sub">Hit generate to build your workout</span></div>`;
+      }
     }
     if(sb)sb.style.display='none';
     return;
   }
-  const isCustom=buildMode==='custom';
-  c.innerHTML=pending.map(ex=>{
+  const isManual=buildMode==='manual';
+  // Workout header showing what was generated
+  const splitLabel=SPLITS[activeSplit]?SPLITS[activeSplit].label:activeSplit;
+  const hdr=`<div class="gen-workout-hdr">Your Workout — ${pending.length} exercise${pending.length!==1?'s':''} from ${esc(splitLabel)}</div>`;
+  c.innerHTML=hdr+pending.map(ex=>{
     const last=lastForEx(ex.name);
     const plateau=getPlateauCount(ex.name,ex.group);
     const plateauHtml=plateau>=3?`<span class="plateau-hint${plateau>=5?' strong':''}">↑ Push it! (${plateau}× same)</span>`:'';
@@ -2686,19 +2854,113 @@ function renderPending(){
       ${plateauHtml}
     </div>`:(plateauHtml?`<div class="ex-last-bar">${plateauHtml}</div>`:'');
     const nameEsc=esc(ex.name).replace(/'/g,'&#39;');
-    return`<div class="ex-card${ex.isBonus&&!isCustom?' bonus-card':''}">
+    return`<div class="ex-card${ex.isBonus&&!isManual?' bonus-card':''}">
       <div class="ex-card-top">
-        <div style="flex:1;min-width:0;"><div class="ex-name">${esc(ex.name)}${ex.isBonus&&!isCustom?'<span class="bonus-tag">BONUS</span>':''}</div>
-        <div class="ex-group-lbl">${esc(ex.group)}</div></div>
-        ${isCustom?`<button class="scheme-cycle" onclick="cycleScheme('${nameEsc}')">${esc(ex.scheme)}</button><button class="ex-card-remove" onclick="removeCustomEx('${nameEsc}')">×</button>`:`<div class="ex-scheme-lbl">${esc(ex.scheme)}</div>`}
+        <div style="flex:1;min-width:0;"><div class="ex-name">${esc(ex.name)}${ex.isBonus&&!isManual?'<span class="bonus-tag">BONUS</span>':''}</div>
+        <span class="ex-group-chip">${esc(ex.group)}</span></div>
+        ${isManual?`<button class="scheme-cycle" onclick="cycleScheme('${nameEsc}')">${esc(ex.scheme)}</button><button class="ex-card-remove" onclick="removeManualEx('${nameEsc}')">×</button>`:`<div class="ex-scheme-lbl">${esc(ex.scheme)}</div>`}
       </div>${lastHtml}
     </div>`;
   }).join('');
-  if(isCustom){
+  if(isManual){
     c.innerHTML+=`<div style="padding:8px 12px 4px;"><button class="es-secondary" style="width:100%;margin:0;" onclick="openExercisePicker()">+ Add Exercise</button></div>`;
   }
   // Start row: visible when exercises are queued and no workout is already running
   if(sb)sb.style.display=active?'none':'flex';
+}
+
+/* ═══════════════════════════════════════════
+   ONBOARDING WIZARD
+═══════════════════════════════════════════ */
+function renderOnboarding(container){
+  if(_onboardStep===0){
+    // Step 1: Choose your split
+    const cards=Object.entries(SPLITS).map(([id,s])=>{
+      const catNames=s.categories?s.categories.map(c=>c.name).join(', '):(s.dynamic==='bodyPart'?'Auto-created from body parts':'Auto-created from equipment');
+      return`<div class="onboard-split-card" onclick="onboardPickSplit('${id}')">
+        <div class="osc-name">${s.label}</div>
+        <div class="osc-cats">${catNames}</div>
+      </div>`;
+    }).join('');
+    container.innerHTML=`<div class="onboard-wrap">
+      <div class="onboard-title">LET'S BUILD YOUR FORGE</div>
+      <div class="onboard-sub">Pick how you like to train</div>
+      <div class="onboard-split-cards">${cards}</div>
+    </div>`;
+  } else if(_onboardStep===1){
+    // Step 2: Quick add exercises — show starter pack for selected split
+    const splitDef=SPLITS[activeSplit];
+    const cats=splitDef.categories||[];
+    // For dynamic splits, fall back to a reasonable set
+    if(!cats.length){
+      // Dynamic split selected — just add all beginner exercises and skip to generation
+      const beginners=EXERCISE_CATALOG.filter(c=>c.tags.difficulty==='beginner').slice(0,12);
+      beginners.forEach(c=>{_onboardSelected[c.id]=true;});
+    }
+    // Build starter pack: for each category, find matching beginner-friendly exercises
+    let catHtml='';
+    const usedIds=new Set();
+    const catsToShow=cats.length?cats:([{name:'Exercises',filter:null,count:4}]);
+    for(const cat of catsToShow){
+      const matching=EXERCISE_CATALOG.filter(c=>{
+        if(usedIds.has(c.id))return false;
+        if(!cat.filter)return true;
+        return matchesFilter({catalogId:c.id,tags:c.tags},cat.filter);
+      });
+      // Sort beginner first, then intermediate
+      matching.sort((a,b)=>{
+        const order={beginner:0,intermediate:1,advanced:2};
+        return(order[a.tags.difficulty]||1)-(order[b.tags.difficulty]||1);
+      });
+      const picks=matching.slice(0,4);
+      picks.forEach(p=>usedIds.add(p.id));
+      // Pre-select all if not yet configured
+      picks.forEach(p=>{if(!(p.id in _onboardSelected))_onboardSelected[p.id]=true;});
+      const items=picks.map(p=>
+        `<div class="onboard-ex-item">
+          <label class="tog"><input type="checkbox" ${_onboardSelected[p.id]?'checked':''} onchange="_onboardSelected['${p.id}']=this.checked"><span class="tog-track"></span></label>
+          <span style="cursor:pointer;" onclick="var cb=this.previousElementSibling.querySelector('input');cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));">${esc(p.name)}</span>
+        </div>`
+      ).join('');
+      catHtml+=`<div><div class="onboard-cat-title">${esc(cat.name)}</div>${items}</div>`;
+    }
+    const allChecked=Object.values(_onboardSelected).every(v=>v);
+    container.innerHTML=`<div class="onboard-wrap">
+      <div class="onboard-title">ADD YOUR EXERCISES</div>
+      <div class="onboard-sub">We picked some starters for ${esc(SPLITS[activeSplit].label)}</div>
+      <div class="onboard-select-all">
+        <label class="tog"><input type="checkbox" ${allChecked?'checked':''} onchange="onboardToggleAll(this.checked)"><span class="tog-track"></span></label>
+        <span>Select All</span>
+      </div>
+      <div class="onboard-ex-cats">${catHtml}</div>
+      <div class="onboard-actions">
+        <button class="onboard-continue-btn" onclick="onboardFinish()">CONTINUE</button>
+        <button class="onboard-link" onclick="openExerciseLibrary()">Open Full Library</button>
+      </div>
+    </div>`;
+  }
+}
+function onboardPickSplit(id){
+  setSplit(id);
+  _onboardStep=1;
+  _onboardSelected={};
+  renderPending();
+}
+function onboardToggleAll(checked){
+  for(const k in _onboardSelected) _onboardSelected[k]=checked;
+  renderPending();
+}
+function onboardFinish(){
+  const ids=Object.entries(_onboardSelected).filter(([,v])=>v).map(([id])=>id);
+  if(!ids.length){toast('Select at least one exercise');return;}
+  ids.forEach(id=>addExercise(id));
+  _onboardStep=0;
+  _onboardSelected={};
+  pending=null;
+  // Auto-generate and show result
+  renderGenContext();
+  generate();
+  toast('Your forge is ready! Customize anytime in Exercises.');
 }
 
 function renderGenStreakChip(){
@@ -2722,7 +2984,11 @@ function renderTemplates(){
     <button class="tpl-load" onclick="loadTemplate('${t.id}')">${esc(t.name)}<span class="tpl-count">${t.exercises.length}ex</span></button>
     <button class="tpl-del" onclick="deleteTemplate('${t.id}')">×</button>
   </div>`).join('');
-  el.innerHTML=`<div class="tpl-bar"><div class="tpl-lbl">📂 Templates</div><div class="tpl-chips">${chips}</div></div>`;
+  if(templates.length>=4&&!_tplExpanded){
+    el.innerHTML=`<div class="tpl-bar"><div class="tpl-lbl" style="cursor:pointer;" onclick="_tplExpanded=true;renderTemplates();">📂 Templates (${templates.length}) <span class="gen-ctx-chev">▼</span></div></div>`;
+  } else {
+    el.innerHTML=`<div class="tpl-bar"><div class="tpl-lbl"${templates.length>=4?' style="cursor:pointer;" onclick="_tplExpanded=false;renderTemplates();"':''}>📂 Templates${templates.length>=4?' <span class="gen-ctx-chev open">▼</span>':''}</div><div class="tpl-chips">${chips}</div></div>`;
+  }
 }
 function saveAsTemplate(){
   if(!pending||!pending.length){toast('Generate or build a workout first');return;}
@@ -2744,7 +3010,7 @@ function loadTemplate(id){
       weight:last?last.weight:0,last:last||null,
       cue:matched?matched.cue||'':''};
   });
-  buildMode='custom';
+  buildMode='manual';
   renderPending();
   toast(`"${t.name}" loaded`);
 }
@@ -3441,13 +3707,16 @@ function renderHistory(){
       <button class="hvt-btn${histView==='week'?' active':''}"  onclick="setHistView('week')">📅 Week</button>
       <button class="hvt-btn${histView==='month'?' active':''}" onclick="setHistView('month')">📆 Month</button>
       <button class="hvt-btn${histView==='list'?' active':''}"  onclick="setHistView('list')">☰ All${(histFilter.effort||histFilter.group)?'<span class="hvt-filter-dot"></span>':''}</button>
+      <button class="hvt-btn${histView==='stats'?' active':''}" onclick="setHistView('stats')">📊 Stats</button>
     </div>`;
   document.getElementById('week-section').style.display = histView==='week'  ? '' : 'none';
   document.getElementById('cal-section').style.display  = histView==='month' ? '' : 'none';
   document.getElementById('hist-wrap').style.display    = histView==='list'  ? '' : 'none';
+  document.getElementById('stats-section').style.display = histView==='stats' ? '' : 'none';
   if(histView==='week')  renderWeekView();
   if(histView==='month') renderMonthView();
   if(histView==='list')  renderListView();
+  if(histView==='stats') renderStatsInHistory();
 }
 function setHistView(v){histView=v;expandedChip=null;renderHistory();}
 
@@ -4242,20 +4511,29 @@ function renderExercises(){
   const wrap=document.getElementById('exercises-wrap');
   if(!wrap) return;
 
-  // Split selector bar
-  const splitPills=Object.entries(SPLITS).map(([id,s])=>
-    `<button class="split-pill${activeSplit===id?' active':''}" onclick="setSplit('${id}')">${s.label}</button>`
-  ).join('');
-  const splitBar=`<div class="split-bar">${splitPills}</div>`;
-
-  // Summary row with count + add button inline
   const enabledCount=myExercises.filter(e=>e.enabled).length;
-  const summaryRow=`<div class="ex-summary">
-    <span class="ex-count-chip">${enabledCount} of ${myExercises.length} exercises enabled</span>
+  const splitDef=SPLITS[activeSplit];
+
+  // Compact title row: title + count + add button
+  const titleRow=`<div class="ex-tab-title-row">
+    <div class="ex-tab-title">MY EXERCISES</div>
+    <span class="ex-count-inline">${enabledCount}/${myExercises.length}</span>
     <button class="ex-add-btn-sm" onclick="openExerciseLibrary()">+ Add</button>
   </div>`;
 
-  // Category cards
+  // Compact split dropdown (replaces pill bar)
+  const ddItems=_exSplitOpen?`<div class="gen-ctx-split-dd">${Object.entries(SPLITS).map(([id,s])=>
+    `<div class="gen-ctx-split-opt${activeSplit===id?' active':''}" onclick="exSetSplit('${id}')">${s.label}</div>`
+  ).join('')}</div>`:'';
+  const splitRow=`<div class="ex-split-row">
+    <span class="ex-split-label">Split</span>
+    <button class="gen-ctx-split-btn${_exSplitOpen?' open':''}" onclick="_exSplitOpen=!_exSplitOpen;renderExercises();">
+      ${esc(splitDef?splitDef.label:'Select')} <span class="chev">▼</span>
+    </button>
+    ${ddItems}
+  </div>`;
+
+  // Category cards — lighter visual weight
   const cats=getActiveCategories();
   const catCards=cats.map(cat=>{
     const allMatched=myExercises.filter(ex=>matchesFilter(ex,cat.filter));
@@ -4267,7 +4545,6 @@ function renderExercises(){
 
     let body='';
     if(isOpen){
-      // Category config row
       const cfgRow=`<div class="cat-cfg">
         <span class="cat-cfg-lbl">Per workout</span>
         <div class="num-ctrl">
@@ -4279,7 +4556,6 @@ function renderExercises(){
         <label class="tog"><input type="checkbox" ${isActive?'checked':''} onchange="toggleCatActive('${esc(cat.name)}',this.checked)"><span class="tog-track"></span></label>
       </div>`;
 
-      // Exercise list
       const exList=allMatched.map(ex=>{
         const sn=esc(ex.name).replace(/'/g,"\\'");
         return`<div class="cat-ex">
@@ -4297,11 +4573,14 @@ function renderExercises(){
       body=`<div class="cat-body open">${cfgRow}${exList}${emptyMsg}</div>`;
     }
 
+    // Collapsed: show compact summary
+    const collapsedInfo=!isOpen?` · ${count}/wkt`:'';
+
     return`<div class="cat-card${!isActive?' inactive':''}">
       <div class="cat-hdr${isOpen?' open':''}" onclick="toggleExCat('${esc(cat.name)}')">
         <span class="cat-chev">▲</span>
         <span class="cat-name">${esc(cat.name)}</span>
-        <span class="cat-badge">${enabled.length}/${allMatched.length}</span>
+        <span class="cat-badge">${enabled.length}/${allMatched.length}${collapsedInfo}</span>
       </div>
       ${body}
     </div>`;
@@ -4327,7 +4606,147 @@ function renderExercises(){
     </div>`;
   }
 
-  wrap.innerHTML=`<div class="ex-tab-title">MY EXERCISES</div>${splitBar}${summaryRow}${catCards}${uncatHtml}`;
+  wrap.innerHTML=`${titleRow}${splitRow}${catCards}${uncatHtml}`;
+}
+function exSetSplit(id){
+  if(id==='custom'){
+    const customCats=splitConfig._customCategories||[];
+    if(!customCats.length){openCustomSplitEditor();return;}
+  }
+  setSplit(id);
+  _exSplitOpen=false;
+  renderExercises();
+}
+
+/* ── Custom Split Editor ── */
+let _cseCategories=[]; // temporary editing state
+let _cseEditIdx=-1; // which category is being edited (-1 = adding new)
+
+function openCustomSplitEditor(){
+  _cseCategories=(splitConfig._customCategories||[]).map(c=>({...c,bodyParts:[...(c.bodyParts||[])],movements:[...(c.movements||[])]}));
+  _cseEditIdx=-1;
+  renderCustomSplitEditor();
+}
+function renderCustomSplitEditor(){
+  const root=document.getElementById('modal-root');
+  const bodyPartLabels=TAG_DEFS.bodyPart.map(t=>t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
+  const movementLabels=TAG_DEFS.movement.map(t=>t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()));
+
+  // Category list
+  const catList=_cseCategories.map((cat,i)=>{
+    const tags=[...(cat.bodyParts||[]),...(cat.movements||[])].map(t=>t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())).slice(0,4);
+    const tagStr=tags.join(', ')+(tags.length<(cat.bodyParts||[]).length+(cat.movements||[]).length?'...':'');
+    return`<div class="cse-cat-row">
+      <div class="cse-cat-info">
+        <div class="cse-cat-name">${esc(cat.name)}</div>
+        <div class="cse-cat-tags">${tagStr||'No filters'} · ${cat.count||1}/wkt</div>
+      </div>
+      <button class="cse-cat-edit" onclick="cseEditCat(${i})">Edit</button>
+      <button class="cse-cat-del" onclick="cseDelCat(${i})">×</button>
+    </div>`;
+  }).join('');
+
+  // Edit/Add form
+  let formHtml='';
+  if(_cseEditIdx>=0||_cseEditIdx===-2){
+    const cat=_cseEditIdx===-2?(_cseTempCat||(_cseTempCat={name:'',bodyParts:[],movements:[],count:2})):_cseCategories[_cseEditIdx];
+    const bpPills=TAG_DEFS.bodyPart.map(t=>{
+      const sel=(cat.bodyParts||[]).includes(t);
+      const label=t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      return`<button class="cse-pill${sel?' active':''}" onclick="cseToggleTag('bodyPart','${t}')">${label}</button>`;
+    }).join('');
+    const mvPills=TAG_DEFS.movement.map(t=>{
+      const sel=(cat.movements||[]).includes(t);
+      const label=t.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      return`<button class="cse-pill${sel?' active':''}" onclick="cseToggleTag('movement','${t}')">${label}</button>`;
+    }).join('');
+    formHtml=`<div class="cse-form">
+      <input class="cse-name-input" id="cse-name" type="text" placeholder="Category name..." maxlength="40" value="${esc(cat.name)}">
+      <div class="cse-section-lbl">Body Parts</div>
+      <div class="cse-pills">${bpPills}</div>
+      <div class="cse-section-lbl">Movements</div>
+      <div class="cse-pills">${mvPills}</div>
+      <div class="cse-form-actions">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;color:var(--text3);">Per workout</span>
+          <div class="num-ctrl">
+            <button class="num-btn" onclick="cseCatCount(-1)">−</button>
+            <span class="num-val" id="cse-count">${cat.count||2}</span>
+            <button class="num-btn" onclick="cseCatCount(1)">+</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="cse-cancel" onclick="_cseEditIdx=-1;renderCustomSplitEditor();">Cancel</button>
+          <button class="cse-save-cat" onclick="cseSaveCat()">Save Category</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  root.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeCustomSplitEditor()">
+    <div class="modal" onclick="event.stopPropagation()" style="max-height:90vh;">
+      <div class="modal-hdr" style="position:sticky;top:0;z-index:10;">
+        <span class="modal-title">CUSTOM SPLIT</span>
+        <button class="modal-close" onclick="closeCustomSplitEditor()">×</button>
+      </div>
+      <div class="modal-body" style="padding:12px 16px 20px;">
+        <div class="cse-subtitle">Define your own workout categories with any combination of muscle groups and movements.</div>
+        ${catList}
+        ${formHtml}
+        ${_cseEditIdx===-1?`<button class="cse-add-btn" onclick="_cseEditIdx=-2;renderCustomSplitEditor();">+ Add Category</button>`:''}
+        <div class="cse-footer">
+          ${_cseCategories.length?`<button class="cse-apply" onclick="applyCustomSplit()">Apply Split (${_cseCategories.length} categories)</button>`
+          :`<div class="cse-empty-hint">Add at least one category to create your split</div>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function cseEditCat(i){_cseEditIdx=i;renderCustomSplitEditor();}
+function cseDelCat(i){_cseCategories.splice(i,1);if(_cseEditIdx===i)_cseEditIdx=-1;renderCustomSplitEditor();}
+function cseToggleTag(dim,tag){
+  const cat=_cseEditIdx===-2?(_cseTempCat||(_cseTempCat={name:'',bodyParts:[],movements:[],count:2})):_cseCategories[_cseEditIdx];
+  const arr=dim==='bodyPart'?(cat.bodyParts||(cat.bodyParts=[])):(cat.movements||(cat.movements=[]));
+  const idx=arr.indexOf(tag);
+  if(idx>=0)arr.splice(idx,1);else arr.push(tag);
+  renderCustomSplitEditor();
+}
+let _cseTempCat=null;
+function cseCatCount(d){
+  const cat=_cseEditIdx===-2?(_cseTempCat||(_cseTempCat={name:'',bodyParts:[],movements:[],count:2})):_cseCategories[_cseEditIdx];
+  cat.count=Math.max(1,Math.min(10,(cat.count||2)+d));
+  renderCustomSplitEditor();
+}
+function cseSaveCat(){
+  const nameEl=document.getElementById('cse-name');
+  const name=(nameEl?nameEl.value:'').trim();
+  if(!name){toast('Enter a category name');return;}
+  const cat=_cseEditIdx===-2?(_cseTempCat||{name:'',bodyParts:[],movements:[],count:2}):_cseCategories[_cseEditIdx];
+  if(!(cat.bodyParts||[]).length&&!(cat.movements||[]).length){toast('Select at least one body part or movement');return;}
+  cat.name=name;
+  if(_cseEditIdx===-2){
+    _cseCategories.push({...cat});
+    _cseTempCat=null;
+  }
+  _cseEditIdx=-1;
+  renderCustomSplitEditor();
+}
+function applyCustomSplit(){
+  if(!_cseCategories.length){toast('Add at least one category');return;}
+  splitConfig._customCategories=_cseCategories.map(c=>({name:c.name,bodyParts:c.bodyParts||[],movements:c.movements||[],count:c.count||2}));
+  sv('fj_split_config',splitConfig);
+  activeSplit='custom';
+  sv('fj_split',activeSplit);
+  _exSplitOpen=false;
+  closeCustomSplitEditor();
+  renderExercises();
+  if(document.getElementById('gen-context'))renderGenContext();
+  toast('Custom split applied');
+}
+function closeCustomSplitEditor(){
+  document.getElementById('modal-root').innerHTML='';
+  _cseTempCat=null;
+  _cseEditIdx=-1;
 }
 
 function toggleExCat(name){_exTabOpen[name]=!_exTabOpen[name];renderExercises();}
@@ -4342,6 +4761,11 @@ function adjCatCount(name,d){
 function toggleCatActive(name,val){
   setCatConfig(name,'active',val);
   renderExercises();
+}
+function previewGeneration(){
+  buildMode='random';
+  switchTab('generate');
+  generate();
 }
 
 /* ═══════════════════════════════════════════
@@ -4392,7 +4816,16 @@ function renderWorkoutSettings(){
   const rt=cfg.restTimer||{enabled:false,duration:60};
   const durOpts=[[30,'30s'],[45,'45s'],[60,'1m'],[90,'1:30'],[120,'2m'],[180,'3m']].map(([v,l])=>`<button class="inc-pill${rt.duration===v?' active':''}" onclick="setRestDuration(${v})">${l}</button>`).join('');
   const goalStepper=mode!=='daily'?`<div class="s-row"><div class="s-lbl">Sessions per ${mode==='weekly'?'Week':'Month'}<span class="s-sub">Minimum workouts needed to count the ${mode==='weekly'?'week':'month'}</span></div><div class="num-ctrl"><button class="num-btn" onclick="adjStreakGoal(-1)">−</button><span class="num-val">${cfg.streakGoal||3}</span><button class="num-btn" onclick="adjStreakGoal(1)">+</button></div></div>`:'';
-  return`<div class="sett-card">
+  const {current:streakCur,periodProgress,periodGoal,periodLabel}=computeStreaks();
+  const streakUnit=mode==='daily'?'day':mode==='weekly'?'week':'month';
+  const streakDone=periodProgress>=periodGoal;
+  const streakChip=`<div class="gen-streak-row" style="margin-bottom:14px;">
+    ${streakCur>0?`<div class="gen-streak-count"><span class="gen-streak-fire">🔥</span>${streakCur}-${streakUnit} streak</div>`:`<div class="gen-streak-idle">No active streak</div>`}
+    ${mode==='daily'
+      ?`<div class="gen-streak-prog${streakDone?' done':''}">${streakDone?'Logged today ✓':'Log today'}</div>`
+      :`<div class="gen-streak-prog${streakDone?' done':''}">${periodProgress}/${periodGoal} ${periodLabel}${streakDone?' ✓':''}</div>`}
+  </div>`;
+  return`${streakChip}<div class="sett-card">
     <div class="sett-card-title">Workout Structure</div>
     ${renderStructure()}
   </div>
@@ -4766,6 +5199,10 @@ function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
   _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
+  // Refresh gen-context if on Generate tab so pool count updates after adding exercises
+  if(document.getElementById('view-generate')&&document.getElementById('view-generate').classList.contains('active')){
+    renderGenContext();
+  }
 }
 
 /* renderPool removed — exercises now managed in Exercises tab */
@@ -4934,8 +5371,12 @@ function renderTheme(){
 /* ═══════════════════════════════════════════
    STATS
 ═══════════════════════════════════════════ */
-function renderStats(){
-  const wrap=document.getElementById('stats-wrap');
+function renderStatsInHistory(){
+  const wrap=document.getElementById('stats-section');
+  if(!wrap)return;
+  renderStatsInto(wrap);
+}
+function renderStatsInto(wrap){
   if(!sessions.length){
     wrap.innerHTML=`<div class="empty-state-card">
       <span class="es-icon">📊</span>
@@ -4956,7 +5397,7 @@ function renderStats(){
   else panel=renderStatSessions();
   wrap.innerHTML=tabs+panel;
 }
-function setStatTab(t){statTab=t;renderStats();}
+function setStatTab(t){statTab=t;renderStatsInHistory();}
 
 
 function computeStreaks(){
