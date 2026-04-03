@@ -997,6 +997,48 @@ body{
 .uncat-section{margin-top:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
 .uncat-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
 .cat-empty{font-size:11px;color:var(--text3);padding:8px 0;text-align:center;}
+/* ─── Exercises View Toggle ─── */
+.ex-view-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:0 0 12px;overflow:hidden;}
+.ex-view-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
+.ex-view-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
+/* ─── My Pool View ─── */
+.ex-pool-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ex-pool-search{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:'Inter',sans-serif;transition:border-color .15s;}
+.ex-pool-search:focus{border-color:var(--accent);}
+.ex-pool-search::placeholder{color:var(--border3);}
+.ex-pool-sort-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:border-color .15s;}
+.ex-pool-sort-btn:hover{border-color:var(--accent);color:var(--accent);}
+.ex-pool-summary{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px;}
+.ex-pool-count{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.5px;}
+.ex-pool-actions{display:flex;gap:6px;}
+.ex-pool-actions button{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--text3);cursor:pointer;transition:all .15s;}
+.ex-pool-actions button:hover{border-color:var(--accent);color:var(--accent);}
+.ex-pool-section-hdr{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:10px 2px 4px;border-bottom:1px solid var(--border);}
+.ex-pool-item{display:flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--border);}
+.ex-pool-item:last-child{border-bottom:none;}
+.ex-pool-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.ex-pool-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ex-pool-name.disabled{color:var(--text3);text-decoration:line-through;}
+.ex-pool-tags{display:flex;flex-wrap:wrap;gap:3px;}
+.ex-pool-tag{font-size:8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text3);border:1px solid var(--border);}
+.ex-pool-cue{width:100%;font-size:10px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed transparent;padding:2px 0;outline:none;font-style:italic;font-family:'Inter',sans-serif;transition:border-color .15s;}
+.ex-pool-cue:focus{border-bottom-color:var(--accent);color:var(--text2);}
+.ex-pool-cue:hover{border-bottom-color:var(--border2);}
+.ex-pool-cue::placeholder{color:var(--border3);}
+.ex-pool-del{width:20px;height:20px;background:transparent;border:none;color:var(--border3);cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;}
+.ex-pool-del:hover{color:#ef4444;}
+.ex-pool-empty{text-align:center;padding:40px 20px;font-size:11px;color:var(--text3);letter-spacing:1px;}
+.ex-back-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;padding:4px 0 8px;transition:color .15s;letter-spacing:.5px;}
+.ex-back-link:hover{color:var(--accent);}
+.ex-groups-hint{font-size:10px;color:var(--text3);letter-spacing:.5px;margin-bottom:8px;padding:0 2px;font-style:italic;}
+/* ─── Custom Split Preview ─── */
+.cse-preview{margin:8px 0 4px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+.cse-preview-count{font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:6px;}
+.cse-preview-count .chev{font-size:8px;transition:transform .15s;}
+.cse-preview-count .chev.open{transform:rotate(180deg);}
+.cse-preview-warn{color:#f59e0b;}
+.cse-preview-list{margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
+.cse-preview-ex{font-size:10px;color:var(--text3);padding:2px 0;}
 
 /* ════════════════════════
    PRs
@@ -1346,6 +1388,8 @@ body{
 .gen-ctx-chip{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;background:var(--surface);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;white-space:nowrap;}
 .gen-ctx-chip:hover{border-color:var(--accent);color:var(--accent);}
 .gen-ctx-chip .chip-ct{color:var(--accent);margin-left:3px;}
+.gen-ctx-chip.empty{border-color:#f59e0b;background:rgba(245,158,11,.08);}
+.gen-ctx-chip .chip-warn{color:#f59e0b;margin-left:3px;font-size:9px;}
 .gen-ctx-pool{font-size:10px;color:var(--text3);letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
 .gen-ctx-pool.warn{color:var(--accent);font-weight:600;}
 .gen-browse-btn{display:block;width:auto;padding:4px 0;margin:4px 0 4px auto;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;letter-spacing:1.5px;cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s;text-transform:uppercase;text-align:right;}
@@ -1470,6 +1514,7 @@ body{
     <button class="bm-btn active" id="bm-random" onclick="setBuildMode('random')">⚡ Random</button>
     <button class="bm-btn" id="bm-manual" onclick="setBuildMode('manual')">✎ Manual</button>
   </div>
+  <div id="gen-streak-chip"></div>
   <div id="gen-context"></div>
   <div id="templates-section"></div>
   <button class="gen-btn" id="gen-btn" onclick="generate()">
@@ -1946,6 +1991,11 @@ let _genSplitOpen = false; // split dropdown state on Generate tab
 let _genContextExpanded = false; // context panel collapsed/expanded
 let _tplExpanded = false; // templates collapsed/expanded when 4+
 let _exSplitOpen = false; // exercises tab split dropdown state
+let _exViewMode = 'pool'; // 'pool' (flat list) or 'groups' (split-based)
+let _exPoolSearch = ''; // search filter for pool view
+let _exPoolSort = ld('fj_pool_sort','az'); // 'az', 'bodypart', 'newest'
+let _exNavSource = null; // 'generate' if navigated from generate tab
+let _csePreviewOpen = false; // custom split editor preview expanded
 let _onboardStep = 0; // onboarding wizard step (0=split, 1=exercises, 2=done)
 let _onboardSelected = {}; // {catalogId: true/false} for onboarding exercise picks
 
@@ -2719,7 +2769,8 @@ function switchTab(tab){
   const todayBtn=document.getElementById('bnav-today');
   if(todayBtn) todayBtn.classList.toggle('has-active-workout',!!active);
   if(tab!=='today') clearInterval(_timerInterval);
-  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenContext();renderTemplates();}
+  if(tab!=='exercises') _exNavSource=null; // clear back-link state when leaving exercises
+  if(tab==='generate'){renderActiveWorkoutBanner();setBuildMode(buildMode);renderGenStreakChip();renderGenContext();renderTemplates();}
   if(tab==='today')     renderToday();
   if(tab==='exercises') renderExercises();
   if(tab==='history')   renderHistory();
@@ -2741,11 +2792,16 @@ function renderGenContext(){
   const enabledCount=myExercises.filter(e=>e.enabled).length;
   const isWarn=enabledCount===0;
 
+  // Check category health — how many active categories have 0 enabled exercises
+  const emptyCats=cats.filter(c=>{const avail=exercisesForCategory(c);return avail.length===0;});
+  const healthWarn=emptyCats.length>0;
+
   // Collapsed: single summary line
-  const summaryText=isWarn
+  let summaryText=isWarn
     ?'No exercises enabled'
     :`${esc(splitDef.label)} · ${enabledCount} exercises · ${totalPerWorkout} per workout`;
-  const summaryLine=`<div class="gen-ctx-summary${isWarn?' warn':''}" onclick="_genContextExpanded=!_genContextExpanded;renderGenContext();">
+  if(healthWarn&&!isWarn) summaryText+=` · ⚠ ${emptyCats.length} empty group${emptyCats.length>1?'s':''}`;
+  const summaryLine=`<div class="gen-ctx-summary${isWarn||healthWarn?' warn':''}" onclick="_genContextExpanded=!_genContextExpanded;renderGenContext();">
     <span>${summaryText}</span>
     <span class="gen-ctx-chev${_genContextExpanded?' open':''}">▼</span>
   </div>`;
@@ -2766,12 +2822,14 @@ function renderGenContext(){
     ${ddItems}
   </div>`;
 
-  const catChips=`<div class="gen-ctx-cats">${cats.map(c=>
-    `<span class="gen-ctx-chip" onclick="genNavToCat('${esc(c.name)}')">${esc(c.name)}<span class="chip-ct">${c.count||1}</span></span>`
-  ).join('')}</div>`;
+  const catChips=`<div class="gen-ctx-cats">${cats.map(c=>{
+    const avail=exercisesForCategory(c);
+    const isEmpty=avail.length===0;
+    return`<span class="gen-ctx-chip${isEmpty?' empty':''}" onclick="genNavToCat('${esc(c.name)}')">${esc(c.name)}<span class="chip-ct">${c.count||1}</span>${isEmpty?'<span class="chip-warn">⚠</span>':''}</span>`;
+  }).join('')}</div>`;
 
   const poolLine=`<div class="gen-ctx-pool${isWarn?' warn':''}">
-    <span>${isWarn?'No exercises enabled — add some to generate':`${enabledCount} exercise${enabledCount!==1?'s':''} in pool`}</span>
+    <span onclick="genNavToPool()" style="cursor:pointer;">${isWarn?'No exercises enabled — tap to manage':`${enabledCount} exercise${enabledCount!==1?'s':''} in pool · Manage`}</span>
     <span>${totalPerWorkout} per workout</span>
   </div>`;
 
@@ -2787,7 +2845,14 @@ function genSetSplit(id){
   renderGenContext();
 }
 function genNavToCat(name){
+  _exViewMode='groups';
+  _exNavSource='generate';
   _exTabOpen[name]=true;
+  switchTab('exercises');
+}
+function genNavToPool(){
+  _exViewMode='pool';
+  _exNavSource='generate';
   switchTab('exercises');
 }
 
@@ -4511,17 +4576,145 @@ function renderExercises(){
   const wrap=document.getElementById('exercises-wrap');
   if(!wrap) return;
 
-  const enabledCount=myExercises.filter(e=>e.enabled).length;
-  const splitDef=SPLITS[activeSplit];
+  // Back link when navigated from Generate tab
+  const backLink=_exNavSource==='generate'
+    ?`<div class="ex-back-link" onclick="_exNavSource=null;switchTab('generate');">← Back to Build</div>`:'';
 
-  // Compact title row: title + count + add button
+  // View toggle bar (My Pool | Split Groups)
+  const viewBar=`<div class="ex-view-bar">
+    <button class="ex-view-btn${_exViewMode==='pool'?' active':''}" onclick="exSetView('pool')">My Pool</button>
+    <button class="ex-view-btn${_exViewMode==='groups'?' active':''}" onclick="exSetView('groups')">Split Groups</button>
+  </div>`;
+
+  // Title row with count + add button
+  const enabledCount=myExercises.filter(e=>e.enabled).length;
   const titleRow=`<div class="ex-tab-title-row">
     <div class="ex-tab-title">MY EXERCISES</div>
     <span class="ex-count-inline">${enabledCount}/${myExercises.length}</span>
     <button class="ex-add-btn-sm" onclick="openExerciseLibrary()">+ Add</button>
   </div>`;
 
-  // Compact split dropdown (replaces pill bar)
+  let content='';
+  if(_exViewMode==='pool'){
+    content=renderExPool();
+  } else {
+    content=renderExGroups();
+  }
+
+  wrap.innerHTML=`${backLink}${titleRow}${viewBar}${content}`;
+}
+function exSetView(mode){_exViewMode=mode;renderExercises();}
+
+/* ── My Pool View ── */
+function renderExPool(){
+  const sortLabels={az:'A-Z',bodypart:'Body Part',newest:'Newest'};
+  const sortCycle={az:'bodypart',bodypart:'newest',newest:'az'};
+
+  // Toolbar: search + sort
+  const toolbar=`<div class="ex-pool-toolbar">
+    <input class="ex-pool-search" type="text" placeholder="Search exercises..." value="${esc(_exPoolSearch)}" oninput="_exPoolSearch=this.value;renderExercises();">
+    <button class="ex-pool-sort-btn" onclick="cyclePoolSort()">${sortLabels[_exPoolSort]||'A-Z'} ↕</button>
+  </div>`;
+
+  // Summary + bulk actions
+  const enabledCount=myExercises.filter(e=>e.enabled).length;
+  const allEnabled=myExercises.length>0&&enabledCount===myExercises.length;
+  const noneEnabled=enabledCount===0;
+  const summary=`<div class="ex-pool-summary">
+    <span class="ex-pool-count">${enabledCount} enabled · ${myExercises.length} total</span>
+    <div class="ex-pool-actions">
+      ${!allEnabled?`<button onclick="poolBulkEnable(true)">Enable All</button>`:''}
+      ${!noneEnabled?`<button onclick="poolBulkEnable(false)">Disable All</button>`:''}
+    </div>
+  </div>`;
+
+  if(!myExercises.length){
+    return toolbar+summary+`<div class="ex-pool-empty">No exercises yet — tap + Add to browse the catalog</div>`;
+  }
+
+  // Filter by search
+  let filtered=myExercises.map((ex,i)=>({...ex,_idx:i}));
+  if(_exPoolSearch.trim()){
+    const q=_exPoolSearch.trim().toLowerCase();
+    filtered=filtered.filter(ex=>ex.name.toLowerCase().includes(q));
+  }
+
+  // Sort
+  if(_exPoolSort==='az'){
+    filtered.sort((a,b)=>a.name.localeCompare(b.name));
+  } else if(_exPoolSort==='bodypart'){
+    filtered.sort((a,b)=>{
+      const ta=getExTags(a).bodyPart||[];
+      const tb=getExTags(b).bodyPart||[];
+      const pa=(ta[0]||'zzz');
+      const pb=(tb[0]||'zzz');
+      return pa.localeCompare(pb)||a.name.localeCompare(b.name);
+    });
+  } else if(_exPoolSort==='newest'){
+    filtered.reverse();
+  }
+
+  // Render items (with section headers for bodypart sort)
+  let html='';
+  let lastSection='';
+  filtered.forEach(ex=>{
+    const sn=esc(ex.name).replace(/'/g,"\\'");
+    const tags=getExTags(ex);
+    const bodyParts=(tags.bodyPart||[]).map(t=>t.replace(/-/g,' '));
+    const movements=(tags.movement||[]).map(t=>t.replace(/-/g,' '));
+
+    // Section header for bodypart sort
+    if(_exPoolSort==='bodypart'){
+      const section=(bodyParts[0]||'Other').replace(/\b\w/g,c=>c.toUpperCase());
+      if(section!==lastSection){
+        html+=`<div class="ex-pool-section-hdr">${esc(section)}</div>`;
+        lastSection=section;
+      }
+    }
+
+    const tagChips=[...bodyParts,...movements].slice(0,3).map(t=>
+      `<span class="ex-pool-tag">${esc(t)}</span>`
+    ).join('');
+
+    html+=`<div class="ex-pool-item">
+      <label class="tog"><input type="checkbox" ${ex.enabled?'checked':''} onchange="toggleExEnabled('${sn}',this.checked)"><span class="tog-track"></span></label>
+      <div class="ex-pool-info">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="ex-pool-name${!ex.enabled?' disabled':''}">${esc(ex.name)}</span>
+          <div class="ex-pool-tags">${tagChips}</div>
+        </div>
+        <input class="ex-pool-cue" type="text" placeholder="Add cue..." maxlength="80"
+          value="${esc(ex.cue||'')}" oninput="saveExCueByName('${sn}',this.value)">
+      </div>
+      <button class="ex-pool-del" onclick="removeExByName('${sn}')">×</button>
+    </div>`;
+  });
+
+  if(!filtered.length&&_exPoolSearch.trim()){
+    html=`<div class="ex-pool-empty">No exercises match "${esc(_exPoolSearch)}"</div>`;
+  }
+
+  return toolbar+summary+html;
+}
+function cyclePoolSort(){
+  const cycle={az:'bodypart',bodypart:'newest',newest:'az'};
+  _exPoolSort=cycle[_exPoolSort]||'az';
+  sv('fj_pool_sort',_exPoolSort);
+  renderExercises();
+}
+function poolBulkEnable(val){
+  myExercises.forEach(ex=>ex.enabled=val);
+  sv('fj_exercises',myExercises);
+  renderExercises();
+}
+
+/* ── Split Groups View ── */
+function renderExGroups(){
+  const splitDef=SPLITS[activeSplit];
+
+  const hint=`<div class="ex-groups-hint">Configure how exercises are grouped for workout generation</div>`;
+
+  // Split dropdown
   const ddItems=_exSplitOpen?`<div class="gen-ctx-split-dd">${Object.entries(SPLITS).map(([id,s])=>
     `<div class="gen-ctx-split-opt${activeSplit===id?' active':''}" onclick="exSetSplit('${id}')">${s.label}</div>`
   ).join('')}</div>`:'';
@@ -4533,7 +4726,7 @@ function renderExercises(){
     ${ddItems}
   </div>`;
 
-  // Category cards — lighter visual weight
+  // Category cards
   const cats=getActiveCategories();
   const catCards=cats.map(cat=>{
     const allMatched=myExercises.filter(ex=>matchesFilter(ex,cat.filter));
@@ -4573,7 +4766,6 @@ function renderExercises(){
       body=`<div class="cat-body open">${cfgRow}${exList}${emptyMsg}</div>`;
     }
 
-    // Collapsed: show compact summary
     const collapsedInfo=!isOpen?` · ${count}/wkt`:'';
 
     return`<div class="cat-card${!isActive?' inactive':''}">
@@ -4606,7 +4798,7 @@ function renderExercises(){
     </div>`;
   }
 
-  wrap.innerHTML=`${titleRow}${splitRow}${catCards}${uncatHtml}`;
+  return hint+splitRow+catCards+uncatHtml;
 }
 function exSetSplit(id){
   if(id==='custom'){
@@ -4666,6 +4858,7 @@ function renderCustomSplitEditor(){
       <div class="cse-pills">${bpPills}</div>
       <div class="cse-section-lbl">Movements</div>
       <div class="cse-pills">${mvPills}</div>
+      ${cseRenderPreview(cat)}
       <div class="cse-form-actions">
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:10px;color:var(--text3);">Per workout</span>
@@ -4712,6 +4905,30 @@ function cseToggleTag(dim,tag){
   renderCustomSplitEditor();
 }
 let _cseTempCat=null;
+function cseRenderPreview(cat){
+  const filter={};
+  if(cat.bodyParts&&cat.bodyParts.length) filter.bodyPart=cat.bodyParts;
+  if(cat.movements&&cat.movements.length) filter.movement=cat.movements;
+  if(!filter.bodyPart&&!filter.movement) return '';
+  const matched=myExercises.filter(ex=>matchesFilter(ex,filter));
+  const warn=matched.length===0;
+  const countText=warn
+    ?`<span class="cse-preview-warn">No exercises in your pool match these filters</span>`
+    :`${matched.length} exercise${matched.length!==1?'s':''} match`;
+  const chevClass=_csePreviewOpen?' open':'';
+  let listHtml='';
+  if(_csePreviewOpen&&matched.length){
+    listHtml=`<div class="cse-preview-list">${matched.map(ex=>
+      `<div class="cse-preview-ex">${esc(ex.name)}</div>`
+    ).join('')}</div>`;
+  }
+  return`<div class="cse-preview">
+    <div class="cse-preview-count" onclick="_csePreviewOpen=!_csePreviewOpen;renderCustomSplitEditor();">
+      ${countText}${matched.length?` <span class="chev${chevClass}">▼</span>`:''}
+    </div>
+    ${listHtml}
+  </div>`;
+}
 function cseCatCount(d){
   const cat=_cseEditIdx===-2?(_cseTempCat||(_cseTempCat={name:'',bodyParts:[],movements:[],count:2})):_cseCategories[_cseEditIdx];
   cat.count=Math.max(1,Math.min(10,(cat.count||2)+d));
@@ -5199,9 +5416,12 @@ function closeLibrary(event){
   if(event&&event.target!==event.currentTarget)return;
   _libFilterOpen=null;
   document.getElementById('modal-root').innerHTML='';
-  // Refresh gen-context if on Generate tab so pool count updates after adding exercises
+  // Refresh visible tab after adding exercises
   if(document.getElementById('view-generate')&&document.getElementById('view-generate').classList.contains('active')){
     renderGenContext();
+  }
+  if(document.getElementById('view-exercises')&&document.getElementById('view-exercises').classList.contains('active')){
+    renderExercises();
   }
 }
 
