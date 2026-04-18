@@ -974,6 +974,8 @@ body{
 .me-add-ex:hover{border-color:var(--j-acc);color:var(--j-acc);background:var(--j-tnt);}
 .me-save-btn{width:100%;padding:15px;background:var(--j-acc);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:16px;transition:opacity .15s;box-shadow:0 4px 16px rgba(200,16,46,.2);}
 .me-save-btn:active{opacity:.85;}
+.me-del-sess-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--j-dn);background:transparent;font-size:15px;color:var(--j-dn);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.me-del-sess-btn:hover{background:rgba(220,38,38,0.1);}
 
 /* Backup prompt */
 .backup-prompt{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);width:calc(100% - 26px);max-width:554px;background:var(--surface);border:1px solid var(--border3);border-radius:12px;padding:14px 16px;z-index:400;box-shadow:0 8px 32px rgba(0,0,0,.45);animation:slideUpPrompt .25s cubic-bezier(.22,1,.36,1);}
@@ -2386,7 +2388,7 @@ function renderToday(){
     </button>`).join('');
   const metField=selM?`<div class="c-row">
     <span class="c-lbl">${selM.metric}</span>
-    <input class="c-inp" type="number" inputmode="decimal" placeholder="0"
+    <input class="c-inp" id="cd-metric" type="number" inputmode="decimal" placeholder="0"
       value="${cd.metric}" onchange="active.cardio.metric=this.value;saveActiveThrottled()">
     <span class="c-unit">${selM.unit}</span>
   </div>`:'';
@@ -2400,16 +2402,16 @@ function renderToday(){
       <div id="cardio-fields" style="${cd.machine?'':'display:none'}">
         <div class="cardio-fields">
           <div class="c-row"><span class="c-lbl">Program</span>
-            <input class="c-inp" type="text" placeholder="e.g. Weight Loss Mode Level 3"
+            <input class="c-inp" id="cd-prog" type="text" placeholder="e.g. Weight Loss Mode Level 3"
               value="${cd.program||''}" onchange="active.cardio.program=this.value;saveActiveThrottled()">
           </div>
           <div class="c-row"><span class="c-lbl">Duration</span>
-            <input class="c-inp" type="text" placeholder="e.g. 30 min"
+            <input class="c-inp" id="cd-dur" type="text" placeholder="e.g. 30 min"
               value="${cd.duration}" onchange="active.cardio.duration=this.value;saveActiveThrottled()">
           </div>
           ${metField}
           <div class="c-row"><span class="c-lbl">Calories</span>
-            <input class="c-inp" type="number" inputmode="numeric" placeholder="from machine"
+            <input class="c-inp" id="cd-cal" type="number" inputmode="numeric" placeholder="from machine"
               value="${cd.calories}" onchange="active.cardio.calories=this.value;saveActiveThrottled()">
             <span class="c-unit">cal</span>
           </div>
@@ -3442,7 +3444,10 @@ function renderEditModal(){
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-hdr">
         <span class="modal-title">Edit Session</span>
-        <button class="modal-close" onclick="closeEditModal()">×</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="me-del-sess-btn" onclick="deleteEditSession()" title="Delete this session">🗑</button>
+          <button class="modal-close" onclick="closeEditModal()">×</button>
+        </div>
       </div>
       <div class="modal-body">
         <div class="me-section"><span class="me-section-lbl">Date</span>
@@ -3452,17 +3457,51 @@ function renderEditModal(){
           <div class="me-ex-list">${exHtml}</div>
           <button class="me-add-ex" onclick="editAddEx()">+ Add Exercise</button>
         </div>
+        ${(()=>{
+          const cd=s.cardio||{machine:null,duration:'',metric:'',calories:'',program:''};
+          const selM=cd.machine?machById(cd.machine):null;
+          const machGrid=machines.map(m=>`
+            <button class="mach-btn${cd.machine===m.id?' sel':''}" onclick="editSelMachine('${m.id}')">
+              <span class="mi">${m.icon}</span>${m.name}
+            </button>`).join('');
+          const metField=selM?`<div class="me-field" style="flex:1;min-width:100px;">
+            <span class="me-field-lbl">${selM.metric} (${selM.unit})</span>
+            <input class="me-inp" style="width:100%;" type="number" inputmode="decimal" placeholder="0"
+              value="${cd.metric||''}" onchange="editSessionData.cardio.metric=this.value">
+          </div>`:'';
+          return`<div class="me-section"><span class="me-section-lbl">Cardio</span>
+            <div class="machine-grid">${machGrid}</div>
+            <div style="${cd.machine?'':'display:none'}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;margin-bottom:8px;">
+                <div class="me-field" style="flex:1;min-width:120px;"><span class="me-field-lbl">Program</span>
+                  <input class="me-inp" style="width:100%;" type="text" placeholder="e.g. Weight Loss Level 3"
+                    value="${esc(cd.program||'')}" onchange="editSessionData.cardio.program=this.value">
+                </div>
+                <div class="me-field" style="flex:1;min-width:100px;"><span class="me-field-lbl">Duration</span>
+                  <input class="me-inp" style="width:100%;" type="text" placeholder="e.g. 30 min"
+                    value="${esc(cd.duration||'')}" onchange="editSessionData.cardio.duration=this.value">
+                </div>
+                ${metField}
+                <div class="me-field" style="flex:1;min-width:80px;"><span class="me-field-lbl">Calories</span>
+                  <input class="me-inp" style="width:100%;" type="number" inputmode="numeric" placeholder="from machine"
+                    value="${cd.calories||''}" onchange="editSessionData.cardio.calories=this.value">
+                </div>
+              </div>
+              <button style="font-size:10px;color:var(--j-mut);background:transparent;border:none;cursor:pointer;padding:2px 0;text-decoration:underline;" onclick="editClearCardio()">Clear cardio</button>
+            </div>
+          </div>`;
+        })()}
         <div class="me-section"><span class="me-section-lbl">Session Notes (optional)</span>
           <textarea class="me-inp" style="width:100%;resize:none;min-height:60px;font-size:13px;" id="edit-notes">${esc(s.notes||'')}</textarea>
         </div>
-        <div style="display:flex;gap:8px;">
-          <div class="me-field" style="flex:1;"><span class="me-field-lbl">Effort</span>
-            <select class="me-inp" style="width:100%;" id="edit-effort">
-              <option value="">— skip —</option>
-              ${[1,2,3,4].map(n=>`<option value="${n}"${s.effort===n?' selected':''}>${effortLabels[n]}</option>`).join('')}
-            </select>
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+          <div class="me-field" style="flex:2;min-width:160px;"><span class="me-field-lbl">Effort</span>
+            <div class="effort-opts">
+              <button class="eff-btn${!s.effort?' e0':''}" style="${!s.effort?'border-color:var(--j-acc);color:var(--j-acc);':''}" onclick="editSessionData.effort=null;renderEditModal()">— Skip —</button>
+              ${[1,2,3,4].map(n=>`<button class="eff-btn${s.effort===n?' e'+n:''}" onclick="editSessionData.effort=${n};renderEditModal()">${effortLabels[n]}</button>`).join('')}
+            </div>
           </div>
-          <div class="me-field" style="flex:1;"><span class="me-field-lbl">Total Time</span>
+          <div class="me-field" style="flex:1;min-width:120px;"><span class="me-field-lbl">Total Time</span>
             <input class="me-inp" style="width:100%;" type="text" id="edit-duration" value="${s.duration||''}" placeholder="e.g. 60 min">
           </div>
         </div>
@@ -3470,6 +3509,27 @@ function renderEditModal(){
       </div>
     </div>
   </div>`;
+}
+function editSelMachine(id){
+  if(!editSessionData.cardio)editSessionData.cardio={machine:null,duration:'',metric:'',calories:'',program:''};
+  editSessionData.cardio.machine=id;
+  renderEditModal();
+}
+function editClearCardio(){
+  editSessionData.cardio={machine:null,duration:'',metric:'',calories:'',program:''};
+  renderEditModal();
+}
+function deleteEditSession(){
+  if(!confirm('Delete this session? This cannot be undone.'))return;
+  const idx=sessions.findIndex(s=>String(s.id)===String(editSessionData.id));
+  if(idx===-1){toast('Session not found');return;}
+  sessions.splice(idx,1);
+  sv('fj_sessions',sessions);
+  rebuildStats();
+  document.getElementById('modal-root').innerHTML='';
+  toast('Session deleted');
+  renderHistory();
+  if(gistCfg.pat){setSyncStatus('syncing');gistPush().then(()=>setSyncStatus('synced')).catch(()=>setSyncStatus('error'));}
 }
 function editRemoveEx(i){editSessionData.exercises.splice(i,1);renderEditModal();}
 function editAddEx(){
@@ -3493,7 +3553,6 @@ function closeEditModal(event){
 async function saveEditSession(){
   const dateEl=document.getElementById('edit-date');
   const notesEl=document.getElementById('edit-notes');
-  const effortEl=document.getElementById('edit-effort');
   const durEl=document.getElementById('edit-duration');
   const idx=sessions.findIndex(s=>String(s.id)===String(editSessionData.id));
   if(idx===-1){toast('Session not found');return;}
@@ -3502,7 +3561,6 @@ async function saveEditSession(){
   if(newDate>todayISO()){toast('Date cannot be in the future');return;}
   editSessionData.date=newDate;
   editSessionData.notes=notesEl?notesEl.value:editSessionData.notes;
-  editSessionData.effort=effortEl&&effortEl.value?parseInt(effortEl.value):null;
   editSessionData.duration=durEl?durEl.value:editSessionData.duration;
   sessions[idx]=editSessionData;
   sessions.sort((a,b)=>b.date.localeCompare(a.date));
