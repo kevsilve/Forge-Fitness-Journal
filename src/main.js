@@ -1,7 +1,9 @@
 import './styles/index.css';
-import { DEF_GROUPS, DEF_CFG, DEF_MACHINES, THEME_BASES, EFFORT_LABELS, EFFORT_COLORS, GIST_FILENAME } from './constants.js';
+import { DEF_GROUPS, DEF_CFG, DEF_MACHINES, THEME_BASES, EFFORT_LABELS, EFFORT_COLORS } from './constants.js';
 import { dotw, fmtDate, todayISO, isoFromDate, getWeekStart, DAYS_OF_WEEK } from './utils/date.js';
 import { dc, uid, esc, normalizeWeightType, pick, shuffle, parseScheme } from './utils/misc.js';
+import { ld, sv } from './storage.js';
+import { gistPull, gistPush } from './sync/gist.js';
 'use strict';
 
 function getSchemes(){return(cfg.schemes&&cfg.schemes.length)?cfg.schemes:['3×10','3×12','4×10'];}
@@ -9,8 +11,6 @@ function getSchemes(){return(cfg.schemes&&cfg.schemes.length)?cfg.schemes:['3×1
 /* ═══════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════ */
-function ld(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):dc(d);}catch(e){console.warn('ld failed for',k,e);return dc(d);}}
-function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){if(typeof toast==='function')toast('⚠️ Storage full — clear old sessions to free space',5000);}console.error('sv failed for',k,e);}}
 const lsGet=ld, lsSet=sv;
 let gistCfg = ld('fj_gist_cfg', {pat:'',gistId:''});
 
@@ -270,27 +270,6 @@ function applyPayload(data){
   if(!stats.prs)stats.prs={};
 }
 
-async function gistPull(){
-  if(!gistCfg.pat||!gistCfg.gistId)return null;
-  const res=await fetch(`https://api.github.com/gists/${gistCfg.gistId}`,{headers:{'Authorization':`token ${gistCfg.pat}`,'Accept':'application/vnd.github.v3+json'}});
-  if(!res.ok)throw new Error('GitHub error '+res.status);
-  const data=await res.json();
-  const fileObj=data.files&&data.files[GIST_FILENAME];
-  if(!fileObj)throw new Error(`"${GIST_FILENAME}" not found in Gist`);
-  let content=fileObj.content;
-  if(fileObj.truncated&&fileObj.raw_url){const raw=await fetch(fileObj.raw_url,{headers:{'Authorization':`token ${gistCfg.pat}`}});content=await raw.text();}
-  return JSON.parse(content);
-}
-async function gistPush(){
-  if(!gistCfg.pat)return;
-  const body={description:'FORGE Fitness Journal Backup',public:false,files:{[GIST_FILENAME]:{content:buildPayload()}}};
-  let url='https://api.github.com/gists';let method='POST';
-  if(gistCfg.gistId){url=`https://api.github.com/gists/${gistCfg.gistId}`;method='PATCH';}
-  const res=await fetch(url,{method,headers:{'Authorization':`token ${gistCfg.pat}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
-  if(!res.ok){const e=await res.json();throw new Error(e.message||'GitHub error '+res.status);}
-  const data=await res.json();if(!gistCfg.gistId){gistCfg.gistId=data.id;lsSet('fj_gist_cfg',gistCfg);}
-  return data;
-}
 
 /* ═══════════════════════════════════════════
    STARTUP
@@ -308,7 +287,7 @@ async function init(){
   }
   lmsg.textContent='Syncing from Gist…';setSyncStatus('syncing');
   try{
-    const data=await gistPull();
+    const data=await gistPull(gistCfg);
     if(data&&data.version){
       // Merge strategy: compare session counts — take whichever has more data
       // For sessions: merge by id so no duplicates, keep all unique sessions
@@ -383,7 +362,7 @@ function startAutoSync(){
     if(!active||!gistCfg.pat)return;
     // Save active workout state to localStorage silently
     lsSet('fj_active_workout',active);
-    try{await gistPush();}catch(e){/* silent */}
+    try{await gistPush(gistCfg, buildPayload());}catch(e){/* silent */}
   },30000);
 }
 /* ── AUTO-PUSH settings changes to Gist (debounced) ── */
@@ -393,7 +372,7 @@ function autoSaveSettings(){
   if(_settingsPushTimer)clearTimeout(_settingsPushTimer);
   _settingsPushTimer=setTimeout(async()=>{
     _settingsPushTimer=null;
-    try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}
+    try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}
   },2500);
 }
 // Throttled version for high-frequency events (weight inputs, reps)
@@ -419,8 +398,8 @@ async function setupConnect(){
   showSetupMsg('Connecting…','info');
   gistCfg.pat=pat;if(gistId)gistCfg.gistId=gistId;lsSet('fj_gist_cfg',gistCfg);
   try{
-    if(gistId){showSetupMsg('Pulling your data from Gist…','info');const data=await gistPull();if(data&&data.version)applyPayload(data);showSetupMsg(`✓ Restored ${sessions.length} sessions`,'ok');}
-    else{showSetupMsg('Creating new Gist…','info');await gistPush();showSetupMsg('✓ New Gist created','ok');}
+    if(gistId){showSetupMsg('Pulling your data from Gist…','info');const data=await gistPull(gistCfg);if(data&&data.version)applyPayload(data);showSetupMsg(`✓ Restored ${sessions.length} sessions`,'ok');}
+    else{showSetupMsg('Creating new Gist…','info');await gistPush(gistCfg, buildPayload());showSetupMsg('✓ New Gist created','ok');}
     setSyncStatus('synced');setTimeout(launchApp,800);
   }catch(err){showSetupMsg(`Error: ${err.message}`,'err');gistCfg.pat='';gistCfg.gistId='';lsSet('fj_gist_cfg',gistCfg);}
 }
@@ -445,8 +424,8 @@ async function manualSync(){
   if(!gistCfg.pat){openGistSetupModal();return;}
   setSyncStatus('syncing');
   try{
-    const data=await gistPull();if(data&&data.version)applyPayload(data);
-    await gistPush();setSyncStatus('synced');toast('Synced with Gist ✓');
+    const data=await gistPull(gistCfg);if(data&&data.version)applyPayload(data);
+    await gistPush(gistCfg, buildPayload());setSyncStatus('synced');toast('Synced with Gist ✓');
     const activeNav=document.querySelector('.tab.active');
     if(activeNav){const tabs=['generate','today','history','settings','stats'];tabs.forEach((t,i)=>{if(document.querySelectorAll('.tab')[i]?.classList.contains('active'))switchTab(t);});}
   }catch(err){setSyncStatus('error');toast(formatSyncError(err),4000);}
@@ -461,8 +440,8 @@ async function modalGistConnect(){
   gistCfg.pat=pat;if(gid)gistCfg.gistId=gid;lsSet('fj_gist_cfg',gistCfg);
   if(msgEl){msgEl.className='gist-msg info';msgEl.textContent=gid?'Pulling data…':'Creating Gist…';}
   try{
-    if(gid){const data=await gistPull();applyPayload(data);if(msgEl){msgEl.className='gist-msg ok';msgEl.innerHTML=`✅ Restored ${sessions.length} sessions`;}}
-    else{await gistPush();if(msgEl){msgEl.className='gist-msg ok';msgEl.textContent='✅ Gist created!';}}
+    if(gid){const data=await gistPull(gistCfg);applyPayload(data);if(msgEl){msgEl.className='gist-msg ok';msgEl.innerHTML=`✅ Restored ${sessions.length} sessions`;}}
+    else{await gistPush(gistCfg, buildPayload());if(msgEl){msgEl.className='gist-msg ok';msgEl.textContent='✅ Gist created!';}}
     setSyncStatus('synced');toast('Connected ✓');setTimeout(()=>{closeExportModal();renderHistory();},800);
   }catch(err){gistCfg.pat='';gistCfg.gistId='';lsSet('fj_gist_cfg',gistCfg);if(msgEl){msgEl.className='gist-msg err';msgEl.textContent='❌ '+err.message;}}
 }
@@ -1428,7 +1407,7 @@ async function saveWorkout(){
   // Auto-push to Gist in background while summary is visible
   if(gistCfg.pat){
     setSyncStatus('syncing');
-    try{await gistPush();setSyncStatus('synced');}
+    try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}
     catch(err){setSyncStatus('error');toast(formatSyncError(err),4000);}
   } else {
     const lastSeen=parseInt(ld('fj_backup_seen_count',0)||0);
@@ -1989,7 +1968,7 @@ function clearHistory(){
 async function _doClearHistory(){
   sessions=[];sv('fj_sessions',sessions);
   rebuildStats();
-  if(gistCfg.pat){try{await gistPush();}catch(e){}}
+  if(gistCfg.pat){try{await gistPush(gistCfg, buildPayload());}catch(e){}}
   toast('History cleared');renderHistory();
 }
 
@@ -2142,7 +2121,7 @@ function deleteEditSession(){
   document.getElementById('modal-root').innerHTML='';
   toast('Session deleted');
   renderHistory();
-  if(gistCfg.pat){setSyncStatus('syncing');gistPush().then(()=>setSyncStatus('synced')).catch(()=>setSyncStatus('error'));}
+  if(gistCfg.pat){setSyncStatus('syncing');gistPush(gistCfg, buildPayload()).then(()=>setSyncStatus('synced')).catch(()=>setSyncStatus('error'));}
 }
 function editRemoveEx(i){editSessionData.exercises.splice(i,1);renderEditModal();}
 function editAddEx(){
@@ -2182,7 +2161,7 @@ async function saveEditSession(){
   document.getElementById('modal-root').innerHTML='';
   toast('Session updated ✓');
   renderHistory();
-  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
 }
 
 /* ═══════════════════════════════════════════
@@ -2555,7 +2534,7 @@ function resetHistoryAndStats(){
 async function _doResetHistoryAndStats(){
   sessions=[];stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
   sv('fj_sessions',sessions);sv('fj_stats',stats);
-  if(gistCfg.pat){try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+  if(gistCfg.pat){try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
   toast('History & stats cleared');renderSettings();
 }
 function nuclearReset(){
@@ -2594,7 +2573,7 @@ async function _doNuclearReset(){
   sv('fj_gamification',gamification);
   applyBodyClasses();applyCustomAccent(null);
   renderHeaderLevel();
-  if(gistCfg.pat){try{await gistPush();}catch(e){}}
+  if(gistCfg.pat){try{await gistPush(gistCfg, buildPayload());}catch(e){}}
   toast('Everything reset to defaults');renderSettings();
 }
 function renderStructure(){
@@ -3379,7 +3358,7 @@ async function saveManualSession(){
   sv('fj_stats',stats);
   document.getElementById('modal-root').innerHTML='';
   toast('Session logged ✓');renderHistory();
-  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush();setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
+  if(gistCfg.pat){setSyncStatus('syncing');try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}}
 }
 
 /* ═══════════════════════════════════════════
@@ -3390,7 +3369,7 @@ async function settGistPush(){
   if(pat)gistCfg.pat=pat;if(gid)gistCfg.gistId=gid;lsSet('fj_gist_cfg',gistCfg);
   if(!gistCfg.pat){setSettMsg('Enter your PAT first','err');return;}
   setSettMsg('Pushing…','info');setSyncStatus('syncing');
-  try{const d=await gistPush();const idInp=document.getElementById('s-gid');if(idInp)idInp.value=gistCfg.gistId;setSettMsg(`✅ Pushed! <a href="${d.html_url}" target="_blank" style="color:var(--accent);">View Gist ↗</a>`,'ok');setSyncStatus('synced');toast('Synced ✓');}
+  try{const d=await gistPush(gistCfg, buildPayload());const idInp=document.getElementById('s-gid');if(idInp)idInp.value=gistCfg.gistId;setSettMsg(`✅ Pushed! <a href="${d.html_url}" target="_blank" style="color:var(--accent);">View Gist ↗</a>`,'ok');setSyncStatus('synced');toast('Synced ✓');}
   catch(err){setSettMsg(`❌ ${formatSyncError(err)}`,'err');setSyncStatus('error');}
 }
 async function settGistPull(){
@@ -3398,7 +3377,7 @@ async function settGistPull(){
   if(pat)gistCfg.pat=pat;if(gid)gistCfg.gistId=gid;lsSet('fj_gist_cfg',gistCfg);
   if(!gistCfg.pat||!gistCfg.gistId){setSettMsg('Need both PAT and Gist ID','err');return;}
   setSettMsg('Pulling…','info');
-  try{const data=await gistPull();applyPayload(data);setSettMsg(`✅ Restored ${sessions.length} sessions`,'ok');toast('Restored ✓');setSyncStatus('synced');renderHistory();}
+  try{const data=await gistPull(gistCfg);applyPayload(data);setSettMsg(`✅ Restored ${sessions.length} sessions`,'ok');toast('Restored ✓');setSyncStatus('synced');renderHistory();}
   catch(err){setSettMsg(`❌ ${formatSyncError(err)}`,'err');}
 }
 function setSettMsg(msg,type){const el=document.getElementById('s-gist-msg');if(el){el.className='gist-msg '+type;el.innerHTML=msg;}}
