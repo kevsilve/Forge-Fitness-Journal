@@ -1,0 +1,249 @@
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.modal{width:100%;max-width:580px;background:var(--j-bg);border-radius:16px 16px 0 0;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease;}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;border-bottom:1px solid var(--j-bor);background:var(--j-sur);position:sticky;top:0;z-index:10;}
+.modal-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:var(--j-txt);}
+.modal-close{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--j-bor2);background:transparent;font-size:18px;color:var(--j-mut);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.modal-close:hover{background:var(--j-tnt);color:var(--j-txt);}
+.modal-body{padding:14px 14px 32px;}
+.me-section{margin-bottom:18px;}
+.me-section-lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--j-mut);margin-bottom:10px;display:block;}
+.me-ex-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.me-ex-card{background:var(--j-card);border:1px solid var(--j-bor);border-radius:8px;overflow:hidden;}
+.me-ex-top{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--j-bor);background:var(--j-tnt);}
+.me-ex-num{font-family:'Black Ops One',sans-serif;font-size:12px;color:var(--j-acc);flex:1;letter-spacing:1px;}
+.me-ex-del{width:22px;height:22px;border-radius:4px;border:1px solid #dc2626;background:transparent;font-size:14px;color:#dc2626;cursor:pointer;transition:all .15s;}
+.me-ex-del:hover{background:rgba(220,38,38,0.1);}
+.me-ex-fields{display:flex;gap:8px;padding:9px 11px;align-items:flex-start;flex-wrap:wrap;}
+.me-field{display:flex;flex-direction:column;gap:3px;}
+.me-field-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--j-mut);}
+.me-inp{padding:7px 9px;border:1.5px solid var(--j-bor2);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;color:var(--j-txt);background:var(--j-sur);transition:border-color .2s;}
+.me-inp:focus{outline:none;border-color:var(--j-acc);}
+.me-inp-sm{width:72px;}
+.me-add-ex{width:100%;padding:10px;border:1.5px dashed var(--j-bor2);border-radius:8px;background:transparent;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--j-mut);cursor:pointer;transition:all .15s;letter-spacing:.5px;}
+.me-add-ex:hover{border-color:var(--j-acc);color:var(--j-acc);background:var(--j-tnt);}
+.me-save-btn{width:100%;padding:15px;background:var(--j-acc);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:16px;transition:opacity .15s;box-shadow:0 4px 16px rgba(200,16,46,.2);}
+.me-save-btn:active{opacity:.85;}
+.me-del-sess-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--j-dn);background:transparent;font-size:15px;color:var(--j-dn);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.me-del-sess-btn:hover{background:rgba(220,38,38,0.1);}
+
+/* Backup prompt */
+.backup-prompt{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);width:calc(100% - 26px);max-width:554px;background:var(--surface);border:1px solid var(--border3);border-radius:12px;padding:14px 16px;z-index:400;box-shadow:0 8px 32px rgba(0,0,0,.45);animation:slideUpPrompt .25s cubic-bezier(.22,1,.36,1);}
+@keyframes slideUpPrompt{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.backup-prompt-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.backup-prompt-icon{font-size:22px;}
+.backup-prompt-text{flex:1;}
+.backup-prompt-title{font-size:13px;font-weight:700;color:var(--text);}
+.backup-prompt-sub{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.3px;}
+.backup-prompt-btns{display:flex;gap:8px;}
+.backup-dl-btn{flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .15s;}
+.backup-dl-btn:active{opacity:.85;}
+.backup-skip-btn{padding:10px 16px;background:transparent;border:1px solid var(--border2);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.backup-skip-btn:hover{border-color:var(--border3);color:var(--text2);}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;z-index:999;border:1px solid var(--border3);box-shadow:0 4px 24px rgba(0,0,0,.35);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── Sticky workout bar (replaces separate progress + ts-bar) ── */
+.j-sticky-bar{
+  position:sticky;top:var(--hdr-h,72px);z-index:100;
+  background:var(--j-sur);
+  border-bottom:1px solid var(--j-bor);
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+}
+.j-sticky-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 14px;
+}
+.j-sticky-sets{font-size:11px;font-weight:700;color:var(--j-txt);letter-spacing:.2px;}
+.j-sticky-timer{font-size:12px;font-weight:700;color:var(--j-acc);letter-spacing:.5px;font-variant-numeric:tabular-nums;}
+.j-sticky-cal{font-size:11px;font-weight:600;color:var(--j-mut);letter-spacing:.3px;font-variant-numeric:tabular-nums;}
+/* ── Progress bar ── */
+.j-progress{height:3px;background:var(--j-bor2);overflow:hidden;}
+.j-progress-fill{height:100%;background:var(--j-acc);transition:width .35s cubic-bezier(.4,0,.2,1);will-change:width;}
+.j-progress-fill.complete{background:var(--j-up);}
+
+/* ── Live timer (legacy class kept for JS compat) ── */
+.j-live-timer{font-variant-numeric:tabular-nums;}
+
+/* ── Set completion pop animation ── */
+@keyframes setDone{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+.j-cell-set.set-pop{animation:setDone .35s cubic-bezier(.34,1.56,.64,1);}
+
+/* ── Save button improved ── */
+.save-btn:hover{box-shadow:0 6px 28px rgba(200,16,46,.42);transform:translateY(-1px);}
+.save-btn.saving{opacity:.7;pointer-events:none;}
+.save-btn.saving::after{content:'';display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-left:8px;vertical-align:middle;}
+
+/* ── Effort button improvements ── */
+.eff-btn.e1{background:#dcfce7;border-color:var(--j-up);color:var(--j-up);font-weight:800;}
+.eff-btn.e2{background:#fef9c3;border-color:#ca8a04;color:#ca8a04;font-weight:800;}
+.eff-btn.e3{background:#fee2e2;border-color:var(--j-dn);color:var(--j-dn);font-weight:800;}
+.eff-btn.e4{background:#111;border-color:#333;color:#fff;font-weight:800;}
+.eff-btn{transition:all .15s cubic-bezier(.34,1.56,.64,1);}
+.eff-btn:active{transform:scale(.92);}
+
+/* ── Week day cell transition ── */
+.week-day-cell{transition:transform .12s ease,background .15s;}
+.week-day-cell.is-selected .wdc-bubble{transform:scale(1.12);}
+.wdc-bubble{transition:transform .15s cubic-bezier(.34,1.56,.64,1);}
+
+/* ── History chip expand transition ── */
+.wec-detail{max-height:0;overflow:hidden;padding:0 12px;transition:max-height .28s cubic-bezier(.4,0,.2,1),padding .2s;}
+.wec-detail.open{max-height:200px;padding:0 12px 10px;}
+
+/* ── Exercise card hover polish ── */
+.j-ex:active{transform:scale(.995);}
+.j-adj{width:38px;height:38px;}
+
+/* ── Active workout dot on nav ── */
+.bnav-btn{position:relative;}
+.bnav-active-dot{
+  position:absolute;top:5px;right:calc(50% - 14px);
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  animation:navDotPulse 2s ease-in-out infinite;
+  display:none;
+}
+.bnav-btn.has-active-workout .bnav-active-dot{display:block;}
+@keyframes navDotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+
+/* Loading & Setup screens */
+#loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.loading-logo{font-family:'Black Ops One',sans-serif;font-size:52px;letter-spacing:10px;color:var(--accent);text-shadow:0 0 40px var(--accent-glow);}
+.loading-msg{font-size:13px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-err{display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:12px 16px;max-width:400px;text-align:center;}
+.loading-err-msg{font-size:12px;color:var(--dn);line-height:1.6;margin-bottom:10px;}
+.loading-err-btn{padding:7px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;}
+
+#setup-screen{position:fixed;inset:0;background:var(--bg);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+.setup-logo{font-family:'Black Ops One',sans-serif;font-size:48px;letter-spacing:10px;color:var(--accent);text-shadow:0 0 40px var(--accent-glow);margin-bottom:8px;}
+.setup-sub{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:36px;}
+.setup-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.setup-card-hdr{padding:16px 18px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.setup-card-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;}
+.setup-card-sub{font-size:13px;color:var(--text2);line-height:1.5;}
+.setup-body{padding:18px;display:flex;flex-direction:column;gap:14px;}
+.setup-field{display:flex;flex-direction:column;gap:5px;}
+.setup-field label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);}
+.setup-inp{width:100%;padding:11px 13px;border:1.5px solid var(--border2);border-radius:4px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface3);transition:border-color .2s;}
+.setup-inp:focus{outline:none;border-color:var(--accent);}
+.setup-inp::placeholder{color:var(--text3);}
+.setup-hint{font-size:11px;color:var(--text3);line-height:1.6;}
+.setup-hint code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px;}
+.setup-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 20px var(--accent-glow);}
+.setup-btn:active{opacity:.88;}
+.setup-msg{padding:10px 13px;border-radius:4px;font-size:12px;font-weight:600;}
+.setup-msg.ok{background:rgba(34,197,94,.1);color:var(--up);border:1px solid rgba(34,197,94,.2);}
+.setup-msg.err{background:rgba(239,68,68,.1);color:var(--dn);border:1px solid rgba(239,68,68,.2);}
+.setup-msg.info{background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2);}
+.setup-skip{margin-top:12px;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+/* ─── Settings Tabs ─── */
+.sett-tabs{display:flex;background:var(--surface);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10;}
+.sett-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 9px;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .15s;}
+.sett-tab.active{border-bottom-color:var(--accent);}
+.sett-tab-icon{font-size:15px;line-height:1;}
+.sett-tab-lbl{font-size:7.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text3);}
+.sett-tab.active .sett-tab-lbl{color:var(--accent);}
+.sett-panel{padding:12px 12px 48px;animation:fadeIn .15s ease;}
+.sett-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;}
+.sett-card-title{font-family:'Black Ops One',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;}
+.sett-row-disabled{opacity:.4;pointer-events:none;}
+/* ─── Rest Timer Bar ─── */
+.rest-timer-bar{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom) + 8px);left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:560px;background:var(--j-sur);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;z-index:250;display:flex;align-items:center;gap:12px;box-shadow:0 -2px 20px rgba(0,0,0,.35);overflow:hidden;}
+.rest-timer-time{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent);min-width:52px;}
+.rest-timer-label{font-size:10px;color:var(--j-mut);letter-spacing:1px;text-transform:uppercase;flex:1;}
+.rest-timer-prog{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);opacity:.6;transition:width 1s linear;}
+.rest-timer-skip{font-size:11px;font-weight:700;color:var(--accent);background:transparent;border:1.5px solid var(--accent);padding:5px 12px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.rest-timer-bar.rt-done{border-color:var(--up);}
+.rest-timer-bar.rt-done .rest-timer-time,.rest-timer-bar.rt-done .rest-timer-skip{color:var(--up);}
+.rest-timer-bar.rt-done .rest-timer-prog{background:var(--up);}
+/* ─── Plateau Hint ─── */
+.plateau-hint{font-size:9px;font-weight:700;letter-spacing:.5px;color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);padding:2px 7px;border-radius:4px;white-space:nowrap;display:inline-block;margin-top:4px;}
+.plateau-hint.strong{color:#ef4444;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);}
+/* ─── Build Mode Toggle ─── */
+.build-mode-bar{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:3px;margin:0 0 12px;overflow:hidden;}
+.bm-btn{flex:1;padding:8px 4px;background:transparent;border:none;color:var(--text3);font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;border-radius:6px;transition:all .2s;}
+.bm-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow);}
+#gen-streak-chip{margin:0 0 10px;}
+.gen-streak-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;}
+.gen-streak-count{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:1px;color:var(--up);display:flex;align-items:center;gap:7px;}
+.gen-streak-fire{font-size:15px;line-height:1;}
+.gen-streak-idle{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.gen-streak-prog{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);}
+.gen-streak-prog.done{color:var(--up);}
+.start-row{display:flex;gap:8px;align-items:stretch;padding:12px 0 0;}
+.save-tpl-btn{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:4px;font-family:'Black Ops One',sans-serif;font-size:10px;letter-spacing:1.5px;padding:0 14px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;}
+.save-tpl-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tpl-bar{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;margin:0 0 10px;}
+.tpl-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.tpl-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.tpl-chip{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border2);border-radius:6px;overflow:hidden;}
+.tpl-load{background:transparent;border:none;color:var(--text);font-size:11px;font-weight:600;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.tpl-load:hover{color:var(--accent);}
+.tpl-count{font-size:9px;color:var(--text3);}
+.tpl-del{background:transparent;border:none;border-left:1px solid var(--border2);color:#ef4444;padding:6px 8px;cursor:pointer;font-size:14px;line-height:1;}
+.tpl-del:hover{background:rgba(239,68,68,0.08);}
+/* ─── Custom Workout Cards ─── */
+.ex-card-remove{width:26px;height:26px;background:transparent;border:1.5px solid var(--border2);color:var(--text3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.ex-card-remove:hover{border-color:#ef4444;color:#ef4444;}
+.scheme-cycle{font-size:10px;font-weight:700;padding:3px 9px;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);border-radius:4px;cursor:pointer;letter-spacing:.5px;transition:all .15s;}
+.scheme-cycle:hover{background:var(--accent-dim);}
+/* ─── Exercise Picker ─── */
+.picker-group-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--j-sur);cursor:pointer;user-select:none;border-bottom:1px solid var(--j-bor);}
+.picker-group-name{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--j-txt);flex:1;}
+.picker-group-count{font-size:10px;color:var(--j-mut);}
+.picker-group-chev{font-size:8px;color:var(--j-mut);transition:transform .2s;}
+.picker-group-hdr.open .picker-group-chev{transform:rotate(180deg);}
+.picker-ex-list{padding:0 8px;}
+.picker-ex-item{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid var(--j-bor);cursor:pointer;transition:background .12s;border-radius:6px;margin:2px 0;}
+.picker-ex-item:last-child{border-bottom:none;}
+.picker-ex-item:hover{background:var(--j-tnt);}
+.picker-ex-item.selected{background:var(--j-tnt);}
+.picker-ex-name{flex:1;font-size:13px;color:var(--j-txt);}
+.picker-ex-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--j-bor2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:transparent;}
+.picker-ex-item.selected .picker-ex-check{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* ─── Empty State Cards ─── */
+.empty-state-card{text-align:center;padding:56px 24px 40px;}
+.es-icon{font-size:38px;margin-bottom:14px;display:block;}
+.es-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--text2);margin-bottom:8px;}
+.es-sub{font-size:12px;color:var(--text3);margin-bottom:24px;line-height:1.8;max-width:220px;margin-left:auto;margin-right:auto;}
+.es-cta{font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;padding:10px 22px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;display:block;margin:0 auto 10px;transition:opacity .15s;}
+.es-cta:hover{opacity:.85;}
+.es-secondary{font-size:11px;font-weight:600;color:var(--text3);background:transparent;border:1.5px solid var(--border2);padding:8px 18px;border-radius:8px;cursor:pointer;display:block;margin:0 auto;transition:all .15s;}
+.es-secondary:hover{color:var(--text);border-color:var(--border);}
+/* ─── Workout Summary Modal ─── */
+.summ-modal{border-radius:16px 16px 0 0;}
+.summ-hero{text-align:center;padding:28px 20px 20px;background:var(--j-sur);border-bottom:1px solid var(--j-bor);}
+.summ-title{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:4px;color:var(--accent);margin-bottom:6px;}
+.summ-date{font-size:12px;color:var(--j-mut);letter-spacing:1px;margin-bottom:6px;}
+.summ-effort{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.summ-stats-grid{display:flex;gap:8px;padding:16px;flex-wrap:wrap;justify-content:center;}
+.summ-stat{background:var(--j-card);border:1px solid var(--j-bor);border-radius:10px;padding:14px 18px;text-align:center;min-width:72px;flex:1;}
+.summ-stat-val{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--j-txt);letter-spacing:1px;margin-bottom:4px;}
+.summ-stat-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--j-mut);}
+.summ-prs{margin:0 16px 8px;background:var(--j-tnt);border:1px solid var(--accent);border-radius:10px;padding:12px 14px;}
+.summ-prs-title{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;}
+.summ-pr-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--j-txt);padding:3px 0;}
+.summ-xp-row{margin:0 16px 8px;background:var(--j-tnt);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;}
+.summ-xp-left{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.summ-xp-gained{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--accent);letter-spacing:1px;}
+.summ-xp-lv{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;}
+.summ-lvlup{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--up);animation:pulseGlow 1s ease-in-out infinite alternate;}
+.summ-xp-bar-wrap{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;}
+.summ-xp-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .6s ease;}
+.summ-badges-section{border-color:var(--border2);}
+.summ-badge-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
+.summ-badge-icon{font-size:20px;width:28px;text-align:center;}
+.summ-badge-tier{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-left:auto;}
+.summ-exercises{margin:0 16px 8px;background:var(--j-card);border:1px solid var(--j-bor);border-radius:10px;padding:12px 14px;}
+.summ-ex-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--j-bor);}.summ-ex-row:last-child{border-bottom:none;}
+.summ-ex-info{flex:1;min-width:0;}
+.summ-ex-name{font-size:12px;font-weight:700;color:var(--j-txt);display:flex;align-items:center;gap:6px;}
+.summ-ex-detail{font-size:10px;color:var(--j-mut);margin-top:1px;}
+.summ-ex-wt{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;margin-left:8px;}
+.summ-ex-pr-tag{font-size:8px;font-weight:700;letter-spacing:1px;background:var(--accent);color:#000;padding:1px 5px;border-radius:3px;}

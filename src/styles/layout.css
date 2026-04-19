@@ -1,0 +1,53 @@
+/* ── HEADER ── */
+.hdr{
+  width:100%;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 12px 8px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  position:sticky;top:0;z-index:200;
+}
+.hdr-left{min-width:0;flex-shrink:1;overflow:hidden;}
+.hdr-right{flex-shrink:0;display:flex;align-items:center;gap:6px;}
+.hdr-title{
+  font-family:'Black Ops One',sans-serif;font-size:30px;letter-spacing:7px;
+  color:var(--accent);line-height:1;
+  text-shadow:0 0 30px var(--accent-glow);
+  white-space:nowrap;overflow:hidden;
+}
+.hdr-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--text3);margin-top:2px;}
+.sync-btn{
+  display:flex;align-items:center;gap:5px;padding:5px 8px;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:4px;
+  cursor:pointer;transition:all .2s;color:var(--text3);font-size:10px;font-weight:600;
+  font-family:'Inter',sans-serif;letter-spacing:.5px;white-space:nowrap;
+}
+.sync-btn.synced{border-color:var(--up);color:var(--up);}
+.sync-btn.syncing{border-color:var(--accent);color:var(--accent);animation:pulse .8s infinite;}
+.sync-btn.error{border-color:var(--dn);color:var(--dn);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#sync-lbl{white-space:nowrap;}
+
+/* ── BOTTOM NAV ── */
+.bot-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;justify-content:center;z-index:300;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bot-nav-inner{display:flex;width:100%;max-width:580px;}
+.bnav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 2px 8px;background:transparent;border:none;cursor:pointer;
+  color:var(--text3);font-family:'Inter',sans-serif;font-size:9px;font-weight:600;
+  letter-spacing:.3px;text-transform:uppercase;gap:3px;transition:color .2s;min-width:0;
+}
+.bnav-btn.active{color:var(--accent);}
+.bnav-btn svg{width:18px;height:18px;stroke-width:1.8;flex-shrink:0;}
+.bnav-btn .bnav-lbl{font-size:8px;letter-spacing:.4px;line-height:1;}
+
+/* ── VIEWS ── */
+.view{width:100%;max-width:580px;display:none;animation:fadeIn .2s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#view-generate{padding:14px 13px 16px;}
+#view-today,#view-history,#view-settings,#view-stats,#view-prs{padding:0;}
+

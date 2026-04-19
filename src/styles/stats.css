@@ -1,0 +1,73 @@
+/* ════════════════════════
+   STATS
+════════════════════════ */
+.stats-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
+.stat-tabs{display:flex;gap:0;border:1px solid var(--border);margin-bottom:14px;border-radius:4px;overflow:hidden;}
+.stat-tab{flex:1;padding:9px 4px;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.stat-tab:last-child{border-right:none;}
+.stat-tab.active{background:var(--accent-dim);color:var(--accent);}
+.stat-panel{display:none;animation:fadeIn .2s ease;}
+.stat-panel.active{display:block;}
+.sess-hero{text-align:center;padding:24px 0 18px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sess-num{font-family:'Black Ops One',sans-serif;font-size:56px;letter-spacing:4px;color:var(--accent);line-height:1;display:block;text-shadow:0 0 30px var(--accent-glow);}
+.sess-lbl{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--text3);margin-top:4px;display:block;}
+.sg{margin-bottom:18px;}
+.sg-name{font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.sr{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.sn{font-size:11px;text-transform:uppercase;letter-spacing:.3px;width:130px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+.sbw{flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+.sb{height:100%;background:var(--accent);border-radius:2px;transition:width .8s cubic-bezier(.22,1,.36,1);}
+.sb.top{box-shadow:0 0 8px var(--accent-glow);}
+.sp{font-size:10px;color:var(--text3);width:32px;text-align:right;flex-shrink:0;}
+.sct{font-size:10px;color:var(--text3);width:18px;text-align:right;flex-shrink:0;}
+.sreps{font-size:9px;color:var(--text3);width:42px;text-align:right;flex-shrink:0;line-height:1.3;}
+.no-stat{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);text-align:center;padding:32px 0;}
+.stat-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.stat-count-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
+.rst-stats-btn{background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;cursor:pointer;border-radius:4px;transition:all .2s;}
+.rst-stats-btn.armed{border-color:var(--accent);color:var(--accent);}
+.wt-chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:14px;overflow:hidden;}
+.wt-chart-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 13px 8px;border-bottom:1px solid var(--border);}
+.wt-chart-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+.wt-chart-max{font-size:11px;color:var(--accent);font-weight:700;}
+.wt-chart-svg{display:block;width:100%;height:72px;}
+.wt-chart-foot{display:flex;justify-content:space-between;padding:4px 13px 8px;font-size:9px;color:var(--text3);letter-spacing:.5px;}
+.weekly-chart{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 13px;margin-bottom:16px;}
+.weekly-chart-title{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;}
+.week-bars{display:flex;align-items:flex-end;gap:4px;height:60px;}
+.week-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.week-bar-fill{width:100%;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;transition:height .6s cubic-bezier(.22,1,.36,1);opacity:.85;}
+.week-bar-fill.this-week{opacity:1;box-shadow:0 0 8px var(--accent-glow);}
+.week-bar-lbl{font-size:8px;color:var(--text3);letter-spacing:.3px;}
+.week-bar-num{font-size:9px;font-weight:700;color:var(--text3);}
+
+/* ════════════════════════
+   PRs
+════════════════════════ */
+.prs-wrap{background:var(--bg);min-height:100vh;padding:14px 12px 40px;}
+.prs-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--accent);margin-bottom:16px;text-align:center;text-shadow:0 0 20px var(--accent-glow);}
+.pr-group{margin-bottom:20px;}
+.pr-group-name{font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.pr-row{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;transition:border-color .2s;}
+.pr-row:hover{border-color:var(--border3);}
+.pr-rank{font-size:18px;width:24px;flex-shrink:0;text-align:center;}
+.pr-info{flex:1;min-width:0;}
+.pr-name{font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pr-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.pr-weight{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent);}
+.pr-unit{font-size:10px;color:var(--text3);}
+.pr-1rm{font-size:9px;color:var(--text3);margin-top:1px;white-space:nowrap;}
+.prs-empty{text-align:center;padding:56px 20px;font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+/* plate calculator */
+.plate-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+.plate-field{display:flex;flex-direction:column;gap:6px;}
+.plate-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.plate-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+.plate-chip{font-family:'Black Ops One',sans-serif;font-size:14px;padding:6px 12px;border-radius:8px;border:2px solid;letter-spacing:1px;}
+.plate-side-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
+.plate-total-row{margin-top:10px;font-size:11px;color:var(--text2);}
+.plate-total-val{font-family:'Black Ops One',sans-serif;font-size:16px;color:var(--accent);}
+.plate-empty{font-size:11px;color:var(--text3);text-align:center;padding:24px 0;letter-spacing:1px;}
+/* in-workout PR badge */
+.j-pr-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--up);background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);border-radius:6px;padding:3px 8px;margin:0 14px 8px;animation:pulseGlow .8s ease-in-out infinite alternate;}
+.j-plate-btn{background:none;border:1px solid var(--j-bor2);border-radius:6px;font-size:13px;padding:4px 7px;cursor:pointer;color:var(--j-mut);flex-shrink:0;}

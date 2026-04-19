@@ -1,0 +1,99 @@
+/* ════════════════════════
+   GAMIFICATION
+════════════════════════ */
+/* Header Level Badge */
+.hdr-level{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);gap:2px;transition:border-color .2s,background .2s;min-width:54px;}
+.hdr-level:hover{border-color:var(--accent);background:var(--accent-dim);}
+.hdr-level-tier{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-weight:700;}
+.hdr-level-num{font-family:'Black Ops One',sans-serif;font-size:15px;color:var(--accent);line-height:1;}
+.hdr-level-bar{width:100%;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.hdr-level-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;}
+/* Profile Modal */
+.profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.profile-sheet{width:100%;max-width:580px;background:var(--bg);border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;animation:slideUp .22s ease;}
+.profile-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;}
+.profile-hdr-title{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--accent);}
+.profile-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border3);background:transparent;font-size:20px;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.profile-close:hover{border-color:var(--accent);color:var(--accent);}
+.profile-body{padding:16px 16px 40px;}
+/* Archetype Card */
+.archetype-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.archetype-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:var(--accent-glow);filter:blur(50px);pointer-events:none;}
+.archetype-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.archetype-icon{font-size:30px;line-height:1;flex-shrink:0;}
+.archetype-info{flex:1;margin-left:12px;}
+.archetype-name{font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:2px;color:var(--text);}
+.archetype-tagline{font-size:11px;color:var(--text2);margin-top:3px;font-style:italic;line-height:1.4;}
+.archetype-level{text-align:right;flex-shrink:0;}
+.archetype-lv-num{font-family:'Black Ops One',sans-serif;font-size:26px;color:var(--accent);line-height:1;}
+.archetype-lv-tier{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
+.archetype-xp{font-size:10px;color:var(--text3);margin-top:3px;}
+.xp-bar{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s ease;}
+.xp-meta{font-size:9px;color:var(--text3);text-align:right;margin-top:3px;margin-bottom:10px;letter-spacing:.5px;}
+/* Sub-stats */
+.substats{display:flex;flex-direction:column;gap:7px;}
+.substat-row{display:flex;align-items:center;gap:8px;}
+.substat-lbl{font-size:9px;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:var(--text3);width:32px;flex-shrink:0;}
+.substat-bar{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden;}
+.substat-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .6s ease;}
+.substat-val{font-size:10px;font-weight:700;color:var(--text2);width:24px;text-align:right;flex-shrink:0;}
+/* Section Title */
+.gamif-section-title{font-size:9px;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+/* Badge Grid */
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:border-color .15s,background .15s;text-align:center;min-height:74px;justify-content:center;cursor:pointer;}
+.badge-item:active{transform:scale(.95);}
+.badge-item.earned{border-color:var(--accent);background:var(--accent-dim);}
+.badge-item.hidden-badge{opacity:.35;}
+.badge-icon{font-size:22px;line-height:1;}
+.badge-name{font-size:8px;letter-spacing:.5px;font-weight:700;text-transform:uppercase;color:var(--text2);line-height:1.2;}
+.badge-item.earned .badge-name{color:var(--accent);}
+.badge-tier-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.tier-bronze{background:#cd7f32;}.tier-silver{background:#94a3b8;}.tier-gold{background:#f59e0b;}.tier-platinum{background:linear-gradient(135deg,#a5b4fc,#60a5fa);}
+/* Badge detail sheet */
+.badge-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:650;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease;}
+.badge-detail-sheet{width:100%;max-width:580px;background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px 40px;animation:slideUp .2s ease;text-align:center;}
+.badge-detail-icon{font-size:56px;margin-bottom:12px;display:block;}
+.badge-detail-name{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:2px;color:var(--text);margin-bottom:6px;}
+.badge-detail-tier{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+.badge-detail-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;padding:0 8px;}
+.badge-detail-status{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 20px;border-radius:20px;display:inline-block;}
+.badge-detail-status.earned{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);}
+.badge-detail-status.locked{background:var(--surface2);color:var(--text3);border:1px solid var(--border2);}
+.badge-detail-close{margin-top:16px;width:100%;padding:12px;border:1.5px solid var(--border2);background:transparent;border-radius:8px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+.badge-detail-close:hover{border-color:var(--accent);color:var(--accent);}
+/* Calling Card */
+.calling-card-section{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.card-preview{border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#181010 100%);border:1px solid #2a2a2a;padding:18px;margin-bottom:12px;position:relative;}
+.card-accent-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.card-top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.card-archetype-name{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;color:#fff;}
+.card-archetype-tag{font-size:10px;color:#666;margin-top:2px;}
+.card-level-badge{background:var(--accent);color:#fff;font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:1px;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+.card-substats-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.card-stat-row{display:flex;align-items:center;gap:6px;}
+.card-stat-lbl{font-size:8px;font-weight:700;letter-spacing:1px;color:#666;width:28px;}
+.card-stat-bar{flex:1;height:5px;background:#222;border-radius:3px;overflow:hidden;}
+.card-stat-fill{height:100%;border-radius:3px;}
+.card-stat-val{font-size:9px;color:#666;width:20px;text-align:right;}
+.card-badges-row{display:flex;gap:8px;margin-bottom:12px;min-height:28px;align-items:center;}
+.card-badge-icon{font-size:20px;}
+.card-footer{border-top:1px solid #222;padding-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;}
+.card-footer-stat{text-align:center;}
+.card-footer-val{font-family:'Black Ops One',sans-serif;font-size:13px;color:#eee;}
+.card-footer-lbl{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:2px;}
+.card-export-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:opacity .15s;}
+.card-export-btn:active{opacity:.8;}
+/* Level-up Modal */
+.levelup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:700;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.levelup-modal{background:var(--surface);border:1.5px solid var(--accent);border-radius:16px;padding:32px 24px;text-align:center;max-width:300px;width:88%;animation:levelupPop .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 60px var(--accent-glow);}
+@keyframes levelupPop{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}
+.levelup-icon{font-size:44px;margin-bottom:6px;}
+.levelup-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.levelup-level{font-family:'Black Ops One',sans-serif;font-size:52px;color:var(--accent);line-height:1;text-shadow:0 0 30px var(--accent-glow);}
+.levelup-tier{font-family:'Black Ops One',sans-serif;font-size:14px;color:var(--text2);letter-spacing:3px;margin-top:4px;margin-bottom:12px;}
+.levelup-desc{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.levelup-close{background:var(--accent);color:#fff;border:none;padding:12px 32px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;border-radius:6px;transition:opacity .15s;}
+.levelup-close:active{opacity:.8;}
+

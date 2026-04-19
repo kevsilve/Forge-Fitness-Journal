@@ -1,0 +1,63 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── THEME VARIABLES ── */
+body.base-dark{
+  --bg:#080808;--surface:#0f0f0f;--surface2:#141414;--surface3:#1a1a1a;
+  --border:#1e1e1e;--border2:#2a2a2a;--border3:#333;
+  --text:#ececec;--text2:#aaa;--text3:#555;
+  --accent:#e8271f;--accent2:#ff4438;--accent-dim:rgba(232,39,31,0.1);--accent-glow:rgba(232,39,31,0.25);
+  --up:#22c55e;--dn:#ef4444;--eq:#64748b;
+  --j-bg:#f7f6f4;--j-sur:#fff;--j-bor:#eae7e2;--j-bor2:#d8d4ce;
+  --j-txt:#111;--j-txt2:#555;--j-mut:#999;
+  --j-acc:#e8271f;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#f0ede8;
+  --j-tnt2:#e8e4de;--j-card:#fff;
+}
+body.base-dark #view-today,body.base-dark #view-history,body.base-dark #modal-root{
+  --j-bg:var(--bg);--j-sur:var(--surface);--j-bor:var(--border);--j-bor2:var(--border2);
+  --j-txt:var(--text);--j-txt2:var(--text2);--j-mut:var(--text3);
+  --j-tnt:var(--surface2);--j-tnt2:var(--surface3);--j-card:var(--surface);
+  --j-acc:var(--accent);
+}
+body.base-dark{color-scheme:dark;}
+body.base-light{color-scheme:light;}
+body.base-light{
+  --bg:#f0eeeb;--surface:#faf9f7;--surface2:#f0eeeb;--surface3:#e8e5e0;
+  --border:#ddd9d3;--border2:#ccc8c2;--border3:#bbb6b0;
+  --text:#1a1a1a;--text2:#555;--text3:#aaa;
+  --accent:#c8102e;--accent2:#e01530;--accent-dim:rgba(200,16,46,0.08);--accent-glow:rgba(200,16,46,0.2);
+  --up:#16a34a;--dn:#dc2626;--eq:#64748b;
+  --j-bg:#f0eeeb;--j-sur:#faf9f7;--j-bor:#ddd9d3;--j-bor2:#ccc8c2;
+  --j-txt:#1a1a1a;--j-txt2:#555;--j-mut:#888;
+  --j-acc:#c8102e;--j-up:#16a34a;--j-dn:#dc2626;--j-eq:#64748b;--j-tnt:#e8e5e0;
+  --j-tnt2:#ddd9d3;--j-card:#faf9f7;
+}
+
+/* ── ACCENT PICKER UI ── */
+.accent-swatches{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0;}
+.accent-swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0;}
+.accent-swatch:hover{transform:scale(1.15);}
+.accent-swatch.active{border-color:var(--text);transform:scale(1.1);}
+.accent-custom-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.accent-hex-inp{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:6px 9px;border-radius:4px;width:100px;transition:border-color .2s;}
+.accent-hex-inp:focus{outline:none;border-color:var(--accent);}
+.accent-preview{width:32px;height:32px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;transition:background .2s,border-color .2s,box-shadow .2s;cursor:pointer;}
+.accent-preview:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.accent-preview.fcp-open{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.fcp-panel{margin-top:14px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);background:var(--surface2);}
+.fcp-sv{display:block;width:100%;cursor:crosshair;touch-action:none;user-select:none;}
+.fcp-hue{display:block;width:100%;height:20px;cursor:ew-resize;touch-action:none;user-select:none;border-top:1px solid var(--border2);}
+.base-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.base-btn{border-radius:10px;border:2px solid var(--border2);padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s;position:relative;}
+.base-btn.active{border-color:var(--accent);box-shadow:0 0 14px var(--accent-glow);}
+.base-btn-label{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;}
+.base-btn-dots{display:flex;gap:4px;margin-top:2px;}
+.base-btn-dot{width:8px;height:8px;border-radius:50%;}
+.base-btn-check{position:absolute;top:8px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;}
+
+body{
+  background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding-bottom:72px;overflow-x:clip;
+  transition:background .3s,color .3s;
+}
+
