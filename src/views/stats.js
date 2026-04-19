@@ -2,7 +2,7 @@ import { esc } from '../utils/misc.js';
 import { sessionTotalCal } from '../utils/misc.js';
 import { todayISO, isoFromDate } from '../utils/date.js';
 
-function computeStreaks(cfg, sessions) {
+export function computeStreaks(cfg, sessions) {
   const mode = cfg.streakMode || 'weekly';
   const goal = mode === 'daily' ? 1 : Math.max(1, cfg.streakGoal || 3);
 
