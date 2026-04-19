@@ -36,3 +36,5 @@ export const EFFORT_LABELS = ['','Easy','Good','Hard','Max'];
 export const EFFORT_COLORS = ['','#16a34a','#ca8a04','#dc2626','#aaa'];
 
 export const GIST_FILENAME = 'forge-backup.json';
+
+export const DEF_GAMIFICATION = {xp:0,level:1,earnedBadges:[],unlockedItems:[],activeTitle:'',activeBadge:'',activeBackground:'default',lastProcessedSession:0};
