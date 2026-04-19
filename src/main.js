@@ -1,54 +1,17 @@
 import './styles/index.css';
+import { DEF_GROUPS, DEF_CFG, DEF_MACHINES, THEME_BASES, EFFORT_LABELS, EFFORT_COLORS, GIST_FILENAME } from './constants.js';
+import { dotw, fmtDate, todayISO, isoFromDate, getWeekStart, DAYS_OF_WEEK } from './utils/date.js';
+import { dc, uid, esc, normalizeWeightType, pick, shuffle, parseScheme } from './utils/misc.js';
 'use strict';
 
-/* ═══════════════════════════════════════════
-   DEFAULTS
-═══════════════════════════════════════════ */
-const DEF_GROUPS = [
-  {id:'g1',name:'Lower',mode:'core',active:true,required:1,exercises:[
-    {id:'e1',name:'Leg Press',enabled:true},{id:'e2',name:'Leg Extension',enabled:true},
-    {id:'e3',name:'Leg Curl',enabled:true},{id:'e4',name:'Goblet Squat',enabled:true},
-    {id:'e5',name:'Romanian Deadlift',enabled:true},{id:'e6',name:'Walking Lunges',enabled:true}]},
-  {id:'g2',name:'Shoulders',mode:'core',active:true,required:1,exercises:[
-    {id:'e7',name:'Shoulder Press',enabled:true},{id:'e8',name:'Shrugs',enabled:true},
-    {id:'e9',name:'Lateral & Front Raise Combo',enabled:true},{id:'e10',name:'Face Pull',enabled:true}]},
-  {id:'g3',name:'Triceps',mode:'core',active:true,required:1,exercises:[
-    {id:'e11',name:'Extension',enabled:true},{id:'e12',name:'Pushdown',enabled:true},{id:'e13',name:'Skull Crusher',enabled:true}]},
-  {id:'g4',name:'Lower Arm / Biceps',mode:'core',active:true,required:1,exercises:[
-    {id:'e14',name:'Preacher Curls',enabled:true},{id:'e15',name:'Wrist Curl',enabled:true},
-    {id:'e16',name:'Hammer Curls',enabled:true},{id:'e17',name:'Single Arm Row',enabled:true},{id:'e18',name:'Upright Row',enabled:true}]},
-  {id:'g5',name:'Chest',mode:'core',active:true,required:1,exercises:[
-    {id:'e19',name:'Butterflies',enabled:true},{id:'e20',name:'Chest Press',enabled:true},{id:'e21',name:'Incline Chest Press',enabled:true}]},
-  {id:'g6',name:'Back',mode:'core',active:true,required:1,exercises:[
-    {id:'e22',name:'Row Machine',enabled:true},{id:'e23',name:'Lat Pull Downs',enabled:true},
-    {id:'e24',name:'Barbell Pullover',enabled:true},{id:'e25',name:'Bent Over Row',enabled:true}]}
-];
-const DEF_CFG = {bonusSlots:2, weightIncrement:5, streakMode:'weekly', streakGoal:3, restTimer:{enabled:false,duration:60}, profile:{weight:'',weightUnit:'lbs',height:'',heightUnit:'in',age:'',sex:'male'}, accentColor:null, cardPrefs:{showCues:true,showLastSession:true,showGroupLabel:true}, gamificationPrefs:{showHeaderBadge:true,showXPBar:true}, schemes:['3×10','3×12','4×10']};
-const DEF_MACHINES = [
-  {id:'m1',icon:'🏃',name:'Treadmill',metric:'Distance',unit:'mi'},
-  {id:'m2',icon:'⭕',name:'Elliptical',metric:'Distance',unit:'mi'},
-  {id:'m3',icon:'🪜',name:'Stair Climber',metric:'Floors',unit:'fl'},
-  {id:'m4',icon:'🚲',name:'Stationary Bike',metric:'Distance',unit:'mi'}
-];
 function getSchemes(){return(cfg.schemes&&cfg.schemes.length)?cfg.schemes:['3×10','3×12','4×10'];}
-const DAYS_OF_WEEK = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const THEME_BASES = [
-  {id:'dark',  label:'DARK',  bg:'#080808', text:'#ececec', dots:['#e8271f','#aaa','#0f0f0f']},
-  {id:'light', label:'LIGHT', bg:'#f0eeeb', text:'#1a1a1a', dots:['#c8102e','#555','#faf9f7']},
-];
-const EFFORT_LABELS=['','Easy','Good','Hard','Max'];
-const EFFORT_COLORS=['','#16a34a','#ca8a04','#dc2626','#aaa'];
 
 /* ═══════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════ */
-function dc(x){return JSON.parse(JSON.stringify(x));}
-function uid(){return '_'+Math.random().toString(36).slice(2,9);}
-function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function ld(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):dc(d);}catch(e){console.warn('ld failed for',k,e);return dc(d);}}
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){if(typeof toast==='function')toast('⚠️ Storage full — clear old sessions to free space',5000);}console.error('sv failed for',k,e);}}
 const lsGet=ld, lsSet=sv;
-const GIST_FILENAME='forge-backup.json';
 let gistCfg = ld('fj_gist_cfg', {pat:'',gistId:''});
 
 let groups   = ld('fj_groups',   DEF_GROUPS);
@@ -242,10 +205,6 @@ function applyCustomAccent(hex){
   document.body.style.setProperty('--accent-dim',accentDim);
   document.body.style.setProperty('--accent-glow',accentGlow);
   document.body.style.setProperty('--j-acc',hex);
-}
-function normalizeWeightType(wt){
-  if(wt==='bw'||wt==='bw+') return 'bodyweight';
-  return wt||'standard';
 }
 function fmtWt(n,noUnit,weightType){
   const type=normalizeWeightType(weightType);
@@ -508,16 +467,6 @@ async function modalGistConnect(){
   }catch(err){gistCfg.pat='';gistCfg.gistId='';lsSet('fj_gist_cfg',gistCfg);if(msgEl){msgEl.className='gist-msg err';msgEl.textContent='❌ '+err.message;}}
 }
 
-/* ═══════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════ */
-const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-function dotw(iso){return DAYS[new Date(iso+'T12:00:00').getDay()];}
-function fmtDate(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
-function todayISO(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
-function parseScheme(s){const p=String(s||'3×10').split('×');const sets=Math.max(1,Math.min(parseInt(p[0])||3,20));const reps=Math.max(1,Math.min(parseInt(p[1])||10,100));return{sets,reps};}
 // % of 1RM intensity by rep count, based on standard training zones:
 // Strength (1-6 reps): 80-90%, Hypertrophy (7-12): 65-75%, Endurance (15+): <60%
 function repIntensity(r){
@@ -1580,14 +1529,6 @@ function renderHistory(){
 function setHistView(v){histView=v;expandedChip=null;renderHistory();}
 
 /* ─── WEEK VIEW ─── */
-function isoFromDate(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function getWeekStart(offset){
-  const now=new Date();
-  const d=new Date(now);
-  d.setDate(now.getDate()-((now.getDay()+6)%7)+offset*7); // Monday-anchored
-  d.setHours(0,0,0,0);
-  return d;
-}
 function renderWeekView(){
   const wrap=document.getElementById('week-section');
   const ws=getWeekStart(weekOffset);
