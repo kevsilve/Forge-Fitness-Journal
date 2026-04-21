@@ -3,6 +3,7 @@ import { parseDurationMin, estimateCalories } from '../utils/misc.js';
 import { normalizeWeightType } from '../utils/misc.js';
 import { sv, ld } from '../storage.js';
 import { gistPush } from '../sync/gist.js';
+import { isSupabaseEnabled, dbPushSession, dbPushStats } from '../sync/supabase.js';
 import { clearRestTimer, clearLiveTimer } from './timers.js';
 import { showWorkoutSummary } from './summary.js';
 import { processGamification } from '../gamification/ui.js';
@@ -115,6 +116,24 @@ export async function saveWorkout() {
   showWorkoutSummary(session, newPRs, gamResult);
 
   const { gistCfg, buildPayload, setSyncStatus, formatSyncError, toast } = _ctx;
+
+  // Supabase sync (primary) — push session + stats incrementally
+  if(isSupabaseEnabled()){
+    setSyncStatus('syncing');
+    try{
+      await Promise.all([dbPushSession(session), dbPushStats(stats)]);
+      setSyncStatus('synced');
+    }catch(err){
+      // Queue for retry on next login
+      const q=JSON.parse(ld('fj_pending_sync','[]')||'[]');
+      if(!q.includes(session.id)){ q.push(session.id); sv('fj_pending_sync',JSON.stringify(q)); }
+      setSyncStatus('error');
+      console.warn('Supabase session push failed, queued:', err.message);
+    }
+    return;
+  }
+
+  // Legacy Gist sync (fallback when Supabase not configured)
   if(gistCfg.pat){
     setSyncStatus('syncing');
     try{ await gistPush(gistCfg, buildPayload()); setSyncStatus('synced'); }

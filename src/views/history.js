@@ -2,6 +2,7 @@ import { dc, esc, normalizeWeightType, parseScheme, sessionTotalCal } from '../u
 import { fmtDate, dotw, isoFromDate, todayISO, getWeekStart } from '../utils/date.js';
 import { sv } from '../storage.js';
 import { gistPush } from '../sync/gist.js';
+import { isSupabaseEnabled, dbDeleteSession } from '../sync/supabase.js';
 import { EFFORT_LABELS, EFFORT_COLORS } from '../constants.js';
 
 let _ctx = null;
@@ -447,6 +448,8 @@ export function deleteSession(id){
   renderHistory();
   _pendingDelete={session:removed,t:setTimeout(()=>{
     _pendingDelete=null;sv('fj_sessions',_ctx.sessions);rebuildStats();
+    if(isSupabaseEnabled()) dbDeleteSession(removed.id).catch(()=>{});
+    else if(_ctx.gistCfg.pat){gistPush(_ctx.gistCfg,_ctx.buildPayload()).catch(()=>{});}
   },5000)};
   _ctx.toastHtml(`Session removed &nbsp;<span style="font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="undoDelete()">Undo</span>`,5200);
 }

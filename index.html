@@ -22,7 +22,28 @@
   </div>
 </div>
 
-<!-- SETUP SCREEN -->
+<!-- AUTH SCREEN (Supabase magic-link login) -->
+<div id="auth-screen" style="display:none;">
+  <div class="setup-logo">FORGE</div>
+  <div class="setup-sub">Personal Fitness Journal</div>
+  <div class="setup-card">
+    <div class="setup-card-hdr">
+      <div class="setup-card-title" id="auth-title">SIGN IN</div>
+      <div class="setup-card-sub" id="auth-sub">Enter your email to receive a magic link.</div>
+    </div>
+    <div class="setup-body" id="auth-body">
+      <div class="setup-field">
+        <label>Email</label>
+        <input class="setup-inp" type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div id="auth-msg" style="display:none;margin-bottom:10px;font-size:12px;"></div>
+      <button class="setup-btn" onclick="authSendLink()">Send Magic Link</button>
+    </div>
+  </div>
+  <div class="setup-skip" onclick="continueOffline()">Skip — use local storage only</div>
+</div>
+
+<!-- SETUP SCREEN (Gist legacy — shown when Supabase not configured) -->
 <div id="setup-screen">
   <div class="setup-logo">FORGE</div>
   <div class="setup-sub">Personal Fitness Journal</div>
