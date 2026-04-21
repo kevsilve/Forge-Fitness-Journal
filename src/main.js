@@ -4,6 +4,7 @@ import { dotw, fmtDate, todayISO, isoFromDate, getWeekStart, DAYS_OF_WEEK } from
 import { dc, uid, esc, normalizeWeightType, pick, shuffle, parseScheme } from './utils/misc.js';
 import { ld, sv } from './storage.js';
 import { gistPull, gistPush } from './sync/gist.js';
+import { supabase, isSupabaseEnabled, signInWithEmail, signOut, getSession, dbPull, dbPush, dbPushSession, dbDeleteSession, dbPushConfig, dbPushStats } from './sync/supabase.js';
 import { sessionTotalCal } from './utils/misc.js';
 import { renderPRs } from './views/prs.js';
 import { renderStats, computeStreaks } from './views/stats.js';
@@ -38,7 +39,7 @@ import {
   exportData, copyExportJson, closeExportModal, importData,
   openManualEntry, renderManualModal, setManualGroup, setManualExName,
   setManualScheme, addManualEx, removeManualEx, closeManualModal, saveManualSession,
-  settGistPush, settGistPull, setSettMsg,
+  settGistPush, settGistPull, settDbPush, setSettMsg,
 } from './views/settings/index.js';
 import { initTimers, startRestTimer, clearRestTimer, clearLiveTimer, startLiveTimer, updateLiveTimer, updateStickyCalories, setRestTimerEnabled, setRestDuration } from './workout/timers.js';
 import { initPlates, calcPlates, openPlateCalc, setPlateBar, renderPlates } from './workout/plates.js';
@@ -322,33 +323,51 @@ async function init(){
   const lspinner=document.querySelector('.loading-spinner');
   const lerr=document.getElementById('loading-err');
   const lerrmsg=document.getElementById('loading-err-msg');
-  if(!gistCfg.pat){
-    ls.style.display='none';
-    launchApp();
+
+  // ── Supabase auth path ──────────────────────────────────────────────────────
+  if(isSupabaseEnabled()){
+    // Handle magic-link redirect (token in URL hash)
+    if(window.location.hash.includes('access_token')){
+      lmsg.textContent='Signing in…';
+      await supabase.auth.getSession(); // Supabase processes the hash automatically
+      window.history.replaceState(null,'',window.location.pathname);
+    }
+    const session=await getSession();
+    if(!session){
+      ls.style.display='none';
+      document.getElementById('auth-screen').style.display='';
+      // Subscribe to auth state changes so magic-link tab can advance
+      supabase.auth.onAuthStateChange(async(event,s)=>{
+        if(event==='SIGNED_IN'&&s){
+          document.getElementById('auth-screen').style.display='none';
+          ls.style.display='';
+          lmsg.textContent='Loading your data…';
+          await _syncFromSupabase(ls,lmsg,lspinner,lerr,lerrmsg);
+        }
+      });
+      return;
+    }
+    await _syncFromSupabase(ls,lmsg,lspinner,lerr,lerrmsg);
     return;
   }
+
+  // ── Legacy Gist path ────────────────────────────────────────────────────────
+  if(!gistCfg.pat){ls.style.display='none';launchApp();return;}
   lmsg.textContent='Syncing from Gist…';setSyncStatus('syncing');
   try{
     const data=await gistPull(gistCfg);
     if(data&&data.version){
-      // Merge strategy: compare session counts — take whichever has more data
-      // For sessions: merge by id so no duplicates, keep all unique sessions
       const localSessions=ld('fj_sessions',[]);
       const gistSessions=data.sessions||[];
       if(gistSessions.length>0){
-        // Merge: union of sessions by id, newest wins for duplicates
         const merged=Object.values(
           [...localSessions,...gistSessions].reduce((acc,s)=>{
             if(!acc[s.id]||s.savedAt>acc[s.id].savedAt)acc[s.id]=s;
             return acc;
           },{})
         ).sort((a,b)=>b.date.localeCompare(a.date));
-        sessions=merged;sv('fj_sessions',sessions);
-        data.sessions=sessions;
+        sessions=merged;sv('fj_sessions',sessions);data.sessions=sessions;
       }
-      // For non-session data, only apply Gist version if local wasn't modified after last push
-      // Simple heuristic: always take Gist groups/cfg/machines (they're settings, not history)
-      // But only if Gist has them — don't wipe local customizations
       if(data.groups&&data.groups.length)applyPayload({...data,sessions});
       else applyPayload({...data,sessions,groups,cfg,machines});
     }
@@ -358,6 +377,75 @@ async function init(){
     lerrmsg.textContent=`Could not sync from Gist: ${err.message}. You can continue with your locally cached data.`;
     lerr.style.display='block';setSyncStatus('error');
   }
+}
+
+async function _syncFromSupabase(ls,lmsg,lspinner,lerr,lerrmsg){
+  lmsg.textContent='Loading your data…';setSyncStatus('syncing');
+  try{
+    const remote=await dbPull();
+    if(remote){
+      // Merge strategy: Supabase is source of truth for config; merge sessions by id
+      const localSessions=ld('fj_sessions',[]);
+      const remoteSessions=remote.sessions||[];
+      const merged=Object.values(
+        [...localSessions,...remoteSessions].reduce((acc,s)=>{
+          if(!acc[s.id]||s.savedAt>acc[s.id].savedAt)acc[s.id]=s;
+          return acc;
+        },{})
+      ).sort((a,b)=>b.date.localeCompare(a.date));
+      const payload={
+        cfg:remote.cfg||cfg,
+        groups:remote.groups&&remote.groups.length?remote.groups:groups,
+        machines:remote.machines&&remote.machines.length?remote.machines:machines,
+        theme:remote.theme||theme,
+        gamification:remote.gamification||gamification,
+        sessions:merged,
+        stats:remote.stats||stats,
+        version:1,
+      };
+      applyPayload(payload);
+    }
+    // Push any locally-pending sessions that aren't in Supabase yet
+    const pendingSync=JSON.parse(ld('fj_pending_sync','[]')||'[]');
+    if(pendingSync.length){
+      for(const sid of pendingSync){
+        const s=sessions.find(x=>x.id===sid);
+        if(s)await dbPushSession(s);
+      }
+      sv('fj_pending_sync','[]');
+    }
+    setSyncStatus('synced');ls.style.display='none';launchApp();
+  }catch(err){
+    lspinner.style.display='none';lmsg.style.display='none';
+    lerrmsg.textContent=`Could not load data: ${err.message}. You can continue offline.`;
+    lerr.style.display='block';setSyncStatus('error');
+  }
+}
+
+async function authSendLink(){
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  const msgEl=document.getElementById('auth-msg');
+  const titleEl=document.getElementById('auth-title');
+  const subEl=document.getElementById('auth-sub');
+  const bodyEl=document.getElementById('auth-body');
+  if(!email||!email.includes('@')){
+    if(msgEl){msgEl.style.display='';msgEl.style.color='var(--accent)';msgEl.textContent='Enter a valid email address.';}
+    return;
+  }
+  try{
+    await signInWithEmail(email);
+    titleEl.textContent='CHECK YOUR EMAIL';
+    subEl.textContent=`Magic link sent to ${email}. Click it to sign in — you can close this tab.`;
+    bodyEl.style.display='none';
+  }catch(err){
+    if(msgEl){msgEl.style.display='';msgEl.style.color='var(--accent)';msgEl.textContent='Error: '+err.message;}
+  }
+}
+
+async function authSignOut(){
+  await signOut();
+  sv('fj_sessions',[]);sv('fj_stats',{exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}});
+  window.location.reload();
 }
 function setHdrH(){
   const h=document.querySelector('.hdr');
@@ -479,11 +567,14 @@ function startAutoSync(){
 /* ── AUTO-PUSH settings changes to Gist (debounced) ── */
 let _settingsPushTimer=null;
 function autoSaveSettings(){
-  if(!gistCfg.pat)return;
   if(_settingsPushTimer)clearTimeout(_settingsPushTimer);
   _settingsPushTimer=setTimeout(async()=>{
     _settingsPushTimer=null;
-    try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}
+    if(isSupabaseEnabled()){
+      try{await dbPushConfig(cfg,groups,machines,theme,gamification);setSyncStatus('synced');}catch(e){setSyncStatus('error');}
+    } else if(gistCfg.pat){
+      try{await gistPush(gistCfg, buildPayload());setSyncStatus('synced');}catch(e){setSyncStatus('error');}
+    }
   },2500);
 }
 // Throttled version for high-frequency events (weight inputs, reps)
@@ -496,6 +587,7 @@ function saveActiveThrottled(){
 function continueOffline(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('setup-screen').style.display='none';
+  document.getElementById('auth-screen').style.display='none';
   launchApp();
 }
 
@@ -646,10 +738,12 @@ init().catch(err=>{
 // Expose functions to global scope for inline onclick="" handlers in HTML.
 // This block is temporary and will be removed in Phase 4e when event delegation replaces inline handlers.
 Object.assign(window, {
+  // Auth
+  authSendLink, authSignOut,
   // Navigation & core UI
   switchTab, continueOffline, manualSync,
   // Setup / Gist
-  setupConnect, settGistPush, settGistPull, modalGistConnect,
+  setupConnect, settGistPush, settGistPull, settDbPush, modalGistConnect,
   // Generate tab
   generate, setBuildMode, startWorkout, saveAsTemplate,
   openExercisePicker, togglePickerEx, togglePickerGroup, closePickerModal,

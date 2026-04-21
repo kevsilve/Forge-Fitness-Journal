@@ -3,6 +3,7 @@ import { sv } from '../../storage.js';
 import { todayISO } from '../../utils/date.js';
 import { DEF_CFG, DEF_GROUPS, DEF_MACHINES, DEF_GAMIFICATION } from '../../constants.js';
 import { gistPush, gistPull } from '../../sync/gist.js';
+import { isSupabaseEnabled, signOut, getUser, dbPush, dbPushSession, dbPushStats } from '../../sync/supabase.js';
 
 let _ctx = null;
 let _newSchemeSets = 3, _newSchemeReps = 10;
@@ -11,7 +12,7 @@ let backupPromptTimer = null;
 
 export function initSettings(ctx) { _ctx = ctx; }
 
-export function renderSettings() {
+export async function renderSettings() {
   const wrap = document.getElementById('sett-wrap');
   const tab = _ctx.settingsTab;
   const tabs = [
@@ -38,7 +39,7 @@ export function renderSettings() {
   else if(tab==='exercises') panel=renderPool();
   else if(tab==='cardio') panel=`<div class="sett-card">${renderMachines()}</div>`;
   else if(tab==='theme') panel=`<div class="sett-card">${renderTheme()}</div><div style="height:24px"></div>`;
-  else if(tab==='data') panel=renderDataTab();
+  else if(tab==='data'){ await renderDataTab(); return; }
   wrap.innerHTML=tabBar+`<div class="sett-panel">${panel}</div>`;
   if(tab==='theme'&&_ctx._fcp.open){
     const fp=document.getElementById('fcp-panel');
@@ -110,7 +111,34 @@ function renderWorkoutSettings(){
   </div>`;
 }
 
-function renderDataTab(){
+async function renderDataTab(){
+  if(isSupabaseEnabled()){
+    let email='';
+    try{ const u=await getUser(); email=u?.email||''; }catch(e){}
+    const wrap=document.getElementById('sett-wrap');
+    const tab=_ctx.settingsTab;
+    const tabs=[
+      {id:'profile',icon:'👤',lbl:'Profile'},{id:'workout',icon:'⚡',lbl:'Workout'},
+      {id:'exercises',icon:'🏋️',lbl:'Exercises'},{id:'cardio',icon:'🏃',lbl:'Cardio'},
+      {id:'theme',icon:'🎨',lbl:'Theme'},{id:'data',icon:'💾',lbl:'Data'},
+    ];
+    const tabBar=`<div class="sett-tabs">${tabs.map(t=>`<button class="sett-tab${tab===t.id?' active':''}" onclick="setSettTab('${t.id}')"><span class="sett-tab-icon">${t.icon}</span><span class="sett-tab-lbl">${t.lbl}</span></button>`).join('')}</div>`;
+    const panel=`<div class="sett-card">
+      <div class="sett-card-title">Account <span style="color:var(--up);font-size:10px;">● Synced</span></div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5;">Signed in as <strong>${email||'—'}</strong></div>
+      <div class="gist-btns" style="margin-bottom:12px;">
+        <button class="gist-btn primary" onclick="settDbPush()">⬆ Push All Data</button>
+        <button class="gist-btn" onclick="authSignOut()">Sign Out</button>
+      </div>
+      <div id="s-gist-msg" style="margin-bottom:8px;"></div>
+    </div>
+    <div class="sett-card">
+      <div class="sett-card-title">Backup &amp; Import</div>
+      ${renderDataManagement()}
+    </div>`;
+    if(wrap)wrap.innerHTML=tabBar+`<div class="sett-panel">${panel}</div>`;
+    return;
+  }
   const gc=_ctx.gistCfg;
   const linked=!!(gc.pat&&gc.gistId);
   return`<div class="sett-card">
@@ -462,7 +490,11 @@ export function resetHistoryAndStats(){
 export async function _doResetHistoryAndStats(){
   _ctx.sessions=[];_ctx.stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
   sv('fj_sessions',_ctx.sessions);sv('fj_stats',_ctx.stats);
-  if(_ctx.gistCfg.pat){try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}}
+  if(isSupabaseEnabled()){
+    try{await dbPush(_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
+  } else if(_ctx.gistCfg.pat){
+    try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
+  }
   _ctx.toast('History & stats cleared');renderSettings();
 }
 export function nuclearReset(){
@@ -495,7 +527,8 @@ export async function _doNuclearReset(){
   sv('fj_sessions',_ctx.sessions);sv('fj_stats',_ctx.stats);sv('fj_theme','dark');
   sv('fj_gamification',_ctx.gamification);
   _ctx.applyBodyClasses();_ctx.applyCustomAccent(null);_ctx.renderHeaderLevel();
-  if(_ctx.gistCfg.pat){try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());}catch(e){}}
+  if(isSupabaseEnabled()){try{await dbPush(_ctx.buildPayload());}catch(e){}}
+  else if(_ctx.gistCfg.pat){try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());}catch(e){}}
   _ctx.toast('Everything reset to defaults');renderSettings();
 }
 export function setProfileVal(key,val,noRender){
@@ -764,7 +797,27 @@ export async function saveManualSession(){
   sv('fj_stats',_ctx.stats);
   document.getElementById('modal-root').innerHTML='';
   _ctx.toast('Session logged ✓');_ctx.renderHistory();
-  if(_ctx.gistCfg.pat){_ctx.setSyncStatus('syncing');try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}}
+  if(isSupabaseEnabled()){
+    _ctx.setSyncStatus('syncing');
+    try{await Promise.all([dbPushSession(session),dbPushStats(_ctx.stats)]);_ctx.setSyncStatus('synced');}
+    catch(e){_ctx.setSyncStatus('error');}
+  } else if(_ctx.gistCfg.pat){
+    _ctx.setSyncStatus('syncing');
+    try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
+  }
+}
+
+// ── supabase helpers ─────────────────────────────────────────────────────────
+
+export async function settDbPush(){
+  setSettMsg('Pushing…','info');_ctx.setSyncStatus('syncing');
+  try{
+    await dbPush(_ctx.buildPayload());
+    setSettMsg('✅ All data pushed to Supabase','ok');
+    _ctx.setSyncStatus('synced');_ctx.toast('Synced ✓');
+  }catch(err){
+    setSettMsg(`❌ ${_ctx.formatSyncError(err)}`,'err');_ctx.setSyncStatus('error');
+  }
 }
 
 // ── gist helpers ─────────────────────────────────────────────────────────────
