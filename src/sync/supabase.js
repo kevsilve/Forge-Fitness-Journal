@@ -127,6 +127,14 @@ export async function dbDeleteSession(id) {
   if(error) console.warn('dbDeleteSession failed:', error.message);
 }
 
+export async function dbDeleteAllSessions() {
+  if(!supabase) return;
+  const user = await getUser();
+  if(!user) return;
+  const { error } = await supabase.from('sessions').delete().eq('user_id', user.id);
+  if(error) console.warn('dbDeleteAllSessions failed:', error.message);
+}
+
 // Push just the config (after settings change)
 export async function dbPushConfig(cfg, groups, machines, theme, gamification) {
   if(!supabase) return;

@@ -3,7 +3,7 @@ import { sv } from '../../storage.js';
 import { todayISO } from '../../utils/date.js';
 import { DEF_CFG, DEF_GROUPS, DEF_MACHINES, DEF_GAMIFICATION } from '../../constants.js';
 import { gistPush, gistPull } from '../../sync/gist.js';
-import { isSupabaseEnabled, signOut, getUser, dbPush, dbPushSession, dbPushStats } from '../../sync/supabase.js';
+import { isSupabaseEnabled, signOut, getUser, dbPush, dbPushSession, dbPushStats, dbDeleteAllSessions } from '../../sync/supabase.js';
 
 let _ctx = null;
 let _newSchemeSets = 3, _newSchemeReps = 10;
@@ -495,7 +495,7 @@ export async function _doResetHistoryAndStats(){
   _ctx.sessions=[];_ctx.stats={exercises:{},total:0,weightHistory:{},totalReps:{},prs:{}};
   sv('fj_sessions',_ctx.sessions);sv('fj_stats',_ctx.stats);
   if(isSupabaseEnabled()){
-    try{await dbPush(_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
+    try{await dbDeleteAllSessions();await dbPush(_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
   } else if(_ctx.gistCfg.pat){
     try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());_ctx.setSyncStatus('synced');}catch(e){_ctx.setSyncStatus('error');}
   }
@@ -531,7 +531,7 @@ export async function _doNuclearReset(){
   sv('fj_sessions',_ctx.sessions);sv('fj_stats',_ctx.stats);sv('fj_theme','dark');
   sv('fj_gamification',_ctx.gamification);
   _ctx.applyBodyClasses();_ctx.applyCustomAccent(null);_ctx.renderHeaderLevel();
-  if(isSupabaseEnabled()){try{await dbPush(_ctx.buildPayload());}catch(e){}}
+  if(isSupabaseEnabled()){try{await dbDeleteAllSessions();await dbPush(_ctx.buildPayload());}catch(e){}}
   else if(_ctx.gistCfg.pat){try{await gistPush(_ctx.gistCfg,_ctx.buildPayload());}catch(e){}}
   _ctx.toast('Everything reset to defaults');renderSettings();
 }
