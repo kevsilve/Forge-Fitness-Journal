@@ -538,6 +538,7 @@ function launchApp(){
   // Wire up workout modules
   const workoutCtxBase = {
     get cfg(){return cfg;},
+    get groups(){return groups;},
     get sessions(){return sessions;},
     get stats(){return stats;},
     get machines(){return machines;},
