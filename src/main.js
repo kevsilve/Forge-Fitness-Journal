@@ -1,4 +1,18 @@
 import './styles/index.css';
+
+// Mobile error overlay — shows JS errors on screen for debugging
+window.addEventListener('error', e => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#c00;color:#fff;font-size:12px;padding:10px;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto;';
+  d.textContent = '⚠ JS Error: ' + (e.message || e) + '\n' + (e.filename ? e.filename.split('/').pop() + ':' + e.lineno : '');
+  document.body.appendChild(d);
+});
+window.addEventListener('unhandledrejection', e => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#900;color:#fff;font-size:12px;padding:10px;white-space:pre-wrap;word-break:break-all;max-height:40vh;overflow:auto;';
+  d.textContent = '⚠ Unhandled Promise: ' + (e.reason?.message || e.reason || 'unknown');
+  document.body.appendChild(d);
+});
 import { DEF_GROUPS, DEF_CFG, DEF_MACHINES, THEME_BASES, EFFORT_LABELS, EFFORT_COLORS, DEF_GAMIFICATION } from './constants.js';
 import { dotw, fmtDate, todayISO, isoFromDate, getWeekStart, DAYS_OF_WEEK } from './utils/date.js';
 import { dc, uid, esc, normalizeWeightType, pick, shuffle, parseScheme } from './utils/misc.js';
