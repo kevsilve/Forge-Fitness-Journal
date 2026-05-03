@@ -39,7 +39,11 @@ export async function renderSettings() {
   else if(tab==='exercises') panel=renderPool();
   else if(tab==='cardio') panel=`<div class="sett-card">${renderMachines()}</div>`;
   else if(tab==='theme') panel=`<div class="sett-card">${renderTheme()}</div><div style="height:24px"></div>`;
-  else if(tab==='data'){ await renderDataTab(); return; }
+  else if(tab==='data'){
+    const dataPanel = await renderDataTab();
+    if(dataPanel) wrap.innerHTML=tabBar+`<div class="sett-panel">${dataPanel}</div>`;
+    return;
+  }
   wrap.innerHTML=tabBar+`<div class="sett-panel">${panel}</div>`;
   if(tab==='theme'&&_ctx._fcp.open){
     const fp=document.getElementById('fcp-panel');
